@@ -1,0 +1,3 @@
+WWW
+WMW
+M.M
