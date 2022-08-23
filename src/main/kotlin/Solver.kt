@@ -24,7 +24,8 @@ fun solve(board: Board): Optional<Board> {
     while(!b.solved()) {
         val newBoard = applyRules(b, rules)
         if (!newBoard.applicable) {
-            return Optional.empty();
+            println("No rules appllicable, bifurcating")
+            return bifurcate(b)
         }
         b = newBoard.newBoard
         println("Applying rule: ${newBoard.description}")
@@ -35,14 +36,7 @@ fun solve(board: Board): Optional<Board> {
     return Optional.of(b)
 }
 
-fun applyRules(board: Board, rules: List<Rule>): ApplyResult {
-    for (rule in rules) {
-        val tryApply = rule.apply(board)
-        if (tryApply.applicable) {
-            return tryApply
-        }
-    }
-
+fun bifurcate(board: Board): Optional<Board> {
     //no rules apply, bifurcate
     for (rowIdx in board.grid.indices) {
         for (colIdx in board.grid[0].indices) {
@@ -56,7 +50,7 @@ fun applyRules(board: Board, rules: List<Rule>): ApplyResult {
                     update.board.draw()
                     val solve = solve(update.board)
                     if (!solve.isEmpty) {
-                        return ApplyResult(true, "Bifurcation", "Bifurcated[$rowIdx][$colIdx]", solve.get())
+                        return solve
                     }
                 } else {
                     println("Invalid bifurcation probe: ${update.invalidReason}")
@@ -64,7 +58,15 @@ fun applyRules(board: Board, rules: List<Rule>): ApplyResult {
             }
         }
     }
-
+    return Optional.empty()
+}
+fun applyRules(board: Board, rules: List<Rule>): ApplyResult {
+    for (rule in rules) {
+        val tryApply = rule.apply(board)
+        if (tryApply.applicable) {
+            return tryApply
+        }
+    }
     return ApplyResult(false, "", "", board)
 }
 
