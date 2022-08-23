@@ -71,7 +71,7 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
                 Pair(rowIdx, colIdx),
                 Pair(rowIdx+1, colIdx),
                 Pair(rowIdx, colIdx+1),
-                Pair(rowIdx+1, colIdx)
+                Pair(rowIdx+1, colIdx+1)
             ).all { grid[it.first][it.second] == Space.EMPTY }
             if (emptyTwoByTwo) return Pair(false, "Empty 2x2 starting on ($rowIdx,$colIdx)")
         }

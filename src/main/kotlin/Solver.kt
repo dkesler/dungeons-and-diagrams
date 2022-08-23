@@ -42,6 +42,29 @@ fun applyRules(board: Board, rules: List<Rule>): ApplyResult {
             return tryApply
         }
     }
+
+    //no rules apply, bifurcate
+    for (rowIdx in board.grid.indices) {
+        for (colIdx in board.grid[0].indices) {
+            //if space is unknown, make it a wall and try to solve.
+            //if we successfully solve, return solve, otherwise try next unknown
+            if (board.grid[rowIdx][colIdx] == Space.UNKNOWN) {
+                println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx]")
+                val update = board.update(rowIdx, colIdx, Space.WALL)
+                if (update.valid) {
+                    println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx]")
+                    update.board.draw()
+                    val solve = solve(update.board)
+                    if (!solve.isEmpty) {
+                        return ApplyResult(true, "Bifurcation", "Bifurcated[$rowIdx][$colIdx]", solve.get())
+                    }
+                } else {
+                    println("Invalid bifurcation probe: ${update.invalidReason}")
+                }
+            }
+        }
+    }
+
     return ApplyResult(false, "", "", board)
 }
 
