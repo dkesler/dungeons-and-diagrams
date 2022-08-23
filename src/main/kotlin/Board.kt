@@ -20,7 +20,7 @@ class Board(
     fun solved(): Boolean {
         val rowsSatisfied = rowReqs.mapIndexed { index, req -> row(index).filter{it == Space.WALL}.count() == req }.all { it }
         val colsSatisfied = colReqs.mapIndexed { index, req -> col(index).filter{it == Space.WALL}.count() == req }.all { it }
-        return rowsSatisfied && colsSatisfied
+        return rowsSatisfied && colsSatisfied && isValid(grid, rowReqs, colReqs).first
     }
 
     fun row(rowIdx: Int): List<Space> {
@@ -57,12 +57,17 @@ data class Update(val valid: Boolean, val invalidReason: String, val board: Boar
 fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, String> {
     for (rowIdx in rowReqs.indices) {
         val rowWalls = grid[rowIdx].count{it == Space.WALL}
+        val rowUnknowns = grid[rowIdx].count{it == Space.UNKNOWN}
         if (rowWalls > rowReqs[rowIdx]) return Pair(false, "Too many walls in row $rowIdx")
+        if (rowWalls + rowUnknowns < rowReqs[rowIdx]) return Pair(false, "Insufficient space for walls in row $rowIdx")
     }
 
     for (colIdx in colReqs.indices) {
-        val colWalls =  grid.map{it[colIdx]}.count{it == Space.WALL}
+        val col = grid.map{it[colIdx]}
+        val colWalls =  col.count{it == Space.WALL}
+        val colUnknowns = col.count{it == Space.UNKNOWN}
         if (colWalls > colReqs[colIdx]) return Pair(false, "Too many walls in col $colIdx")
+        if (colWalls + colUnknowns < colReqs[colIdx]) return Pair(false, "Insufficient space for walls in col $colIdx")
     }
 
     for (rowIdx in (0 until rowReqs.size - 1)) {
@@ -77,8 +82,8 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
         }
     }
 
-    for (rowIdx in (0 until rowReqs.size - 1)) {
-        for (colIdx in (0 until colReqs.size - 1)) {
+    for (rowIdx in (rowReqs.indices)) {
+        for (colIdx in (colReqs.indices)) {
             val isMonster = grid[rowIdx][colIdx] == Space.MONSTER
             if (isMonster) {
                 val neighbors = neighbors(rowIdx, colIdx, rowReqs.size, colReqs.size)
@@ -106,33 +111,36 @@ fun canBeContiguous(grid: List<List<Space>>): Boolean {
     val visited = mutableSetOf<Pair<Int, Int>>()
     val toVisit = mutableSetOf<Pair<Int, Int>>()
 
-    val firstNonWall = findFirstNonWall(grid)
-    if (firstNonWall == null) return true
+    val firstEmpty = findFirstEmpty(grid)
+    if (firstEmpty == null) return true
 
-    visited.add(firstNonWall)
-    toVisit.add(firstNonWall)
+    visited.add(firstEmpty)
+    toVisit.add(firstEmpty)
 
     while(toVisit.isNotEmpty()) {
         val visiting = toVisit.first()
         toVisit.remove(visiting)
-        val neighbors = neighbors(visiting.first, visiting.second, grid.size, grid[0].size)
-        neighbors.filter{ grid[it.first][it.second] != Space.WALL}
-            .filter{ !visited.contains(it)}
-            .forEach { toVisit.add(it); visited.add(it) }
+        //We can visit a monster, but a monster can't propagate travel
+        if (grid[visiting.first][visiting.second] != Space.MONSTER) {
+            val neighbors = neighbors(visiting.first, visiting.second, grid.size, grid[0].size)
+            neighbors.filter { grid[it.first][it.second] != Space.WALL }
+                .filter { !visited.contains(it) }
+                .forEach { toVisit.add(it); visited.add(it) }
+        }
     }
 
-    val allNonWalls = grid.flatMapIndexed { rowIdx, row -> row.mapIndexed { colIdx, space -> Triple(rowIdx, colIdx, space) } }
-        .filter { it.third != Space.WALL }
+    val allEmptyAndMonsters = grid.flatMapIndexed { rowIdx, row -> row.mapIndexed { colIdx, space -> Triple(rowIdx, colIdx, space) } }
+        .filter { it.third == Space.EMPTY || it.third == Space.MONSTER }
         .map{ Pair(it.first, it.second)}
         .toSet()
 
-    return allNonWalls == visited
+    return visited.containsAll(allEmptyAndMonsters)
 }
 
-fun findFirstNonWall(grid: List<List<Space>>): Pair<Int, Int>? {
+fun findFirstEmpty(grid: List<List<Space>>): Pair<Int, Int>? {
     for (rowIdx in grid.indices) {
         for (colIdx in grid[0].indices) {
-            if (grid[rowIdx][colIdx] != Space.WALL) return Pair(rowIdx, colIdx)
+            if (grid[rowIdx][colIdx] == Space.EMPTY) return Pair(rowIdx, colIdx)
         }
     }
 
