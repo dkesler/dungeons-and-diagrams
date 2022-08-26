@@ -2,7 +2,8 @@ import java.lang.RuntimeException
 
 enum class Space(val c: Char) {
     UNKNOWN('?'),
-    EMPTY('.'),
+    EMPTY('o'), //Either hall or treasure room
+    HALL('.'),
     WALL('W'),
     TREASURE('T'),
     TREASURE_ROOM('O'),
@@ -12,11 +13,13 @@ enum class Space(val c: Char) {
 fun fromChar(c: Char): Space {
     return when (c) {
         '?' -> Space.UNKNOWN
-        '.' -> Space.EMPTY
+        'o' -> Space.EMPTY
+        '.' -> Space.HALL
         'W' -> Space.WALL
         'T' -> Space.TREASURE
         'M' -> Space.MONSTER
         'O' -> Space.TREASURE_ROOM
+
         else -> throw RuntimeException("Unknown char [${c}] in Space.fromChar")
     }
 }
