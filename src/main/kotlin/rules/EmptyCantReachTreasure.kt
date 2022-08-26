@@ -1,52 +1,43 @@
 package rules
 
 import Board
+import findTreasureRoomStartingAt
+import utils.Box
 import kotlin.math.max
 import kotlin.math.min
 
-private data class BoundingBox(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: Int) {
-    fun contains(row: Int, col: Int): Boolean {
-        return row in minRow..maxRow && col in minCol..maxCol
-    }
 
-    fun contains(point: Pair<Int, Int>): Boolean {
-        return contains(point.first, point.second)
-    }
-
-    fun points(): List<Pair<Int, Int>> {
-        return (minRow..maxRow).flatMap { row ->
-            (minCol..maxCol).map{ col ->
-                Pair(row, col)
-            }
-        }
-    }
-}
 
 class EmptyCantReachTreasure : Rule {
 
     override fun apply(board: Board): ApplyResult {
         fun canFeasiblyReachTreasure(row: Int, col: Int, candidate: Pair<Int, Int>): Boolean {
-            //May be the full treasure room or just a slice of it, but it cannot contain hall, monster, or wall
-            val candidateTreasureRoom = BoundingBox(
-                min(row, candidate.first),
-                min(col, candidate.second),
-                max(row, candidate.first),
-                max(row, candidate.second)
+            val candidateTreasureRoomPoints = findTreasureRoomStartingAt(candidate.first, candidate.second, board.grid)
+            val candidateTreasureRoom = Box.fromPoints(candidateTreasureRoomPoints)
+
+            //If the room dimensions would be too large with the empty point added, it can't reach the treasure
+            val augmentedTreasureRoom = Box(
+                min(row, candidateTreasureRoom.minRow),
+                min(col, candidateTreasureRoom.minCol),
+                max(row, candidateTreasureRoom.maxRow),
+                max(col, candidateTreasureRoom.maxCol)
             )
 
-            val candidateTreasureRoomPoints = candidateTreasureRoom.points()
-            val candidateTreasureRoomTypes = candidateTreasureRoomPoints.map{board.grid[it.first][it.second]}.toSet()
-            if (candidateTreasureRoomTypes.intersect(setOf(Space.WALL, Space.HALL, Space.MONSTER)).isEmpty()) {
-                return true
+            if (augmentedTreasureRoom.maxRow - augmentedTreasureRoom.minRow >= 3) {
+                return false
             }
 
-            return false
+            if (augmentedTreasureRoom.maxCol - augmentedTreasureRoom.minCol >= 3) {
+                return false
+            }
+
+            return true
         }
 
         for (row in board.grid.indices) {
             for (col in board.grid[0].indices) {
                 if (board.grid[row][col] == Space.EMPTY) {
-                    val treasureHuntingBoundingBox = BoundingBox(
+                    val treasureHuntingBoundingBox = Box(
                         max(0, row-3),
                         max(0, col-3),
                         min(board.grid.size-1, row+3),

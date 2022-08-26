@@ -1,3 +1,5 @@
+import utils.Box
+
 class Board(
         val rowReqs: List<Int>,
         val colReqs: List<Int>,
@@ -30,6 +32,14 @@ class Board(
 
     fun col(colIdx: Int): List<Space> {
         return grid.map{it[colIdx]}
+    }
+
+    fun subgrid(box: Box): List<List<Space>> {
+        return (box.minRow..box.maxRow).map { row ->
+            (box.minCol..box.maxCol).map { col ->
+                grid[row][col]
+            }
+        }
     }
 
     fun update(rowIdx: Int, colIdx: Int, space: Space): Update {

@@ -15,7 +15,12 @@ fun main(args: Array<String>) {
 }
 
 fun solve(board: Board): Optional<Board> {
-    val rules = listOf<Rule>(WallsExhausted(), EmptyExhausted(), EmptyCantReachTreasure());
+    val rules = listOf(
+        WallsExhausted(),
+        EmptyExhausted(),
+        EmptyCantReachTreasure(),
+        EmptyishTwoByTwoIsTreasureRoom()
+    )
     var b = board
 
     while(!b.solved()) {
