@@ -1,7 +1,4 @@
-import rules.ApplyResult
-import rules.EmptyExhausted
-import rules.Rule
-import rules.WallsExhausted
+import rules.*
 import java.util.Optional
 
 fun main(args: Array<String>) {
@@ -18,7 +15,7 @@ fun main(args: Array<String>) {
 }
 
 fun solve(board: Board): Optional<Board> {
-    val rules = listOf<Rule>(WallsExhausted(), EmptyExhausted());
+    val rules = listOf<Rule>(WallsExhausted(), EmptyExhausted(), EmptyCantReachTreasure());
     var b = board
 
     while(!b.solved()) {

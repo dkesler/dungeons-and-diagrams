@@ -20,7 +20,8 @@ class Board(
     fun solved(): Boolean {
         val rowsSatisfied = rowReqs.mapIndexed { index, req -> row(index).filter{it == Space.WALL}.count() == req }.all { it }
         val colsSatisfied = colReqs.mapIndexed { index, req -> col(index).filter{it == Space.WALL}.count() == req }.all { it }
-        return rowsSatisfied && colsSatisfied && isValid(grid, rowReqs, colReqs).first
+        val containsAnyEmpties = grid.flatten().contains(Space.EMPTY)
+        return rowsSatisfied && colsSatisfied && !containsAnyEmpties && isValid(grid, rowReqs, colReqs).first
     }
 
     fun row(rowIdx: Int): List<Space> {
@@ -33,7 +34,13 @@ class Board(
 
     fun update(rowIdx: Int, colIdx: Int, space: Space): Update {
         if (grid[rowIdx][colIdx] != Space.UNKNOWN) {
-            throw RuntimeException("Tried to update grid[$rowIdx][$colIdx] of type [${grid[rowIdx][colIdx]}]")
+            if (grid[rowIdx][colIdx] != Space.EMPTY) {
+                throw RuntimeException("Tried to update grid[$rowIdx][$colIdx] of type [${grid[rowIdx][colIdx]}]")
+            } else {
+                if (space != Space.HALL && space != Space.TREASURE_ROOM) {
+                    throw RuntimeException("Tried to update grid[$rowIdx][$colIdx] from EMTPY to non-empty type $space")
+                }
+            }
         }
         //TODO: better way of doing this?
         val newGrid = toMutable(grid);
