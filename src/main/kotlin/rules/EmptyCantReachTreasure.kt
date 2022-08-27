@@ -31,6 +31,8 @@ class EmptyCantReachTreasure : Rule {
                 return false
             }
 
+            //TODO:  if the augmented treasure room would include a wall, hall, or monster, we can't reach the treasure
+
             return true
         }
 
