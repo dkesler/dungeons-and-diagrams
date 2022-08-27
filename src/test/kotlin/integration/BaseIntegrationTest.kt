@@ -1,5 +1,6 @@
 package integration
 
+import SolverConfiguration
 import Space
 import fromChar
 import metrics.Step
@@ -10,20 +11,21 @@ import solve
 
 abstract class BaseIntegrationTest {
     abstract val file: String
+    open val config: SolverConfiguration = SolverConfiguration(true)
 
     @Test
     fun doTest() {
         val board = Loader.load(file)
         val solution = loadSolution("/integration$file.sol")
 
-        val solved = solve(board)
+        val solved = solve(board, config)
+        printSolveMetrics(solved.steps)
+
         if (!solved.successful) {
             fail("Did not find a solution")
         }
 
         assertEquals(solution, solved.board.grid)
-
-        printSolveMetrics(solved.steps)
     }
 
     private fun printSolveMetrics(steps: List<Step>) {

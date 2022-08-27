@@ -17,7 +17,7 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
             }
         }
 
-        return ApplyResult(false, "EmptyishTwoByTwoIsTreasureRoom", "", board)
+        return ApplyResult(false, false, "EmptyishTwoByTwoIsTreasureRoom", "", board)
     }
 
 
@@ -27,13 +27,13 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
             if (board.grid[point.first][point.second] == Space.EMPTY) {
                 val update = b.update(point.first, point.second, Space.TREASURE_ROOM)
                 if (!update.valid) {
-                    throw RuntimeException("Invalid update in EmptyishTwoByTwoIsTreasureRoom: ${update.invalidReason}")
+                    return ApplyResult(true, true, "EmptyishTwoByTwoIsTreasureRoom", "EmptyishTwoByTwoIsTreasureRoom.row[${box.minRow}].col[${box.minCol}]", b)
                 } else {
                     b = update.board
                 }
             }
         }
-        return ApplyResult(true, "EmptyishTwoByTwoIsTreasureRoom", "EmptyishTwoByTwoIsTreasureRoom.row[${box.minRow}].col[${box.minCol}]", b)
+        return ApplyResult(true, false,"EmptyishTwoByTwoIsTreasureRoom", "EmptyishTwoByTwoIsTreasureRoom.row[${box.minRow}].col[${box.minCol}]", b)
     }
 
     private fun isEmptyish(subGrid: List<Space>): Boolean {

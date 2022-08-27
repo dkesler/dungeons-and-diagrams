@@ -11,7 +11,8 @@ class EmptyExhausted : Rule {
             val rowWalls = row.filter{it == Space.WALL}.count()
             val rowUnknowns = row.filter{it == Space.UNKNOWN}.count()
             if (rowUnknowns == board.rowReqs[rIdx] - rowWalls && rowUnknowns > 0) {
-                return ApplyResult(true, "EmptyExhausted","EmptyExhausted.row[${rIdx}]" , unknownToWallRow(rIdx, board))
+                val update = unknownToWallRow(rIdx, board)
+                return ApplyResult(true, update.second,"EmptyExhausted","EmptyExhausted.row[${rIdx}]" , update.first)
             }
         }
 
@@ -20,39 +21,40 @@ class EmptyExhausted : Rule {
             val colWalls = col.filter{it == Space.WALL}.count()
             val colUnknowns = col.filter{it == Space.UNKNOWN}.count()
             if (colUnknowns == board.colReqs[cIdx] - colWalls && colUnknowns > 0) {
-                return ApplyResult(true, "EmptyExhausted","EmptyExhausted.col[${cIdx}]", unknownToWallCol(cIdx, board))
+                val update = unknownToWallCol(cIdx, board)
+                return ApplyResult(true, update.second,"EmptyExhausted","EmptyExhausted.col[${cIdx}]", update.first)
             }
         }
 
-        return ApplyResult(false, "EmptyExhausted", "", board);
+        return ApplyResult(false, false, "EmptyExhausted", "", board);
     }
 
-    private fun unknownToWallRow(rIdx: Int, board: Board): Board {
+    private fun unknownToWallRow(rIdx: Int, board: Board): Pair<Board, Boolean> {
         var b = board
         for (cIdx in board.grid[rIdx].indices) {
             if (b.grid[rIdx][cIdx] == Space.UNKNOWN) {
                 val update = b.update(rIdx, cIdx, Space.WALL)
                 if (!update.valid) {
-                    throw RuntimeException("Invalid update in EmptyExhausted: ${update.invalidReason}")
+                    return Pair(b, true)
                 }
                 b = update.board
             }
         }
-        return b
+        return Pair(b, false)
     }
 
-    private fun unknownToWallCol(cIdx: Int, board: Board): Board {
+    private fun unknownToWallCol(cIdx: Int, board: Board): Pair<Board, Boolean> {
         var b = board
         for (rIdx in board.grid.indices) {
             if (b.grid[rIdx][cIdx] == Space.UNKNOWN) {
                 val update = b.update(rIdx, cIdx, Space.WALL)
                 if (!update.valid) {
-                    throw RuntimeException("Invalid update in EmptyExhausted: ${update.invalidReason}")
+                    return Pair(b, true)
                 }
                 b = update.board
 
             }
         }
-        return b
+        return Pair(b, false)
     }
 }

@@ -1,0 +1,8 @@
+.....WWW
+.W.W...M
+.WMW.WWW
+.WWW...M
+OOOW.WWW
+OTOW...M
+OOOW.WWW
+WWWW...M

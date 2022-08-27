@@ -51,15 +51,15 @@ class EmptyCantReachTreasure : Rule {
                     if (candidateTreasures.none{ canFeasiblyReachTreasure(row, col, it)}) {
                         val update = board.update(row, col, Space.HALL)
                         if (!update.valid) {
-                            throw RuntimeException("Invalid update in EmptyCantReachTreasure: ${update.invalidReason}")
+                            return ApplyResult(true, true, "EmptyCantReachTreasure", "EmptyCantReachTreasure.row[$row].col[$col]", update.board)
                         } else {
-                            return ApplyResult(true, "EmptyCantReachTreasure", "EmptyCantReachTreasure.row[$row].col[$col]", update.board)
+                            return ApplyResult(true, false, "EmptyCantReachTreasure", "EmptyCantReachTreasure.row[$row].col[$col]", update.board)
                         }
                     }
                 }
             }
         }
 
-        return ApplyResult(false, "EmptyCantReachTreasure", "", board)
+        return ApplyResult(false, false,"EmptyCantReachTreasure", "", board)
     }
 }

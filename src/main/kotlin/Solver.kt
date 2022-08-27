@@ -3,23 +3,22 @@ import metrics.EvaluationMetric
 import metrics.Solve
 import metrics.Step
 import rules.*
-import java.util.Optional
-import kotlin.system.measureTimeMillis
 
 fun main(args: Array<String>) {
     val file = args[0]
     val board = Loader.load(file)
     board.draw()
     println("")
-    val solved = solve(board);
+    val solved = solve(board, SolverConfiguration(true))
     if (!solved.successful) {
         println("Could not solve board")
     } else {
         println("Solved")
     }
 }
+data class SolverConfiguration(val allowBifurcation: Boolean)
 
-fun solve(board: Board): Solve {
+fun solve(board: Board, config: SolverConfiguration): Solve {
     val rules = listOf(
         WallsExhausted(),
         EmptyExhausted(),
@@ -30,13 +29,23 @@ fun solve(board: Board): Solve {
     val steps = mutableListOf<Step>()
 
     while(!b.solved()) {
-
         val (applyResult, evaluations) = applyRules(b, rules)
+        if (applyResult.contradiction) {
+            println("Contradiction found when applying rules, no solution possible")
+            steps.add(Step(evaluations, null))
+            return Solve(b, false, steps)
+        }
         if (!applyResult.applicable) {
-            println("No rules applicable, bifurcating")
-            val (solvedBoard, successful, bifurcation) = bifurcate(b)
-            steps.add(Step(evaluations, bifurcation))
-            return Solve(solvedBoard, successful, steps)
+            if (config.allowBifurcation) {
+                println("No rules applicable, bifurcating")
+                val (solvedBoard, successful, bifurcation) = bifurcate(b, config)
+                steps.add(Step(evaluations, bifurcation))
+                return Solve(solvedBoard, successful, steps)
+            } else {
+                println("No rules applicable, but bifurcation is disabled.  Returning failuer")
+                steps.add(Step(evaluations, null))
+                return Solve(b, false, steps)
+            }
         } else {
             steps.add(Step(evaluations, null))
             b = applyResult.newBoard
@@ -49,7 +58,7 @@ fun solve(board: Board): Solve {
     return Solve(b, true, steps)
 }
 
-fun bifurcate(board: Board): Triple<Board, Boolean, Bifurcation> {
+fun bifurcate(board: Board, config: SolverConfiguration): Triple<Board, Boolean, Bifurcation> {
     //no rules apply, bifurcate
     var probes = 0
     var wastedTimeMillis = 0L
@@ -66,7 +75,7 @@ fun bifurcate(board: Board): Triple<Board, Boolean, Bifurcation> {
                 if (update.valid) {
                     println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx]")
                     update.board.draw()
-                    val solve = solve(update.board)
+                    val solve = solve(update.board, config)
                     if (solve.successful) {
                         return Triple(solve.board, solve.successful, Bifurcation(probes, wastedTimeMillis, solve.steps))
                     }
@@ -90,7 +99,7 @@ fun applyRules(board: Board, rules: List<Rule>): Pair<ApplyResult, List<Evaluati
             return Pair(tryApply, evaluations)
         }
     }
-    return Pair(ApplyResult(false, "", "", board), evaluations)
+    return Pair(ApplyResult(false, false, "", "", board), evaluations)
 }
 
 
