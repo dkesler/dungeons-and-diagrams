@@ -9,7 +9,7 @@ import kotlin.math.min
 
 
 class EmptyCantReachTreasure : Rule {
-
+    override fun name() = "EmptyCantReachTreasure"
     override fun apply(board: Board): ApplyResult {
         fun canFeasiblyReachTreasure(row: Int, col: Int, candidate: Pair<Int, Int>): Boolean {
             val candidateTreasureRoomPoints = findTreasureRoomStartingAt(candidate.first, candidate.second, board.grid)
@@ -51,15 +51,15 @@ class EmptyCantReachTreasure : Rule {
                     if (candidateTreasures.none{ canFeasiblyReachTreasure(row, col, it)}) {
                         val update = board.update(row, col, Space.HALL)
                         if (!update.valid) {
-                            return ApplyResult(true, true, "EmptyCantReachTreasure", "EmptyCantReachTreasure.row[$row].col[$col]", update.board)
+                            return ApplyResult(true, true, name(), "${name()}.row[$row].col[$col]", update.board)
                         } else {
-                            return ApplyResult(true, false, "EmptyCantReachTreasure", "EmptyCantReachTreasure.row[$row].col[$col]", update.board)
+                            return ApplyResult(true, false, name(), "${name()}.row[$row].col[$col]", update.board)
                         }
                     }
                 }
             }
         }
 
-        return ApplyResult(false, false,"EmptyCantReachTreasure", "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 }

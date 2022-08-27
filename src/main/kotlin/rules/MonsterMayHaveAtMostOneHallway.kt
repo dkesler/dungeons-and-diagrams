@@ -4,6 +4,7 @@ import Board
 import neighborsWithTypes
 
 class MonsterMayHaveAtMostOneHallway : Rule {
+    override fun name() = "MonsterMayHaveAtMostOneHallway"
     override fun apply(board: Board): ApplyResult {
         for (monster in board.monsters) {
             val neighborsWithTypes = neighborsWithTypes(monster.first, monster.second, board.grid)
@@ -15,13 +16,13 @@ class MonsterMayHaveAtMostOneHallway : Rule {
                 for (point in adjacentUnknown) {
                     val update = b.update(point.row, point.col, Space.WALL)
                     if (!update.valid) {
-                        return ApplyResult(true, true, this.javaClass.name, "${this.javaClass.name}.row[${monster.first}].col[${monster.second}]", board)
+                        return ApplyResult(true, true, name(), "${name()}.row[${monster.first}].col[${monster.second}]", board)
                     }
                     b = update.board
                 }
-                return ApplyResult(true, false, this.javaClass.name, "${this.javaClass.name}.row[${monster.first}].col[${monster.second}]", b)
+                return ApplyResult(true, false, name(), "${name()}.row[${monster.first}].col[${monster.second}]", b)
             }
         }
-        return ApplyResult(false, false, this.javaClass.name, "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 }

@@ -5,6 +5,7 @@ import Board
 //If the number of unknowns in a column equal the number of walls required minues the number of current walls
 //all unknowns must be walls
 class EmptyExhausted : Rule {
+    override fun name() = "EmptyExhausted"
     override fun apply(board: Board): ApplyResult {
         for (rIdx in board.grid.indices) {
             val row = board.row(rIdx);
@@ -12,7 +13,7 @@ class EmptyExhausted : Rule {
             val rowUnknowns = row.filter{it == Space.UNKNOWN}.count()
             if (rowUnknowns == board.rowReqs[rIdx] - rowWalls && rowUnknowns > 0) {
                 val update = unknownToWallRow(rIdx, board)
-                return ApplyResult(true, update.second,"EmptyExhausted","EmptyExhausted.row[${rIdx}]" , update.first)
+                return ApplyResult(true, update.second,name(),"${name()}.row[${rIdx}]" , update.first)
             }
         }
 
@@ -22,11 +23,11 @@ class EmptyExhausted : Rule {
             val colUnknowns = col.filter{it == Space.UNKNOWN}.count()
             if (colUnknowns == board.colReqs[cIdx] - colWalls && colUnknowns > 0) {
                 val update = unknownToWallCol(cIdx, board)
-                return ApplyResult(true, update.second,"EmptyExhausted","EmptyExhausted.col[${cIdx}]", update.first)
+                return ApplyResult(true, update.second,name(),"${name()}.col[${cIdx}]", update.first)
             }
         }
 
-        return ApplyResult(false, false, "EmptyExhausted", "", board);
+        return ApplyResult(false, false, name(), "", board);
     }
 
     private fun unknownToWallRow(rIdx: Int, board: Board): Pair<Board, Boolean> {

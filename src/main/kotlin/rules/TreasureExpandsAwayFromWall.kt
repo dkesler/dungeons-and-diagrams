@@ -7,6 +7,7 @@ import utils.Box
 import utils.TreasureRoom
 
 class TreasureExpandsAwayFromWall : Rule {
+    override fun name() = "TreasureExpandsAwayFromWall"
     override fun apply(board: Board): ApplyResult {
         //if a wall < 3 squares away from a treasure, the treasure room must expand away from the wall
         for (treasure in board.treasures) {
@@ -72,14 +73,14 @@ class TreasureExpandsAwayFromWall : Rule {
                 for (point in toUpdate) {
                     val update = b.update(point.first, point.second, Space.TREASURE_ROOM)
                     if (!update.valid) {
-                        return ApplyResult(true, true, "TreasureExpandsAwayFromWall", "TreasureExpandsAwayFromWall.row[${treasure.first}].col[${treasure.second}]", board)
+                        return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
                     }
                     b = update.board
                 }
-                return ApplyResult(true, false, "TreasureExpandsAwayFromWall", "TreasureExpandsAwayFromWall.row[${treasure.first}].col[${treasure.second}]", b)
+                return ApplyResult(true, false, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", b)
             }
         }
 
-        return ApplyResult(false, false, "TreasureExpandsAwayFromWall", "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 }

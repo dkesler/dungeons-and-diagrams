@@ -6,6 +6,7 @@ import java.lang.RuntimeException
 //If the total number of walls in a row or column matches the number of walls required, every other space
 //in that row or column must be free
 class WallsExhausted : Rule {
+    override fun name() = "WallsExhausted"
     override fun apply(board: Board): ApplyResult {
         for (rIdx in board.grid.indices) {
             val row = board.row(rIdx);
@@ -13,7 +14,7 @@ class WallsExhausted : Rule {
             val rowUnknowns = row.filter{it == Space.UNKNOWN}.count()
             if (rowWalls == board.rowReqs[rIdx] && rowUnknowns > 0) {
                 val result = unknownToFreeRow(rIdx, board)
-                return ApplyResult(true, result.first,"WallsExhausted", "WallsExhausted.row[${rIdx}]", result.second)
+                return ApplyResult(true, result.first,name(), "${name()}.row[${rIdx}]", result.second)
             }
         }
 
@@ -23,11 +24,11 @@ class WallsExhausted : Rule {
             val colUnknowns = col.filter{it == Space.UNKNOWN}.count()
             if (colWalls == board.colReqs[cIdx] && colUnknowns > 0) {
                 val result = unknownToFreeCol(cIdx, board)
-                return ApplyResult(true, result.first,"WallsExhausted", "WallsExhausted.col[${cIdx}]", result.second)
+                return ApplyResult(true, result.first,name(), "${name()}.col[${cIdx}]", result.second)
             }
         }
 
-        return ApplyResult(false, false,"WallsExhausted","", board);
+        return ApplyResult(false, false,name(),"", board);
     }
 
     private fun unknownToFreeRow(rIdx: Int, board: Board): Pair<Boolean, Board> {

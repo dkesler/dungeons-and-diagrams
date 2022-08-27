@@ -8,6 +8,7 @@ import utils.Box
 import utils.TreasureRoom
 
 class TreasureRoomWithExitMustBeWalled : Rule {
+    override fun name() = "TreasureRoomWithExitMustBeWalled"
     override fun apply(board: Board): ApplyResult {
         for (treasure in board.treasures) {
             val treasureRoomPoints = findTreasureRoomStartingAt(treasure.first, treasure.second, board.grid)
@@ -43,16 +44,16 @@ class TreasureRoomWithExitMustBeWalled : Rule {
                     for(point in toUpdate) {
                         val update = b.update(point.row, point.col, Space.WALL)
                         if (!update.valid) {
-                            return ApplyResult(true, true, "TreasureRoomWithExitMustBeWalled", "TreasureRoomWithExitMustBeWalled.row[${treasure.first}].col[${treasure.second}]", board)
+                            return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
                         }
                         b = update.board
                     }
-                    return ApplyResult(true, false, "TreasureRoomWithExitMustBeWalled", "TreasureRoomWithExitMustBeWalled.row[${treasure.first}].col[${treasure.second}]", b)
+                    return ApplyResult(true, false, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", b)
                 }
             }
 
         }
 
-        return ApplyResult(false, false, "TreasureRoomWithExitMustBeWalled", "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 }

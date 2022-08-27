@@ -5,6 +5,7 @@ import Space
 import utils.Box
 
 class EmptyishTwoByTwoIsTreasureRoom : Rule {
+    override fun name() = "EmptyishTwoByTwoIsTreasureRoom"
     override fun apply(board: Board): ApplyResult {
         //if any 2x2 area contains solely empty, treasure room, or treasure, each empty must be treasure room
         for (row in (0 until board.grid.size-1)) {
@@ -17,7 +18,7 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
             }
         }
 
-        return ApplyResult(false, false, "EmptyishTwoByTwoIsTreasureRoom", "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 
 
@@ -27,13 +28,13 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
             if (board.grid[point.first][point.second] == Space.EMPTY) {
                 val update = b.update(point.first, point.second, Space.TREASURE_ROOM)
                 if (!update.valid) {
-                    return ApplyResult(true, true, "EmptyishTwoByTwoIsTreasureRoom", "EmptyishTwoByTwoIsTreasureRoom.row[${box.minRow}].col[${box.minCol}]", b)
+                    return ApplyResult(true, true, name(), "${name()}.row[${box.minRow}].col[${box.minCol}]", b)
                 } else {
                     b = update.board
                 }
             }
         }
-        return ApplyResult(true, false,"EmptyishTwoByTwoIsTreasureRoom", "EmptyishTwoByTwoIsTreasureRoom.row[${box.minRow}].col[${box.minCol}]", b)
+        return ApplyResult(true, false,name(), "${name()}.row[${box.minRow}].col[${box.minCol}]", b)
     }
 
     private fun isEmptyish(subGrid: List<Space>): Boolean {

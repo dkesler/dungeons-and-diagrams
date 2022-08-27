@@ -4,6 +4,7 @@ import Board
 
 interface Rule {
     fun apply(board: Board): ApplyResult
+    fun name(): String
 }
 
 //Applicable:false means no part of the board matched the rule and we did not attempt to update

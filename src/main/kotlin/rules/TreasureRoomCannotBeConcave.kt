@@ -5,6 +5,7 @@ import findTreasureRoomStartingAt
 import utils.Box
 
 class TreasureRoomCannotBeConcave : Rule {
+    override fun name() = "TreasureRoomCannotBeConcave"
     override fun apply(board: Board): ApplyResult {
         for (treasure in board.treasures) {
             val treasureRoomPoints = findTreasureRoomStartingAt(treasure.first, treasure.second, board.grid)
@@ -17,14 +18,14 @@ class TreasureRoomCannotBeConcave : Rule {
                 for (point in toUpdate) {
                     val update = b.update(point.first, point.second, Space.TREASURE_ROOM)
                     if (!update.valid) {
-                        return ApplyResult(true, true, "TreasureRoomCannotBeConcave", "TreasureRoomCannotBeConcave.row[${treasure.first}].col[${treasure.second}]", board)
+                        return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
                     }
                     b = update.board
                 }
-                return ApplyResult(true, false, "TreasureRoomCannotBeConcave", "TreasureRoomCannotBeConcave.row[${treasure.first}].col[${treasure.second}]", b)
+                return ApplyResult(true, false, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", b)
             }
         }
 
-        return ApplyResult(false, false, "TreasureRoomCannotBeConcave", "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 }

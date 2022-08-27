@@ -4,6 +4,7 @@ import Board
 import neighborsWithTypes
 
 class HallwayCannotDeadEnd : Rule {
+    override fun name() = "HallwayCannotDeadEnd"
     override fun apply(board: Board): ApplyResult {
         for (row in board.grid.indices) {
             for (col in board.grid[0].indices) {
@@ -17,15 +18,15 @@ class HallwayCannotDeadEnd : Rule {
                         for (n in unknownNeighbors) {
                             val update = b.update(n.row, n.col, Space.EMPTY)
                             if (!update.valid) {
-                                return ApplyResult(true, true, "HallwayCannotDeadEnd", "HallwayCannotDeadEnd.row[$row]col[${col}]", b)
+                                return ApplyResult(true, true, name(), "${name()}.row[$row]col[${col}]", b)
                             }
                             b = update.board
                         }
-                        return ApplyResult(true, false, "HallwayCannotDeadEnd", "HallwayCannotDeadEnd.row[$row]col[${col}]", b)
+                        return ApplyResult(true, false, name(), "${name()}.row[$row]col[${col}]", b)
                     }
                 }
             }
         }
-        return ApplyResult(false, false, "HallwayCannotDeadEnd", "", board)
+        return ApplyResult(false, false, name(), "", board)
     }
 }
