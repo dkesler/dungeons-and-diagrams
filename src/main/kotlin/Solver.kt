@@ -22,8 +22,11 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
     val rules = listOf(
         WallsExhausted(),
         EmptyExhausted(),
+        MonsterRequiresHallway(),
+        HallwayCannotDeadEnd(),
         EmptyCantReachTreasure(),
-        EmptyishTwoByTwoIsTreasureRoom()
+        EmptyishTwoByTwoIsTreasureRoom(),
+
     )
     var b = board
     val steps = mutableListOf<Step>()

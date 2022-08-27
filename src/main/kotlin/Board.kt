@@ -288,6 +288,12 @@ fun neighbors(row: Int, col: Int, rows: Int, cols: Int): Set<Pair<Int, Int>> {
     return n.toSet()
 }
 
+data class Point(val row: Int, val col: Int, val type: Space)
+fun neighborsWithTypes(row: Int, col: Int, grid: List<List<Space>>): Set<Point> {
+    val neighbors = neighbors(row, col, grid.size, grid[0].size)
+    return neighbors.map{ Point(it.first, it.second, grid[it.first][it.second]) }.toSet()
+}
+
 
 fun createBoard(
     rowReqs: List<Int>,
