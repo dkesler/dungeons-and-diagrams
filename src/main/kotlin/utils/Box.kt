@@ -17,6 +17,22 @@ data class Box(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: In
         }
     }
 
+    fun leftNeighbors(): List<Pair<Int, Int>> {
+        return (minRow..maxRow).map{ Pair(it, minCol-1) }.filter{it.second >= 0 }
+    }
+
+    fun rightNeighbors(cols: Int): List<Pair<Int, Int>> {
+        return (minRow..maxRow).map{ Pair(it, maxCol+1) }.filter{it.second < cols }
+    }
+
+    fun upNeighbors(): List<Pair<Int, Int>> {
+        return (minCol..maxCol).map{ Pair(minRow-1, it) }.filter{it.first >= 0 }
+    }
+
+    fun downNeighbors(rows: Int): List<Pair<Int, Int>> {
+        return (minCol..maxCol).map{ Pair(maxRow+1, it) }.filter{it.first < rows }
+    }
+
     companion object {
         fun fromPoints(points: Collection<Pair<Int, Int>>): Box {
             val minRow = points.minOfOrNull { it.first }!!

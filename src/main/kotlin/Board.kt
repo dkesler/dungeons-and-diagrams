@@ -1,4 +1,5 @@
 import utils.Box
+import utils.TreasureRoom
 
 class Board(
         val rowReqs: List<Int>,
@@ -172,6 +173,7 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
     return Pair(true, "")
 }
 
+//TODO: move into TreasureRoom
 fun getTreasureRoomNeighbors(treasureRoom: TreasureRoom, grid: List<List<Space>>): List<Pair<Int, Int>> {
     val neighbors = mutableSetOf<Pair<Int, Int>>()
 
@@ -190,7 +192,6 @@ fun getTreasureRoomNeighbors(treasureRoom: TreasureRoom, grid: List<List<Space>>
         .filter{it.second < grid[0].size}
 }
 
-data class TreasureRoom(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: Int)
 fun getAllTreasureRooms(grid: List<List<Space>>): Set<TreasureRoom> {
     val visited = mutableSetOf<Pair<Int, Int>>()
     val treasureRooms = mutableSetOf<TreasureRoom>()
@@ -205,7 +206,7 @@ fun getAllTreasureRooms(grid: List<List<Space>>): Set<TreasureRoom> {
                 val maxRow = treasureRoomCells.maxOfOrNull { it.first }!!
                 val minCol = treasureRoomCells.minOfOrNull { it.second }!!
                 val maxCol = treasureRoomCells.maxOfOrNull { it.second }!!
-                treasureRooms.add(TreasureRoom(minRow, minCol, maxRow, maxCol))
+                treasureRooms.add(TreasureRoom(Box(minRow, minCol, maxRow, maxCol)))
             }
         }
     }
