@@ -19,22 +19,22 @@ class TreasureRoomWithExitMustBeWalled : Rule {
             //direction must be a wall
             if (Space.HALL in treasureRoomNeighborTypes) {
                 val toUpdate = mutableSetOf<Point>()
-                if (treasureRoom.cannotExpandDown(board.grid, 1)) {
+                if (treasureRoom.cannotExpandDown(board, 1)) {
                     val downNeighbors = treasureRoom.box.downNeighbors(board.grid.size)
                         .map{ Point(it.first, it.second, board.grid[it.first][it.second]) }
                     toUpdate.addAll(downNeighbors.filter { it.type == Space.UNKNOWN })
                 }
-                if (treasureRoom.cannotExpandUp(board.grid, 1)) {
+                if (treasureRoom.cannotExpandUp(board, 1)) {
                     val upNeighbors = treasureRoom.box.upNeighbors()
                         .map{ Point(it.first, it.second, board.grid[it.first][it.second]) }
                     toUpdate.addAll(upNeighbors.filter { it.type == Space.UNKNOWN })
                 }
-                if (treasureRoom.cannotExpandLeft(board.grid, 1)) {
+                if (treasureRoom.cannotExpandLeft(board, 1)) {
                     val leftNeighbors = treasureRoom.box.leftNeighbors()
                         .map{ Point(it.first, it.second, board.grid[it.first][it.second]) }
                     toUpdate.addAll(leftNeighbors.filter { it.type == Space.UNKNOWN })
                 }
-                if (treasureRoom.cannotExpandRight(board.grid, 1)) {
+                if (treasureRoom.cannotExpandRight(board, 1)) {
                     val rightNeighbors = treasureRoom.box.rightNeighbors(board.grid[0].size)
                         .map{ Point(it.first, it.second, board.grid[it.first][it.second]) }
                     toUpdate.addAll(rightNeighbors.filter { it.type == Space.UNKNOWN })

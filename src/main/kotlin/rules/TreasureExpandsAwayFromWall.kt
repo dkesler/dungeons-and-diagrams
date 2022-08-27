@@ -16,12 +16,12 @@ class TreasureExpandsAwayFromWall : Rule {
             val treasureRoom = TreasureRoom(Box.fromPoints(treasureRoomPoints))
 
             //if we can't expand left, then we must expand right
-            if (treasureRoom.cannotExpandLeft(board.grid, 1)) {
+            if (treasureRoom.cannotExpandLeft(board, 1)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.minCol+2)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
                 toUpdate.addAll(pointsToUpdate)
-            } else if (treasureRoom.cannotExpandLeft(board.grid, 2)) {
+            } else if (treasureRoom.cannotExpandLeft(board, 2)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.minCol+1)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
@@ -29,12 +29,12 @@ class TreasureExpandsAwayFromWall : Rule {
             }
 
             //if we can't expand right, then we must expand left
-            if (treasureRoom.cannotExpandRight( board.grid, 1)) {
+            if (treasureRoom.cannotExpandRight( board, 1)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.maxCol-2, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
                 toUpdate.addAll(pointsToUpdate)
-            } else if (treasureRoom.cannotExpandRight( board.grid, 2)) {
+            } else if (treasureRoom.cannotExpandRight( board, 2)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.maxCol-1, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
@@ -42,12 +42,12 @@ class TreasureExpandsAwayFromWall : Rule {
             }
 
             //if we can't expand down, then we must expand up
-            if (treasureRoom.cannotExpandDown( board.grid, 1)) {
+            if (treasureRoom.cannotExpandDown( board, 1)) {
                 val newTreasureRoom = Box(treasureRoom.maxRow-2, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
                 toUpdate.addAll(pointsToUpdate)
-            } else if (treasureRoom.cannotExpandDown( board.grid, 2)) {
+            } else if (treasureRoom.cannotExpandDown( board, 2)) {
                 val newTreasureRoom = Box(treasureRoom.maxRow-1, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
@@ -55,12 +55,12 @@ class TreasureExpandsAwayFromWall : Rule {
             }
 
             //if we can't expand up, then we must expand down
-            if (treasureRoom.cannotExpandUp( board.grid, 1)) {
+            if (treasureRoom.cannotExpandUp( board, 1)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.minRow+2, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
                 toUpdate.addAll(pointsToUpdate)
-            } else if (treasureRoom.cannotExpandUp(board.grid, 2)) {
+            } else if (treasureRoom.cannotExpandUp(board, 2)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.minRow+1, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
                     .filter{board.grid[it.first][it.second] != Space.TREASURE_ROOM }
