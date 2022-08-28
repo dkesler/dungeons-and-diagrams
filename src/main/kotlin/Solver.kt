@@ -31,6 +31,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         TreasureRoomCannotBeConcave(),
         TreasureRoomWithExitMustBeWalled(),
         EmptyishTwoByTwoIsTreasureRoom(),
+        WallBoundBoxInternalStructure()
 
     )
     var b = board
