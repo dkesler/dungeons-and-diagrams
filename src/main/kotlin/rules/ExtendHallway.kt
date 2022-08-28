@@ -3,8 +3,8 @@ package rules
 import Board
 import neighborsWithTypes
 
-class HallwayCannotDeadEnd : Rule {
-    override fun name() = "HallwayCannotDeadEnd"
+class ExtendHallway : Rule {
+    override fun name() = "ExtendHallway"
     override fun apply(board: Board): ApplyResult {
         for (row in board.grid.indices) {
             for (col in board.grid[0].indices) {
