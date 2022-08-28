@@ -8,14 +8,19 @@ class Board(
         val treasures: Set<Pair<Int, Int>>,
         val grid: List<List<Space>>
     ) {
-    fun draw() {
-        print("  ")
+    fun draw(prev: Board) {
+        print("\u001B[34m  ")
         colReqs.forEach { print(it) }
         println("")
         grid.forEachIndexed{ rIdx, row ->
-            print(rowReqs[rIdx])
+            print("\u001B[34m" + rowReqs[rIdx] + "\u001B[0m")
             print(" ")
-            row.forEach{print(it.c)}
+            row.forEachIndexed{ cIdx, space ->
+                if (space == prev.grid[rIdx][cIdx])
+                    print(space.c)
+                else
+                    print("\u001B[32m" + space.c + "\u001B[0m")
+            }
             println("")
         }
     }
