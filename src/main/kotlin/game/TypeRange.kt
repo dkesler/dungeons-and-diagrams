@@ -46,6 +46,10 @@ class TypeRange(val types: Set<CellType>) {
         return types.hashCode()
     }
 
+    override fun toString(): String {
+        return toChar().toString()
+    }
+
     companion object {
         fun fromChar(c: Char): TypeRange {
             return when (c) {

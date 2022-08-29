@@ -29,6 +29,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         ExtendHallway(),
         AvoidCreatingDeadEnd(),
         AvoidTwoByTwoHall(),
+        LastGapCantCreateDeadend(),
         CantReachTreasure(),
         TreasureExpandsAwayFromWall(),
         TreasureRoomCannotBeConcave(),

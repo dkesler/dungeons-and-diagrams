@@ -263,6 +263,28 @@ fun findFirstEmpty(grid: List<List<TypeRange>>): Pair<Int, Int>? {
     return null
 }
 
+fun horizontalNeighbors(row: Int, col: Int, cols: Int): Set<Pair<Int, Int>> {
+    val n = mutableSetOf<Pair<Int, Int>>()
+    if (col-1 >= 0) {
+        n.add(Pair(row, col-1))
+    }
+    if (col+1 < cols) {
+        n.add(Pair(row, col+1))
+    }
+    return n.toSet()
+}
+
+fun verticalNeighbors(row: Int, col: Int, rows: Int): Set<Pair<Int, Int>> {
+    val n = mutableSetOf<Pair<Int, Int>>()
+    if (row-1 >= 0) {
+        n.add(Pair(row-1, col))
+    }
+    if (row+1 < rows) {
+        n.add(Pair(row+1, col))
+    }
+    return n.toSet()
+}
+
 fun neighbors(row: Int, col: Int, rows: Int, cols: Int): Set<Pair<Int, Int>> {
     val n = mutableSetOf<Pair<Int, Int>>()
     if (row-1 >= 0) {

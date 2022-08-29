@@ -1,0 +1,8 @@
+MWW.....
+.W..WMWM
+...WWWWW
+W.WWOOOW
+M...OTOW
+W.WWOOOW
+...WWWWW
+MW.MWWWW
