@@ -9,7 +9,7 @@ import rules.*
 fun main(args: Array<String>) {
     val file = args[0]
     val board = Loader.load(file)
-    board.draw(board)
+    board.draw()
     println("")
     val solved = solve(board, SolverConfiguration(true))
     if (!solved.successful) {
@@ -63,7 +63,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
             val prev = b
             b = applyResult.newBoard
             println("Applying rule: ${applyResult.description}")
-            b.draw(prev)
+            b.draw(prev.grid)
             println("")
         }
     }
@@ -88,7 +88,7 @@ fun bifurcate(board: Board, config: SolverConfiguration): Triple<Board, Boolean,
                 val update = board.update(rowIdx, colIdx, setOf(CellType.WALL))
                 if (update.valid) {
                     println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx]")
-                    update.board.draw(board)
+                    update.board.draw()
                     val solve = solve(update.board, config)
                     if (solve.successful) {
                         return Triple(solve.board, solve.successful, Bifurcation(probes, wastedTimeMillis, solve.steps))

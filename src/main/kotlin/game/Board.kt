@@ -10,21 +10,11 @@ class Board(
         val treasures: Set<Pair<Int, Int>>,
         val grid: List<List<TypeRange>>
     ) {
-    fun draw(prev: Board) {
-        print("\u001B[34m  ")
-        colReqs.forEach { print(it) }
-        println("")
-        grid.forEachIndexed{ rIdx, row ->
-            print("\u001B[34m" + rowReqs[rIdx] + "\u001B[0m")
-            print(" ")
-            row.forEachIndexed{ cIdx, space ->
-                if (space == prev.grid[rIdx][cIdx])
-                    print(space.toChar())
-                else
-                    print("\u001B[32m" + space.toChar() + "\u001B[0m")
-            }
-            println("")
-        }
+    fun draw(prev: List<List<TypeRange>>) {
+        draw(rowReqs, colReqs, grid, prev)
+    }
+    fun draw() {
+        draw(rowReqs, colReqs, grid, null)
     }
 
     fun solved(): Boolean {
@@ -326,4 +316,21 @@ private fun toMutable(l: List<List<TypeRange>>): MutableList<MutableList<TypeRan
 
 private fun toImmutable(l: MutableList<MutableList<TypeRange>>): List<List<TypeRange>> {
     return l.map{ it.toList()}.toList()
+}
+
+fun draw(rowReqs: List<Int>, colReqs: List<Int>, thisGrid: List<List<TypeRange>>, diffGrid: List<List<TypeRange>>?) {
+    print("\u001B[34m  ")
+    colReqs.forEach { print(it) }
+    println("")
+    thisGrid.forEachIndexed{ rIdx, row ->
+        print("\u001B[34m" + rowReqs[rIdx] + "\u001B[0m")
+        print(" ")
+        row.forEachIndexed{ cIdx, space ->
+            if (diffGrid == null || space == diffGrid[rIdx][cIdx])
+                print(space.toChar())
+            else
+                print("\u001B[32m" + space.toChar() + "\u001B[0m")
+        }
+        println("")
+    }
 }

@@ -2,7 +2,9 @@ package integration
 
 import Loader
 import SolverConfiguration
+import game.Board
 import game.TypeRange
+import game.draw
 import metrics.Step
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -25,7 +27,15 @@ abstract class BaseIntegrationTest {
             fail("Did not find a solution")
         }
 
-        assertEquals(solution, solved.board.grid)
+        if (solution != solved.board.grid) {
+            println("Solutions do not match.  Final solution:")
+            solved.board.draw()
+            println("Expected solution:")
+            draw(solved.board.rowReqs, solved.board.colReqs, solution, null)
+            println("Diff:")
+            solved.board.draw(solution)
+            fail("Solutions did not match")
+        }
     }
 
     private fun printSolveMetrics(steps: List<Step>) {
