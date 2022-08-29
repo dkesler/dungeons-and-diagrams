@@ -1,7 +1,8 @@
 package rules
 
-import Board
-import findTreasureRoomStartingAt
+import game.Board
+import game.CellType
+import game.findTreasureRoomStartingAt
 import utils.Box
 
 class TreasureRoomCannotBeConcave : Rule {
@@ -16,7 +17,7 @@ class TreasureRoomCannotBeConcave : Rule {
             if (toUpdate.isNotEmpty()) {
                 var b = board
                 for (point in toUpdate) {
-                    val update = b.update(point.first, point.second, Space.TREASURE_ROOM)
+                    val update = b.update(point.first, point.second, setOf(CellType.TREASURE_ROOM))
                     if (!update.valid) {
                         return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
                     }

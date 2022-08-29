@@ -1,19 +1,20 @@
 package rules
 
-import Board
-import neighborsWithTypes
+import game.Board
+import game.CellType
+import game.neighborsWithTypes
 
 class MonsterRequiresHallway : Rule {
     override fun name() = "MonsterRequiresHallway"
     override fun apply(board: Board): ApplyResult {
         for (monster in board.monsters) {
             val neighborsWithTypes = neighborsWithTypes(monster.first, monster.second, board.grid)
-            val numAdjacentEmpty = neighborsWithTypes.count{it.type == Space.EMPTY || it.type == Space.HALL }
-            val adjacentUnknown = neighborsWithTypes.filter{it.type == Space.UNKNOWN }
-            //If the monster does not already have an adjacent empty, and there is only one unknown neighbor
-            //that unknown neighbor must be a hallway
-            if (numAdjacentEmpty == 0 && adjacentUnknown.count() == 1) {
-                val update = board.update(adjacentUnknown.first().row, adjacentUnknown.first().col, Space.HALL)
+            val numAdjacentHall = neighborsWithTypes.count{it.type.eq(CellType.HALL)}
+            val adjacentPossibleHall = neighborsWithTypes.filter{it.type.canBe(CellType.HALL) }
+            //If the monster does not already have an adjacent hall, and there is only one neighbor that could
+            //be a hall, it must be a hall
+            if (numAdjacentHall == 0 && adjacentPossibleHall.count() == 1) {
+                val update = board.update(adjacentPossibleHall.first().row, adjacentPossibleHall.first().col, setOf(CellType.HALL))
                 if (update.valid) {
                     return ApplyResult(true, false, name(), "${name()}.row[${monster.first}].col[${monster.second}]", update.board)
                 } else {

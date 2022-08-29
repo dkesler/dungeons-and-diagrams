@@ -1,6 +1,7 @@
 package rules
 
-import Board
+import game.Board
+import game.CellType
 import utils.Box
 import java.lang.RuntimeException
 
@@ -11,7 +12,7 @@ class AvoidTwoByTwoHall : Rule {
             for (col in (0 until board.grid[0].size-1)) {
                 val box = Box(row, col, row + 1, col + 1)
                 val subGrid = board.subgrid(box).flatten()
-                if (subGrid.count{it == Space.HALL } == 3 && subGrid.count{it == Space.UNKNOWN} == 1) {
+                if (subGrid.count{it.eq(CellType.HALL) } == 3 && subGrid.count{it.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.known} == 1) {
                     return unknownToWall(box, board)
                 }
             }
@@ -23,8 +24,9 @@ class AvoidTwoByTwoHall : Rule {
 
     private fun unknownToWall(box: Box, board: Board): ApplyResult {
         for (point in box.points()) {
-            if (board.grid[point.first][point.second] == Space.UNKNOWN) {
-                val update = board.update(point.first, point.second, Space.WALL)
+            val typeRange = board.grid[point.first][point.second]
+            if (typeRange.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !typeRange.known) {
+                val update = board.update(point.first, point.second, typeRange.types - setOf(CellType.HALL, CellType.TREASURE_ROOM))
                 if (!update.valid) {
                     return ApplyResult(true, true, name(), "", update.board)
                 } else {

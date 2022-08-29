@@ -1,18 +1,18 @@
 package rules
 
-import Board
-import java.lang.RuntimeException
+import game.Board
+import game.CellType
 
-//If the total number of walls in a row or column matches the number of walls required, every other space
+//If the total number of walls in a row or column matches the number of walls required, every other CellType
 //in that row or column must be free
 class WallsExhausted : Rule {
     override fun name() = "WallsExhausted"
     override fun apply(board: Board): ApplyResult {
         for (rIdx in board.grid.indices) {
             val row = board.row(rIdx);
-            val rowWalls = row.filter{it == Space.WALL}.count()
-            val rowUnknowns = row.filter{it == Space.UNKNOWN}.count()
-            if (rowWalls == board.rowReqs[rIdx] && rowUnknowns > 0) {
+            val rowWalls = row.filter{it.eq(CellType.WALL)}.count()
+            val rowPotentialWalls = row.filter{it.canBe(CellType.WALL) && !it.known}.count()
+            if (rowWalls == board.rowReqs[rIdx] && rowPotentialWalls > 0) {
                 val result = unknownToFreeRow(rIdx, board)
                 return ApplyResult(true, result.first,name(), "${name()}.row[${rIdx}]", result.second)
             }
@@ -20,9 +20,9 @@ class WallsExhausted : Rule {
 
         for (cIdx in board.grid[0].indices) {
             val col = board.col(cIdx);
-            val colWalls = col.filter{it == Space.WALL}.count()
-            val colUnknowns = col.filter{it == Space.UNKNOWN}.count()
-            if (colWalls == board.colReqs[cIdx] && colUnknowns > 0) {
+            val colWalls = col.filter{it.eq(CellType.WALL)}.count()
+            val colPotentialWalls = col.filter{it.canBe(CellType.WALL) && !it.known}.count()
+            if (colWalls == board.colReqs[cIdx] && colPotentialWalls > 0) {
                 val result = unknownToFreeCol(cIdx, board)
                 return ApplyResult(true, result.first,name(), "${name()}.col[${cIdx}]", result.second)
             }
@@ -34,8 +34,9 @@ class WallsExhausted : Rule {
     private fun unknownToFreeRow(rIdx: Int, board: Board): Pair<Boolean, Board> {
         var b = board
         for (cIdx in board.grid[rIdx].indices) {
-            if (b.grid[rIdx][cIdx] == Space.UNKNOWN) {
-                val update = b.update(rIdx, cIdx, Space.EMPTY)
+            val cell = b.grid[rIdx][cIdx]
+            if (cell.canBe(CellType.WALL) && !cell.known) {
+                val update = b.update(rIdx, cIdx, cell.types - CellType.WALL)
                 if (!update.valid) {
                     return Pair(true, b)
                 }
@@ -48,8 +49,9 @@ class WallsExhausted : Rule {
     private fun unknownToFreeCol(cIdx: Int, board: Board): Pair<Boolean, Board> {
         var b = board
         for (rIdx in board.grid.indices) {
-            if (b.grid[rIdx][cIdx] == Space.UNKNOWN) {
-                val update = b.update(rIdx, cIdx, Space.EMPTY)
+            val cell = b.grid[rIdx][cIdx]
+            if (cell.canBe(CellType.WALL) && !cell.known) {
+                val update = b.update(rIdx, cIdx, cell.types - CellType.WALL)
                 if (!update.valid) {
                     return Pair(true, b)
                 }

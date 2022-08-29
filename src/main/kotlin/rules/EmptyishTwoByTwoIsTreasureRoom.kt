@@ -1,7 +1,8 @@
 package rules
 
-import Board
-import Space
+import game.Board
+import game.CellType
+import game.TypeRange
 import utils.Box
 
 class EmptyishTwoByTwoIsTreasureRoom : Rule {
@@ -12,7 +13,7 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
             for (col in (0 until board.grid[0].size-1)) {
                 val box = Box(row, col, row + 1, col + 1)
                 val subGrid = board.subgrid(box).flatten()
-                if (containsAtLeastOneEmpty(subGrid) && isEmptyish(subGrid)) {
+                if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
                     return emptyToTreasureRoom(box, board)
                 }
             }
@@ -25,8 +26,9 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
     private fun emptyToTreasureRoom(box: Box, board: Board): ApplyResult {
         var b = board
         for (point in box.points()) {
-            if (board.grid[point.first][point.second] == Space.EMPTY) {
-                val update = b.update(point.first, point.second, Space.TREASURE_ROOM)
+            val cell = board.grid[point.first][point.second]
+            if (cell.canBe(CellType.HALL)) {
+                val update = b.update(point.first, point.second, cell.types - CellType.HALL)
                 if (!update.valid) {
                     return ApplyResult(true, true, name(), "${name()}.row[${box.minRow}].col[${box.minCol}]", b)
                 } else {
@@ -37,11 +39,10 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
         return ApplyResult(true, false,name(), "${name()}.row[${box.minRow}].col[${box.minCol}]", b)
     }
 
-    private fun isEmptyish(subGrid: List<Space>): Boolean {
-        val emptyishTypes = setOf(Space.EMPTY, Space.TREASURE_ROOM, Space.TREASURE)
-        return subGrid.all { emptyishTypes.contains(it) }
+    private fun isEmptyish(subGrid: List<TypeRange>): Boolean {
+        return subGrid.all { it.cannotBe(CellType.WALL, CellType.MONSTER) }
     }
-    private fun containsAtLeastOneEmpty(subGrid: List<Space>): Boolean {
-        return subGrid.any { it == Space.EMPTY }
+    private fun containsAtLeastOnePossibleHall(subGrid: List<TypeRange>): Boolean {
+        return subGrid.any { it.canBe(CellType.HALL) }
     }
 }

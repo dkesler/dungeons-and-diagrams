@@ -1,20 +1,21 @@
 package rules
 
-import Board
-import neighborsWithTypes
+import game.Board
+import game.CellType
+import game.neighborsWithTypes
 
-//For a given unknown cell, if every neighbor, or every neighbor but one is a wall, the cell must be a wall to avoid
-//creating a dead end
+//For a given cell that could be hall or treasure room, if every neighbor, or every neighbor but one is a wall,
+// the cell must be a wall to avoid creating a dead end
 class AvoidCreatingDeadEnd : Rule {
     override fun name() = "AvoidCreatingDeadEnd"
     override fun apply(board: Board): ApplyResult {
         for (rowIdx in board.grid.indices) {
             for (colIdx in board.grid[0].indices) {
-                if (board.grid[rowIdx][colIdx] == Space.UNKNOWN) {
+                if (board.grid[rowIdx][colIdx].canBe(CellType.TREASURE_ROOM, CellType.HALL)) {
                     val neighbors = neighborsWithTypes(rowIdx, colIdx, board.grid)
-                    val wallNeighbors = neighbors.filter { it.type == Space.WALL }
+                    val wallNeighbors = neighbors.filter { it.type.eq(CellType.WALL) }
                     if (wallNeighbors.count() >= neighbors.count()-1) {
-                        val update = board.update(rowIdx, colIdx, Space.WALL)
+                        val update = board.update(rowIdx, colIdx, board.grid[rowIdx][colIdx].types - setOf(CellType.TREASURE_ROOM, CellType.HALL))
                         return ApplyResult(true, !update.valid, name(), "${name()}.row[$rowIdx].col[$colIdx]", update.board)
                     }
                 }

@@ -1,8 +1,8 @@
 package integration
 
+import Loader
 import SolverConfiguration
-import Space
-import fromChar
+import game.TypeRange
 import metrics.Step
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -70,11 +70,11 @@ abstract class BaseIntegrationTest {
         println("Time Wasted Bifurcating: $timeWastedBifurcatingMs")
     }
 
-    private fun loadSolution(file: String): List<List<Space>> {
+    private fun loadSolution(file: String): List<List<TypeRange>> {
         val content = this::class.java.getResource(file)!!.readText()
         val lines = content.split('\n').map { it.trim() }.filter { it != "" }
         return lines.map {
-            it.map { fromChar(it) }
+            it.map { TypeRange.fromChar(it) }
         }
     }
 }

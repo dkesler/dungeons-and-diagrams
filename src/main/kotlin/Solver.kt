@@ -1,3 +1,5 @@
+import game.Board
+import game.CellType
 import metrics.Bifurcation
 import metrics.EvaluationMetric
 import metrics.Solve
@@ -27,7 +29,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         ExtendHallway(),
         AvoidCreatingDeadEnd(),
         AvoidTwoByTwoHall(),
-        EmptyCantReachTreasure(),
+        CantReachTreasure(),
         TreasureExpandsAwayFromWall(),
         TreasureRoomCannotBeConcave(),
         TreasureRoomWithExitMustBeWalled(),
@@ -52,7 +54,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
                 steps.add(Step(evaluations, bifurcation))
                 return Solve(solvedBoard, successful, steps)
             } else {
-                println("No rules applicable, but bifurcation is disabled.  Returning failuer")
+                println("No rules applicable, but bifurcation is disabled.  Returning failure")
                 steps.add(Step(evaluations, null))
                 return Solve(b, false, steps)
             }
@@ -78,11 +80,12 @@ fun bifurcate(board: Board, config: SolverConfiguration): Triple<Board, Boolean,
         for (colIdx in board.grid[0].indices) {
             //if space is unknown, make it a wall and try to solve.
             //if we successfully solve, return solve, otherwise try next unknown
-            if (board.grid[rowIdx][colIdx] == Space.UNKNOWN) {
+            val cell = board.grid[rowIdx][colIdx]
+            if (!cell.known && cell.canBe(CellType.WALL)) {
                 probes++
                 val probeStart = System.currentTimeMillis()
                 println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx]")
-                val update = board.update(rowIdx, colIdx, Space.WALL)
+                val update = board.update(rowIdx, colIdx, setOf(CellType.WALL))
                 if (update.valid) {
                     println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx]")
                     update.board.draw(board)

@@ -1,4 +1,5 @@
-import java.io.File
+import game.Board
+import game.createBoard
 
 object Loader {
     fun load(file: String): Board {

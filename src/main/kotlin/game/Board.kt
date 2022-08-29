@@ -1,3 +1,5 @@
+package game
+
 import utils.Box
 import utils.TreasureRoom
 
@@ -6,7 +8,7 @@ class Board(
         val colReqs: List<Int>,
         val monsters: Set<Pair<Int, Int>>,
         val treasures: Set<Pair<Int, Int>>,
-        val grid: List<List<Space>>
+        val grid: List<List<TypeRange>>
     ) {
     fun draw(prev: Board) {
         print("\u001B[34m  ")
@@ -17,30 +19,30 @@ class Board(
             print(" ")
             row.forEachIndexed{ cIdx, space ->
                 if (space == prev.grid[rIdx][cIdx])
-                    print(space.c)
+                    print(space.toChar())
                 else
-                    print("\u001B[32m" + space.c + "\u001B[0m")
+                    print("\u001B[32m" + space.toChar() + "\u001B[0m")
             }
             println("")
         }
     }
 
     fun solved(): Boolean {
-        val rowsSatisfied = rowReqs.mapIndexed { index, req -> row(index).filter{it == Space.WALL}.count() == req }.all { it }
-        val colsSatisfied = colReqs.mapIndexed { index, req -> col(index).filter{it == Space.WALL}.count() == req }.all { it }
-        val containsAnyEmpties = grid.flatten().contains(Space.EMPTY)
-        return rowsSatisfied && colsSatisfied && !containsAnyEmpties && isValid(grid, rowReqs, colReqs).first
+        val rowsSatisfied = rowReqs.mapIndexed { index, req -> row(index).filter{it.eq(CellType.WALL)}.count() == req }.all { it }
+        val colsSatisfied = colReqs.mapIndexed { index, req -> col(index).filter{it.eq(CellType.WALL)}.count() == req }.all { it }
+        val containsAnyUnknown = grid.flatten().count { !it.known } > 0
+        return rowsSatisfied && colsSatisfied && !containsAnyUnknown && isValid(grid, rowReqs, colReqs).first
     }
 
-    fun row(rowIdx: Int): List<Space> {
+    fun row(rowIdx: Int): List<TypeRange> {
         return grid[rowIdx]
     }
 
-    fun col(colIdx: Int): List<Space> {
+    fun col(colIdx: Int): List<TypeRange> {
         return grid.map{it[colIdx]}
     }
 
-    fun subgrid(box: Box): List<List<Space>> {
+    fun subgrid(box: Box): List<List<TypeRange>> {
         return (box.minRow..box.maxRow).map { row ->
             (box.minCol..box.maxCol).map { col ->
                 grid[row][col]
@@ -48,19 +50,15 @@ class Board(
         }
     }
 
-    fun update(rowIdx: Int, colIdx: Int, space: Space): Update {
-        if (grid[rowIdx][colIdx] != Space.UNKNOWN) {
-            if (grid[rowIdx][colIdx] != Space.EMPTY) {
-                throw RuntimeException("Tried to update grid[$rowIdx][$colIdx] of type [${grid[rowIdx][colIdx]}]")
-            } else {
-                if (space != Space.HALL && space != Space.TREASURE_ROOM) {
-                    throw RuntimeException("Tried to update grid[$rowIdx][$colIdx] from EMTPY to non-empty type $space")
-                }
-            }
+    fun update(rowIdx: Int, colIdx: Int, typeRange: Set<CellType>): Update {
+        //We cannot add types to cells, only remove them
+        if (!grid[rowIdx][colIdx].types.containsAll(typeRange)) {
+            throw RuntimeException("Tried to add type(s) ${typeRange - grid[rowIdx][colIdx]} to grid[$rowIdx][$colIdx]")
         }
+
         //TODO: better way of doing this?
         val newGrid = toMutable(grid);
-        newGrid[rowIdx][colIdx] = space;
+        newGrid[rowIdx][colIdx] = TypeRange(typeRange);
 
         val isValid = isValid(newGrid, rowReqs, colReqs)
         val board = Board(
@@ -77,18 +75,18 @@ class Board(
 
 data class Update(val valid: Boolean, val invalidReason: String, val board: Board)
 
-fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, String> {
+fun isValid(grid: List<List<TypeRange>>, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, String> {
     for (rowIdx in rowReqs.indices) {
-        val rowWalls = grid[rowIdx].count{it == Space.WALL}
-        val rowUnknowns = grid[rowIdx].count{it == Space.UNKNOWN}
+        val rowWalls = grid[rowIdx].count{it.eq(CellType.WALL)}
+        val rowUnknowns = grid[rowIdx].count{!it.known && it.canBe(CellType.WALL)}
         if (rowWalls > rowReqs[rowIdx]) return Pair(false, "Too many walls in row $rowIdx")
         if (rowWalls + rowUnknowns < rowReqs[rowIdx]) return Pair(false, "Insufficient space for walls in row $rowIdx")
     }
 
     for (colIdx in colReqs.indices) {
         val col = grid.map{it[colIdx]}
-        val colWalls =  col.count{it == Space.WALL}
-        val colUnknowns = col.count{it == Space.UNKNOWN}
+        val colWalls =  col.count{it.eq(CellType.WALL)}
+        val colUnknowns = col.count{!it.known && it.canBe(CellType.WALL)}
         if (colWalls > colReqs[colIdx]) return Pair(false, "Too many walls in col $colIdx")
         if (colWalls + colUnknowns < colReqs[colIdx]) return Pair(false, "Insufficient space for walls in col $colIdx")
     }
@@ -100,30 +98,30 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
                 Pair(rowIdx+1, colIdx),
                 Pair(rowIdx, colIdx+1),
                 Pair(rowIdx+1, colIdx+1)
-            ).all { grid[it.first][it.second] == Space.HALL }
+            ).all { grid[it.first][it.second].eq(CellType.HALL) }
             if (emptyTwoByTwo) return Pair(false, "2x2 Hall starting on ($rowIdx,$colIdx)")
         }
     }
 
     for (rowIdx in (rowReqs.indices)) {
         for (colIdx in (colReqs.indices)) {
-            val isMonster = grid[rowIdx][colIdx] == Space.MONSTER
+            val isMonster = grid[rowIdx][colIdx].eq(CellType.MONSTER)
             if (isMonster) {
                 val neighbors = neighbors(rowIdx, colIdx, rowReqs.size, colReqs.size)
                 //if there are more than one neighboring empty, the monster isn't in a dead end
-                val neighboringEmpties = neighbors.count{ grid[it.first][it.second] == Space.EMPTY || grid[it.first][it.second] == Space.HALL}
+                val neighboringEmpties = neighbors.count{ !grid[it.first][it.second].canBe(CellType.WALL) }
                 if (neighboringEmpties > 1) return Pair(false, "Monster at ($rowIdx,$colIdx) not in a dead end")
                 //monsters can't go directly into treasure rooms
-                val neighboringTreasuresOrRoom = neighbors.map{ grid[it.first][it.second]}.count{it == Space.TREASURE_ROOM || it == Space.TREASURE}
+                val neighboringTreasuresOrRoom = neighbors.map{ grid[it.first][it.second]}.count{it.mustBe(CellType.TREASURE_ROOM, CellType.TREASURE)}
                 if (neighboringTreasuresOrRoom > 0) return Pair(false, "Monster at ($rowIdx,$colIdx) neighbors treasure room")
-            } else if (grid[rowIdx][colIdx] == Space.EMPTY || grid[rowIdx][colIdx] == Space.HALL || grid[rowIdx][colIdx] == Space.TREASURE) {
-                //free so cannot be a dead end
+            } else if (!grid[rowIdx][colIdx].canBe(CellType.WALL)) {
+                //not a monster and not a wall so cannot be a dead end
                 val neighbors = neighbors(rowIdx, colIdx, rowReqs.size, colReqs.size)
-                val neighboringWalls = neighbors.count{ grid[it.first][it.second] == Space.WALL}
+                val neighboringWalls = neighbors.count{ grid[it.first][it.second].eq(CellType.WALL)}
                 if (neighboringWalls == neighbors.size - 1) return Pair(false, "Dead end at ($rowIdx,$colIdx) with no monster")
 
-                if (grid[rowIdx][colIdx] == Space.TREASURE) {
-                    val neighboringHalls = neighbors.count{ grid[it.first][it.second] == Space.HALL}
+                if (grid[rowIdx][colIdx].eq(CellType.TREASURE)) {
+                    val neighboringHalls = neighbors.count{ grid[it.first][it.second].eq(CellType.HALL)}
                     if (neighboringHalls > 1) {
                         return Pair(false, "Treasure at ($rowIdx,$colIdx) in a hallway")
                     }
@@ -151,7 +149,7 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
             (treasureRoom.minCol..treasureRoom.maxCol).map{ col -> grid[row][col]}
         }
 
-        val treasureInRoom = treasureRoomContents.count { it == Space.TREASURE }
+        val treasureInRoom = treasureRoomContents.count { it.eq(CellType.TREASURE) }
         if (treasureInRoom > 1) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains more than one treasure")
         }
@@ -160,17 +158,17 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) is complete but does not contain a treasure")
         }
 
-        if (treasureRoomContents.count{ it == Space.WALL } > 0) {
+        if (treasureRoomContents.count{ it.eq(CellType.WALL) } > 0) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a wall")
         }
 
-        if (treasureRoomContents.count{ it == Space.HALL } > 0) {
+        if (treasureRoomContents.count{ it.eq(CellType.HALL) } > 0) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a hall")
         }
 
         val treasureRoomNeighborPoints = getTreasureRoomNeighbors(treasureRoom, grid)
         val treasureRoomNeighborTypes = treasureRoomNeighborPoints.map{ grid[it.first][it.second] }
-        if (treasureRoomNeighborTypes.count{it == Space.HALL} > 1) {
+        if (treasureRoomNeighborTypes.count{it.eq(CellType.HALL)} > 1) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) has multiple exits")
         }
     }
@@ -179,7 +177,7 @@ fun isValid(grid: List<List<Space>>, rowReqs: List<Int>, colReqs: List<Int>): Pa
 }
 
 //TODO: move into TreasureRoom
-fun getTreasureRoomNeighbors(treasureRoom: TreasureRoom, grid: List<List<Space>>): List<Pair<Int, Int>> {
+fun getTreasureRoomNeighbors(treasureRoom: TreasureRoom, grid: List<List<TypeRange>>): List<Pair<Int, Int>> {
     val neighbors = mutableSetOf<Pair<Int, Int>>()
 
     for (col in (treasureRoom.minCol..treasureRoom.maxCol)) {
@@ -197,14 +195,14 @@ fun getTreasureRoomNeighbors(treasureRoom: TreasureRoom, grid: List<List<Space>>
         .filter{it.second < grid[0].size}
 }
 
-fun getAllTreasureRooms(grid: List<List<Space>>): Set<TreasureRoom> {
+fun getAllTreasureRooms(grid: List<List<TypeRange>>): Set<TreasureRoom> {
     val visited = mutableSetOf<Pair<Int, Int>>()
     val treasureRooms = mutableSetOf<TreasureRoom>()
 
     for (row in grid.indices) {
         for (col in grid[0].indices) {
             val type = grid[row][col]
-            if ((type == Space.TREASURE_ROOM || type == Space.TREASURE) && Pair(row, col) !in visited) {
+            if ((type.eq(CellType.TREASURE_ROOM) || type.eq(CellType.TREASURE)) && Pair(row, col) !in visited) {
                 val treasureRoomCells = findTreasureRoomStartingAt(row, col, grid)
                 visited.addAll(treasureRoomCells)
                 val minRow = treasureRoomCells.minOfOrNull { it.first }!!
@@ -219,9 +217,7 @@ fun getAllTreasureRooms(grid: List<List<Space>>): Set<TreasureRoom> {
     return treasureRooms.toSet()
 }
 
-fun findTreasureRoomStartingAt(row: Int, col: Int, grid: List<List<Space>>): Set<Pair<Int, Int>> {
-    val treasureTypes = setOf(Space.TREASURE_ROOM, Space.TREASURE)
-
+fun findTreasureRoomStartingAt(row: Int, col: Int, grid: List<List<TypeRange>>): Set<Pair<Int, Int>> {
     val visited = mutableSetOf(Pair(row, col))
     val toVisit = mutableSetOf(Pair(row, col))
 
@@ -229,14 +225,14 @@ fun findTreasureRoomStartingAt(row: Int, col: Int, grid: List<List<Space>>): Set
         val visiting = toVisit.first()
         toVisit.remove(visiting)
         val neighbors = neighbors(visiting.first, visiting.second, grid.size, grid[0].size)
-        val treasureNeighbors = neighbors.filter{ grid[it.first][it.second] in treasureTypes }.filter{ it !in visited }
+        val treasureNeighbors = neighbors.filter{ grid[it.first][it.second].mustBe(CellType.TREASURE, CellType.TREASURE_ROOM)}.filter{ it !in visited }
         visited.addAll(treasureNeighbors)
         toVisit.addAll(treasureNeighbors)
     }
     return visited
 }
 
-fun canBeContiguous(grid: List<List<Space>>): Boolean {
+fun canBeContiguous(grid: List<List<TypeRange>>): Boolean {
     val visited = mutableSetOf<Pair<Int, Int>>()
     val toVisit = mutableSetOf<Pair<Int, Int>>()
 
@@ -250,27 +246,27 @@ fun canBeContiguous(grid: List<List<Space>>): Boolean {
         val visiting = toVisit.first()
         toVisit.remove(visiting)
         //We can visit a monster, but a monster can't propagate travel
-        if (grid[visiting.first][visiting.second] != Space.MONSTER) {
+        if (grid[visiting.first][visiting.second].cannotBe(CellType.MONSTER)) {
             val neighbors = neighbors(visiting.first, visiting.second, grid.size, grid[0].size)
-            neighbors.filter { grid[it.first][it.second] != Space.WALL }
+            neighbors.filter { !grid[it.first][it.second].eq(CellType.WALL) }
                 .filter { !visited.contains(it) }
                 .forEach { toVisit.add(it); visited.add(it) }
         }
     }
 
     val allEmptyAndMonsters = grid.flatMapIndexed { rowIdx, row -> row.mapIndexed { colIdx, space -> Triple(rowIdx, colIdx, space) } }
-        .filter { it.third == Space.EMPTY || it.third == Space.MONSTER }
+        .filter { it.third.cannotBe(CellType.WALL) }
         .map{ Pair(it.first, it.second)}
         .toSet()
 
     return visited.containsAll(allEmptyAndMonsters)
 }
 
-fun findFirstEmpty(grid: List<List<Space>>): Pair<Int, Int>? {
+fun findFirstEmpty(grid: List<List<TypeRange>>): Pair<Int, Int>? {
     for (rowIdx in grid.indices) {
         for (colIdx in grid[0].indices) {
             val s = grid[rowIdx][colIdx]
-            if (s == Space.EMPTY || s == Space.HALL || s == Space.TREASURE_ROOM || s == Space.TREASURE_ROOM) return Pair(rowIdx, colIdx)
+            if (s.cannotBe(CellType.MONSTER, CellType.WALL)) return Pair(rowIdx, colIdx)
         }
     }
 
@@ -294,8 +290,8 @@ fun neighbors(row: Int, col: Int, rows: Int, cols: Int): Set<Pair<Int, Int>> {
     return n.toSet()
 }
 
-data class Point(val row: Int, val col: Int, val type: Space)
-fun neighborsWithTypes(row: Int, col: Int, grid: List<List<Space>>): Set<Point> {
+data class Point(val row: Int, val col: Int, val type: TypeRange)
+fun neighborsWithTypes(row: Int, col: Int, grid: List<List<TypeRange>>): Set<Point> {
     val neighbors = neighbors(row, col, grid.size, grid[0].size)
     return neighbors.map{ Point(it.first, it.second, grid[it.first][it.second]) }.toSet()
 }
@@ -307,27 +303,27 @@ fun createBoard(
     monsters: Set<Pair<Int, Int>>,
     treasures: Set<Pair<Int, Int>>
 ) : Board {
-    val grid = mutableListOf<MutableList<Space>>()
+    val grid = mutableListOf<MutableList<TypeRange>>()
     for (rIdx in rowReqs.indices) {
         grid.add(mutableListOf())
         for (cIdx in colReqs.indices) {
             val point = Pair(rIdx, cIdx)
             if (point in monsters) {
-                grid[rIdx].add(Space.MONSTER)
+                grid[rIdx].add(TypeRange(setOf(CellType.MONSTER)))
             } else if (point in treasures) {
-                grid[rIdx].add(Space.TREASURE)
+                grid[rIdx].add(TypeRange(setOf(CellType.TREASURE)))
             } else {
-                grid[rIdx].add(Space.UNKNOWN)
+                grid[rIdx].add(TypeRange(setOf(CellType.WALL, CellType.HALL, CellType.TREASURE_ROOM)))
             }
         }
     }
     return Board(rowReqs, colReqs, monsters, treasures, toImmutable(grid));
 }
 
-private fun toMutable(l: List<List<Space>>): MutableList<MutableList<Space>> {
+private fun toMutable(l: List<List<TypeRange>>): MutableList<MutableList<TypeRange>> {
     return l.map{ it.toMutableList()}.toMutableList()
 }
 
-private fun toImmutable(l: MutableList<MutableList<Space>>): List<List<Space>> {
+private fun toImmutable(l: MutableList<MutableList<TypeRange>>): List<List<TypeRange>> {
     return l.map{ it.toList()}.toList()
 }

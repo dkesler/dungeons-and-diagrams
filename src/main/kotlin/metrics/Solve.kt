@@ -1,5 +1,5 @@
 package metrics
 
-import Board
+import game.Board
 
 data class Solve(val board: Board, val successful: Boolean, val steps: List<Step>)

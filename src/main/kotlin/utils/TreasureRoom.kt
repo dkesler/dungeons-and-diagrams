@@ -1,8 +1,8 @@
 package utils
 
-import Board
-import Space
-import getTreasureRoomNeighbors
+import game.Board
+import game.CellType
+import game.getTreasureRoomNeighbors
 
 class TreasureRoom(val box: Box) {
     val minRow: Int
@@ -34,34 +34,34 @@ class TreasureRoom(val box: Box) {
 
         //if the expanded room contains a wall, monster, or 2+ treasures, we can't expand left
         val augmentedRoomTypes = augmentedRoom.points().map{grid[it.first][it.second]}
-        if (augmentedRoomTypes.contains(Space.WALL) || augmentedRoomTypes.contains(Space.MONSTER)) {
+        if (augmentedRoomTypes.any{ it.mustBe(CellType.WALL, CellType.MONSTER)}) {
             return true
         }
-        if (augmentedRoomTypes.count{it == Space.TREASURE} > 1) {
+        if (augmentedRoomTypes.count{it.eq(CellType.TREASURE)} > 1) {
             return true
         }
 
         //if the left neighbor of the expanded room is a treasure or a monster, we can't expand left
         val leftNeighbors = augmentedRoom.leftNeighbors()
         val leftTypes = leftNeighbors.map { grid[it.first][it.second] }
-        if (leftTypes.contains(Space.MONSTER) || leftTypes.contains(Space.TREASURE)) {
+        if (leftTypes.any {it.mustBe(CellType.MONSTER, CellType.TREASURE)}) {
             return true
         }
 
         //If the augmented room has more than one neighbors of type HALL, we can't expand left
         val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), grid)
-            .count{grid[it.first][it.second] == Space.HALL}
+            .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
         }
 
-        //if the col to the left has insufficient space for the expanded treasure room, we can't expand left
-        val wallsAndUnknownsInColLeft = grid.indices.map { Pair(it, augmentedRoom.minCol) }
+        //if the col to the left has insufficient CellType for the expanded treasure room, we can't expand left
+        val cellsThatCanBeWallsInColLeft = grid.indices.map { Pair(it, augmentedRoom.minCol) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
-            .count{ it == Space.WALL || it == Space.UNKNOWN }
+            .count{ it.canBe(CellType.WALL) }
 
-        if (wallsAndUnknownsInColLeft < board.colReqs[augmentedRoom.minCol]) {
+        if (cellsThatCanBeWallsInColLeft < board.colReqs[augmentedRoom.minCol]) {
             return true
         }
 
@@ -77,34 +77,34 @@ class TreasureRoom(val box: Box) {
 
         //if the expanded room contains a wall, monster, or 2+ treasures, we can't expand right
         val augmentedRoomTypes = augmentedRoom.points().map{grid[it.first][it.second]}
-        if (augmentedRoomTypes.contains(Space.WALL) || augmentedRoomTypes.contains(Space.MONSTER)) {
+        if (augmentedRoomTypes.any{ it.mustBe(CellType.WALL, CellType.MONSTER)}) {
             return true
         }
-        if (augmentedRoomTypes.count{it == Space.TREASURE} > 1) {
+        if (augmentedRoomTypes.count{it.eq(CellType.TREASURE)} > 1) {
             return true
         }
 
-        //if the left neighbor of the expanded room is a treasure or a monster, we can't expand right
+        //if the right neighbor of the expanded room is a treasure or a monster, we can't expand right
         val rightNeighbors = augmentedRoom.rightNeighbors(grid[0].size)
         val rightTypes = rightNeighbors.map { grid[it.first][it.second] }
-        if (rightTypes.contains(Space.MONSTER) || rightTypes.contains(Space.TREASURE)) {
+        if (rightTypes.any{ it.mustBe(CellType.TREASURE, CellType.MONSTER)}) {
             return true
         }
 
         //If the augmented room has more than one neighbors of type HALL, we can't expand right
         val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), grid)
-            .count{grid[it.first][it.second] == Space.HALL}
+            .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
         }
 
-        //if the col to the right has insufficient space for the expanded treasure room, we can't expand right
-        val wallsAndUnknownsInColRight = grid.indices.map { Pair(it, augmentedRoom.maxCol) }
+        //if the col to the right has insufficient CellType for the expanded treasure room, we can't expand right
+        val cellsThatCanBeWallsInColRight = grid.indices.map { Pair(it, augmentedRoom.maxCol) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
-            .count{ it == Space.WALL || it == Space.UNKNOWN }
+            .count{ it.canBe(CellType.WALL) }
 
-        if (wallsAndUnknownsInColRight < board.colReqs[augmentedRoom.maxCol]) {
+        if (cellsThatCanBeWallsInColRight < board.colReqs[augmentedRoom.maxCol]) {
             return true
         }
 
@@ -120,34 +120,35 @@ class TreasureRoom(val box: Box) {
 
         //if the expanded room contains a wall, monster, or 2+ treasures, we can't expand down
         val augmentedRoomTypes = augmentedRoom.points().map{grid[it.first][it.second]}
-        if (augmentedRoomTypes.contains(Space.WALL) || augmentedRoomTypes.contains(Space.MONSTER)) {
+        if (augmentedRoomTypes.any{ it.mustBe(CellType.WALL, CellType.MONSTER)}) {
             return true
         }
-        if (augmentedRoomTypes.count{it == Space.TREASURE} > 1) {
+        if (augmentedRoomTypes.count{it.eq(CellType.TREASURE)} > 1) {
             return true
         }
 
         //if the down neighbor of the expanded room is a treasure or a monster, we can't expand down
         val downNeighbors = augmentedRoom.downNeighbors(grid[0].size)
         val downTypes = downNeighbors.map { grid[it.first][it.second] }
-        if (downTypes.contains(Space.MONSTER) || downTypes.contains(Space.TREASURE)) {
+
+        if (downTypes.any{ it.mustBe(CellType.MONSTER, CellType.TREASURE) }) {
             return true
         }
 
         //If the augmented room has more than one neighbors of type HALL, we can't expand down
         val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), grid)
-            .count{grid[it.first][it.second] == Space.HALL}
+            .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
         }
 
-        //if the row below has insufficient space for the expanded treasure room, we can't expand down
-        val wallsAndUnknownsInRowBelow = grid[0].indices.map { Pair(augmentedRoom.maxRow, it) }
+        //if the row below has insufficient CellType for the expanded treasure room, we can't expand down
+        val cellsThatCanBeWallsInRowBelow = grid[0].indices.map { Pair(augmentedRoom.maxRow, it) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
-            .count{ it == Space.WALL || it == Space.UNKNOWN }
+            .count{ it.canBe(CellType.WALL)}
 
-        if (wallsAndUnknownsInRowBelow < board.rowReqs[augmentedRoom.maxRow]) {
+        if (cellsThatCanBeWallsInRowBelow < board.rowReqs[augmentedRoom.maxRow]) {
             return true
         }
 
@@ -164,34 +165,34 @@ class TreasureRoom(val box: Box) {
 
         //if the expanded room contains a wall, monster, or 2+ treasures, we can't expand left
         val augmentedRoomTypes = augmentedRoom.points().map{grid[it.first][it.second]}
-        if (augmentedRoomTypes.contains(Space.WALL) || augmentedRoomTypes.contains(Space.MONSTER)) {
+        if (augmentedRoomTypes.any{ it.mustBe(CellType.WALL, CellType.MONSTER)}) {
             return true
         }
-        if (augmentedRoomTypes.count{it == Space.TREASURE} > 1) {
+        if (augmentedRoomTypes.count{it.eq(CellType.TREASURE)} > 1) {
             return true
         }
 
         //if the left neighbor of the expanded room is a treasure or a monster, we can't expand left
         val upNeighbors = augmentedRoom.upNeighbors()
         val upTypes = upNeighbors.map { grid[it.first][it.second] }
-        if (upTypes.contains(Space.MONSTER) || upTypes.contains(Space.TREASURE)) {
+        if (upTypes.any{ it.mustBe(CellType.MONSTER, CellType.TREASURE)}) {
             return true
         }
 
         //If the augmented room has more than one neighbors of type HALL, we can't expand up
         val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), grid)
-            .count{grid[it.first][it.second] == Space.HALL}
+            .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
         }
 
-        //if the row above has insufficient space for the expanded treasure room, we can't expand up
-        val wallsAndUnknownsInRowAbove = grid[0].indices.map { Pair(augmentedRoom.minRow, it) }
+        //if the row above has insufficient CellType for the expanded treasure room, we can't expand up
+        val cellsThatCanBeWallsInRowAbove = grid[0].indices.map { Pair(augmentedRoom.minRow, it) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
-            .count{ it == Space.WALL || it == Space.UNKNOWN }
+            .count{ it.canBe(CellType.WALL)}
 
-        if (wallsAndUnknownsInRowAbove < board.rowReqs[augmentedRoom.minRow]) {
+        if (cellsThatCanBeWallsInRowAbove < board.rowReqs[augmentedRoom.minRow]) {
             return true
         }
 

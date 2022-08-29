@@ -1,15 +1,16 @@
 package rules
 
-import Board
-import findTreasureRoomStartingAt
+import game.Board
+import game.CellType
+import game.findTreasureRoomStartingAt
 import utils.Box
 import kotlin.math.max
 import kotlin.math.min
 
 
 
-class EmptyCantReachTreasure : Rule {
-    override fun name() = "EmptyCantReachTreasure"
+class CantReachTreasure : Rule {
+    override fun name() = "CantReachTreasure"
     override fun apply(board: Board): ApplyResult {
         fun canFeasiblyReachTreasure(row: Int, col: Int, candidate: Pair<Int, Int>): Boolean {
             val candidateTreasureRoomPoints = findTreasureRoomStartingAt(candidate.first, candidate.second, board.grid)
@@ -38,7 +39,7 @@ class EmptyCantReachTreasure : Rule {
 
         for (row in board.grid.indices) {
             for (col in board.grid[0].indices) {
-                if (board.grid[row][col] == Space.EMPTY) {
+                if (board.grid[row][col].canBe(CellType.TREASURE_ROOM)) {
                     val treasureHuntingBoundingBox = Box(
                         max(0, row-3),
                         max(0, col-3),
@@ -47,9 +48,9 @@ class EmptyCantReachTreasure : Rule {
                     )
                     //Treasures we can even consider given the 3x3 max treasure room size rule
                     val candidateTreasures = board.treasures.filter(treasureHuntingBoundingBox::contains)
-                    //If the current Empty space cannot feasibly reach any treasure, it must just be a hall
+                    //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
                     if (candidateTreasures.none{ canFeasiblyReachTreasure(row, col, it)}) {
-                        val update = board.update(row, col, Space.HALL)
+                        val update = board.update(row, col, board.grid[row][col].types - CellType.TREASURE_ROOM)
                         if (!update.valid) {
                             return ApplyResult(true, true, name(), "${name()}.row[$row].col[$col]", update.board)
                         } else {

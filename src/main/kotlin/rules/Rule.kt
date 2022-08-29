@@ -1,6 +1,6 @@
 package rules
 
-import Board
+import game.Board
 
 interface Rule {
     fun apply(board: Board): ApplyResult
