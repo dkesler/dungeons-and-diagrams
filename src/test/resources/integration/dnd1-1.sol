@@ -1,8 +1,8 @@
-.....WWW
-.W.W...M
-.WMW.WWW
-.WWW...M
-OOOW.WWW
-OTOW...M
-OOOW.WWW
-WWWW...M
+.....###
+.#.#...M
+.#M#.###
+.###...M
+OOO#.###
+OTO#...M
+OOO#.###
+####...M

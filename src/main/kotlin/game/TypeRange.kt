@@ -27,9 +27,11 @@ class TypeRange(val types: Set<CellType>) {
             setOf(CellType.TREASURE) -> 'T'
             setOf(CellType.TREASURE_ROOM) -> 'O'
             setOf(CellType.MONSTER) -> 'M'
-            setOf(CellType.WALL) -> 'W'
+            setOf(CellType.WALL) -> '#'
             setOf(CellType.HALL, CellType.TREASURE_ROOM) -> 'o'
             setOf(CellType.HALL) -> '.'
+            setOf(CellType.WALL, CellType.HALL) -> '!'
+            setOf(CellType.WALL, CellType.TREASURE_ROOM) -> '$'
             else -> '?'
         }
     }
@@ -56,10 +58,12 @@ class TypeRange(val types: Set<CellType>) {
                 '?' -> TypeRange(setOf(CellType.WALL, CellType.HALL, CellType.TREASURE_ROOM))
                 'o' -> TypeRange(setOf(CellType.HALL, CellType.TREASURE_ROOM))
                 '.' -> TypeRange(setOf(CellType.HALL))
-                'W' -> TypeRange(setOf(CellType.WALL))
+                '#' -> TypeRange(setOf(CellType.WALL))
                 'T' -> TypeRange(setOf(CellType.TREASURE))
                 'M' -> TypeRange(setOf(CellType.MONSTER))
                 'O' -> TypeRange(setOf(CellType.TREASURE_ROOM))
+                '!' -> TypeRange(setOf(CellType.WALL, CellType.HALL))
+                '$' -> TypeRange(setOf(CellType.WALL, CellType.TREASURE_ROOM))
 
                 else -> throw RuntimeException("Unknown char [${c}] in TypeRange.fromChar")
             }

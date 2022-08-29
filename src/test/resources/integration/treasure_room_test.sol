@@ -1,3 +1,3 @@
 OOO.M
-OOOWW
-OTOWW
+OOO##
+OTO##
