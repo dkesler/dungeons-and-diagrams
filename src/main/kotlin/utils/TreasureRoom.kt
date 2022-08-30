@@ -48,11 +48,20 @@ class TreasureRoom(val box: Box) {
             return true
         }
 
-        //If the augmented room has more than one neighbors of type HALL, we can't expand left
+        //If the augmented room has more than one neighbors that can't be wall, we can't expand left
         val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), grid)
             .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
+        }
+
+        //if the agumented room is max width and has multiple non-wall cells in its horizontal neighbors, we can't expand left
+        if (augmentedRoom.width() == 3) {
+            val nonWallHorizontalNeighbors = (augmentedRoom.leftNeighbors() + augmentedRoom.rightNeighbors(board.colReqs.size))
+                .count { !board.grid[it.first][it.second].canBe(CellType.WALL) }
+            if (nonWallHorizontalNeighbors > 1) {
+                return true
+            }
         }
 
         //if the col to the left has insufficient CellType for the expanded treasure room, we can't expand left
@@ -96,6 +105,15 @@ class TreasureRoom(val box: Box) {
             .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
+        }
+
+        //if the agumented room is max width and has multiple non-wall cells in its horizontal neighbors, we can't expand right
+        if (augmentedRoom.width() == 3) {
+            val nonWallHorizontalNeighbors = (augmentedRoom.leftNeighbors() + augmentedRoom.rightNeighbors(board.colReqs.size))
+                .count { !board.grid[it.first][it.second].canBe(CellType.WALL) }
+            if (nonWallHorizontalNeighbors > 1) {
+                return true
+            }
         }
 
         //if the col to the right has insufficient CellType for the expanded treasure room, we can't expand right
@@ -142,6 +160,15 @@ class TreasureRoom(val box: Box) {
             return true
         }
 
+        //if the agumented room is max height and has multiple non-wall cells in its vertical neighbors, we can't expand down
+        if (augmentedRoom.height() == 3) {
+            val nonWallVerticalNeighbors = (augmentedRoom.upNeighbors() + augmentedRoom.downNeighbors(board.rowReqs.size))
+                .count { !board.grid[it.first][it.second].canBe(CellType.WALL) }
+            if (nonWallVerticalNeighbors > 1) {
+                return true
+            }
+        }
+
         //if the row below has insufficient CellType for the expanded treasure room, we can't expand down
         val cellsThatCanBeWallsInRowBelow = grid[0].indices.map { Pair(augmentedRoom.maxRow, it) }
             .filter { !augmentedRoom.contains(it) }
@@ -184,6 +211,15 @@ class TreasureRoom(val box: Box) {
             .count{grid[it.first][it.second].eq(CellType.HALL)}
         if (hallNeighbors > 1) {
             return true
+        }
+
+        //if the agumented room is max height and has multiple non-wall cells in its vertical neighbors, we can't expand up
+        if (augmentedRoom.height() == 3) {
+            val nonWallVerticalNeighbors = (augmentedRoom.upNeighbors() + augmentedRoom.downNeighbors(board.rowReqs.size))
+                .count { !board.grid[it.first][it.second].canBe(CellType.WALL) }
+            if (nonWallVerticalNeighbors > 1) {
+                return true
+            }
         }
 
         //if the row above has insufficient CellType for the expanded treasure room, we can't expand up
