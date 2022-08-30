@@ -351,7 +351,7 @@ fun draw(rowReqs: List<Int>, colReqs: List<Int>, thisGrid: List<List<TypeRange>>
             if (diffGrid == null || space == diffGrid[rIdx][cIdx])
                 print(space.toChar())
             else
-                print("\u001B[32m" + space.toChar() + "\u001B[0m")
+                print("\u001b[42m\u001B[30m" + space.toChar() + "\u001B[0m")
         }
         println("")
     }
