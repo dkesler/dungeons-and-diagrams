@@ -25,18 +25,19 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         WallsExhausted(),
         EmptyExhausted(),
         MonsterRequiresHallway(),
+        MonsterCantTouchTreasureRoom(),
         MonsterMayHaveAtMostOneHallway(),
         ExtendHallway(),
         AvoidCreatingDeadEnd(),
         AvoidTwoByTwoHall(),
         LastGapCantCreateDeadend(),
-        CantReachTreasure(),
         TreasureExpandsAwayFromWall(),
         TreasureRoomCannotBeConcave(),
         TreasureRoomWithExitMustBeWalled(),
         EmptyishTwoByTwoIsTreasureRoom(),
-        WallBoundBoxInternalStructure()
-
+        WallBoundBoxInternalStructure(),
+        AllTreasureRoomsComplete(),
+        CantReachTreasure(),
     )
     var b = board
     val steps = mutableListOf<Step>()

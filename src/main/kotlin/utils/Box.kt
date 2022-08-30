@@ -33,6 +33,15 @@ data class Box(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: In
         return (minCol..maxCol).map{ Pair(maxRow+1, it) }.filter{it.first < rows }
     }
 
+    fun width(): Int {
+        return maxCol - minCol + 1
+    }
+
+    fun height(): Int {
+        return maxRow - minRow + 1
+    }
+
+
     companion object {
         fun fromPoints(points: Collection<Pair<Int, Int>>): Box {
             val minRow = points.minOfOrNull { it.first }!!
