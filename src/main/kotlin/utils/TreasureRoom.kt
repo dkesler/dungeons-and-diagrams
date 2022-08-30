@@ -64,7 +64,12 @@ class TreasureRoom(val box: Box) {
             }
         }
 
+
         //if the col to the left has insufficient CellType for the expanded treasure room, we can't expand left
+        if (board.colReqs[augmentedRoom.minCol] >= board.rowReqs.size - 2) {
+            return true
+        }
+
         val cellsThatCanBeWallsInColLeft = grid.indices.map { Pair(it, augmentedRoom.minCol) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
@@ -117,6 +122,10 @@ class TreasureRoom(val box: Box) {
         }
 
         //if the col to the right has insufficient CellType for the expanded treasure room, we can't expand right
+        if (board.colReqs[augmentedRoom.maxCol] >= board.rowReqs.size - 2) {
+            return true
+        }
+
         val cellsThatCanBeWallsInColRight = grid.indices.map { Pair(it, augmentedRoom.maxCol) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
@@ -170,6 +179,10 @@ class TreasureRoom(val box: Box) {
         }
 
         //if the row below has insufficient CellType for the expanded treasure room, we can't expand down
+        if (board.rowReqs[augmentedRoom.maxRow] >= board.colReqs.size - 2) {
+            return true
+        }
+
         val cellsThatCanBeWallsInRowBelow = grid[0].indices.map { Pair(augmentedRoom.maxRow, it) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
@@ -223,6 +236,10 @@ class TreasureRoom(val box: Box) {
         }
 
         //if the row above has insufficient CellType for the expanded treasure room, we can't expand up
+        if (board.rowReqs[augmentedRoom.minRow] >= board.colReqs.size - 2) {
+            return true
+        }
+
         val cellsThatCanBeWallsInRowAbove = grid[0].indices.map { Pair(augmentedRoom.minRow, it) }
             .filter { !augmentedRoom.contains(it) }
             .map{ grid[it.first][it.second] }
