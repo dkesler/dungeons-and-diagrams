@@ -2,41 +2,29 @@ package rules
 
 import game.Board
 import game.CellType
+import game.TypeRange
 import utils.Box
 import utils.Point
 
 class EmptyishTwoByTwoIsTreasureRoom : Rule {
     override fun name() = "EmptyishTwoByTwoIsTreasureRoom"
     override fun apply(board: Board): ApplyResult {
+
         //if any 2x2 area contains solely empty, treasure room, or treasure, each empty must be treasure room
-        for (row in (0 until board.grid.maxRow)) {
-            for (col in (0 until board.grid.maxCol)) {
-                val box = Box(row, col, row + 1, col + 1)
-                val subGrid = board.grid.subgrid(box).flatten()
-                if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
-                    return emptyToTreasureRoom(box, board)
-                }
+        fun rule(box: Box): Rule.Check? {
+            val subGrid = board.grid.subgrid(box).flatten()
+            if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
+                val toUpdate = subGrid.filter { it.type.canBe(CellType.HALL) }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALL)) }
+                return Rule.Check(board.update(toUpdate), ".row[${box.minRow}].col[${box.minCol}]")
             }
+            return null
         }
 
-        return ApplyResult(false, false, name(), "", board)
-    }
-
-
-    private fun emptyToTreasureRoom(box: Box, board: Board): ApplyResult {
-        var b = board
-        for (point in box.points()) {
-            val cell = board.grid.cells[point.first][point.second]
-            if (cell.canBe(CellType.HALL)) {
-                val update = b.update(point.first, point.second, cell.types - CellType.HALL)
-                if (!update.valid) {
-                    return ApplyResult(true, true, name(), "${name()}.row[${box.minRow}].col[${box.minCol}]", b)
-                } else {
-                    b = update.board
-                }
-            }
-        }
-        return ApplyResult(true, false,name(), "${name()}.row[${box.minRow}].col[${box.minCol}]", b)
+        return eachTwoByTwo(
+            board,
+            ::rule
+        )
     }
 
     private fun isEmptyish(subGrid: List<Point>): Boolean {
