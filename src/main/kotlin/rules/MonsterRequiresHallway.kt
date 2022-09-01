@@ -2,13 +2,12 @@ package rules
 
 import game.Board
 import game.CellType
-import game.neighborsWithTypes
 
 class MonsterRequiresHallway : Rule {
     override fun name() = "MonsterRequiresHallway"
     override fun apply(board: Board): ApplyResult {
         for (monster in board.monsters) {
-            val neighborsWithTypes = neighborsWithTypes(monster.first, monster.second, board.grid.cells)
+            val neighborsWithTypes = board.grid.neighbors(monster.first, monster.second)
             val numAdjacentHall = neighborsWithTypes.count{it.type.eq(CellType.HALL)}
             val adjacentPossibleHall = neighborsWithTypes.filter{it.type.canBe(CellType.HALL) }
             //If the monster does not already have an adjacent hall, and there is only one neighbor that could

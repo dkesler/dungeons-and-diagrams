@@ -2,9 +2,9 @@ package rules
 
 import game.Board
 import game.CellType
-import game.Point
 import game.findTreasureRoomStartingAt
 import utils.Box
+import utils.Point
 import utils.TreasureRoom
 
 //If a treasure room cannot expand in a direction and any neighbors on that side could be treasure room
@@ -25,7 +25,7 @@ class TreasureRoomCannotExpand : Rule {
             }
 
             if (treasureRoom.cannotExpandRight(board, 1)) {
-                treasureRoom.box.rightNeighbors(board.grid.numCols).map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
+                treasureRoom.box.rightNeighbors(board.grid.numCols).map { Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }

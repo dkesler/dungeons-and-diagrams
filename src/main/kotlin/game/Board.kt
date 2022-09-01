@@ -1,6 +1,7 @@
 package game
 
 import utils.Box
+import utils.Point
 import utils.TreasureRoom
 
 class Board(
@@ -97,21 +98,21 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
         for (colIdx in (colReqs.indices)) {
             val isMonster = grid.cells[rowIdx][colIdx].eq(CellType.MONSTER)
             if (isMonster) {
-                val neighbors = neighbors(rowIdx, colIdx, rowReqs.size, colReqs.size)
+                val neighbors = grid.neighbors(rowIdx, colIdx)
                 //if there are more than one neighboring empty, the monster isn't in a dead end
-                val neighboringEmpties = neighbors.count{ !grid.cells[it.first][it.second].canBe(CellType.WALL) }
+                val neighboringEmpties = neighbors.count{ !it.type.canBe(CellType.WALL) }
                 if (neighboringEmpties > 1) return Pair(false, "Monster at ($rowIdx,$colIdx) not in a dead end")
                 //monsters can't go directly into treasure rooms
-                val neighboringTreasuresOrRoom = neighbors.map{ grid.cells[it.first][it.second]}.count{it.mustBe(CellType.TREASURE_ROOM, CellType.TREASURE)}
+                val neighboringTreasuresOrRoom = neighbors.map{ it.type }.count{it.mustBe(CellType.TREASURE_ROOM, CellType.TREASURE)}
                 if (neighboringTreasuresOrRoom > 0) return Pair(false, "Monster at ($rowIdx,$colIdx) neighbors treasure room")
             } else if (!grid.cells[rowIdx][colIdx].canBe(CellType.WALL)) {
                 //not a monster and not a wall so cannot be a dead end
-                val neighbors = neighbors(rowIdx, colIdx, rowReqs.size, colReqs.size)
-                val neighboringWalls = neighbors.count{ grid.cells[it.first][it.second].eq(CellType.WALL)}
+                val neighbors = grid.neighbors(rowIdx, colIdx)
+                val neighboringWalls = neighbors.count{ it.type.eq(CellType.WALL)}
                 if (neighboringWalls == neighbors.size - 1) return Pair(false, "Dead end at ($rowIdx,$colIdx) with no monster")
 
                 if (grid.cells[rowIdx][colIdx].eq(CellType.TREASURE)) {
-                    val neighboringHalls = neighbors.count{ grid.cells[it.first][it.second].eq(CellType.HALL)}
+                    val neighboringHalls = neighbors.count{ it.type.eq(CellType.HALL)}
                     if (neighboringHalls > 1) {
                         return Pair(false, "Treasure at ($rowIdx,$colIdx) in a hallway")
                     }
@@ -214,8 +215,10 @@ fun findTreasureRoomStartingAt(row: Int, col: Int, grid: Grid): Set<Pair<Int, In
     while(toVisit.isNotEmpty()) {
         val visiting = toVisit.first()
         toVisit.remove(visiting)
-        val neighbors = neighbors(visiting.first, visiting.second, grid.cells.size, grid.cells[0].size)
-        val treasureNeighbors = neighbors.filter{ grid.cells[it.first][it.second].mustBe(CellType.TREASURE, CellType.TREASURE_ROOM)}.filter{ it !in visited }
+        val neighbors = grid.neighbors(visiting.first, visiting.second)
+        val treasureNeighbors = neighbors.filter{ it.type.mustBe(CellType.TREASURE, CellType.TREASURE_ROOM)}
+            .map{it.toPair()}
+            .filter{ it !in visited }
         visited.addAll(treasureNeighbors)
         toVisit.addAll(treasureNeighbors)
     }
@@ -237,8 +240,9 @@ fun canBeContiguous(grid: Grid): Boolean {
         toVisit.remove(visiting)
         //We can visit a monster, but a monster can't propagate travel
         if (grid.cells[visiting.first][visiting.second].cannotBe(CellType.MONSTER)) {
-            val neighbors = neighbors(visiting.first, visiting.second, grid.cells.size, grid.cells[0].size)
-            neighbors.filter { !grid.cells[it.first][it.second].eq(CellType.WALL) }
+            val neighbors = grid.neighbors(visiting.first, visiting.second)
+            neighbors.filter { !it.type.eq(CellType.WALL) }
+                .map{it.toPair()}
                 .filter { !visited.contains(it) }
                 .forEach { toVisit.add(it); visited.add(it) }
         }
@@ -284,30 +288,6 @@ fun verticalNeighbors(row: Int, col: Int, rows: Int): Set<Pair<Int, Int>> {
     }
     return n.toSet()
 }
-
-fun neighbors(row: Int, col: Int, rows: Int, cols: Int): Set<Pair<Int, Int>> {
-    val n = mutableSetOf<Pair<Int, Int>>()
-    if (row-1 >= 0) {
-        n.add(Pair(row-1, col))
-    }
-    if (row+1 < rows) {
-        n.add(Pair(row+1, col))
-    }
-    if (col-1 >= 0) {
-        n.add(Pair(row, col-1))
-    }
-    if (col+1 < cols) {
-        n.add(Pair(row, col+1))
-    }
-    return n.toSet()
-}
-
-data class Point(val row: Int, val col: Int, val type: TypeRange)
-fun neighborsWithTypes(row: Int, col: Int, grid: List<List<TypeRange>>): Set<Point> {
-    val neighbors = neighbors(row, col, grid.size, grid[0].size)
-    return neighbors.map{ Point(it.first, it.second, grid[it.first][it.second]) }.toSet()
-}
-
 
 fun createBoard(
     rowReqs: List<Int>,

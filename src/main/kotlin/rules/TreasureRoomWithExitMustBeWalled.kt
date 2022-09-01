@@ -2,6 +2,7 @@ package rules
 
 import game.*
 import utils.Box
+import utils.Point
 import utils.TreasureRoom
 
 class TreasureRoomWithExitMustBeWalled : Rule {

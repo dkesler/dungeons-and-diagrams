@@ -2,7 +2,6 @@ package rules
 
 import game.Board
 import game.CellType
-import game.neighbors
 import utils.Box
 import utils.WallBoundBox
 
@@ -144,9 +143,9 @@ class WallBoundBoxInternalStructure : Rule {
     }
 
     private fun hasAtLeastNPotentiallyEmptyNeighbors(row: Int, col: Int, n: Int, board: Board, box: Box): Boolean {
-        return neighbors(row, col, board.grid.numRows, board.grid.numCols)
-            .filter { !box.contains(it) }
-            .map{ board.grid.cells[it.first][it.second] }
+        return board.grid.neighbors(row, col)
+            .filter { !box.contains(it.toPair()) }
+            .map{ it.type }
             .count{ !it.eq(CellType.WALL) } >= n
 
     }
