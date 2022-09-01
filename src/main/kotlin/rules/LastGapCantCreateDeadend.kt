@@ -8,53 +8,42 @@ class LastGapCantCreateDeadend: Rule {
     override fun name() = "LastGapCantCreateDeadend"
 
     override fun apply(board: Board): ApplyResult {
-        for (rowIdx in board.grid.rows) {
-            val row = board.grid.row(rowIdx)
+
+        fun rowRule(row: List<Point>, rowIdx: Int): Rule.Check? {
             if (gapsRemaining(board.rowReqs[rowIdx], row) == 1) {
-                val changeToWall = mutableSetOf<Pair<Int, Int>>()
+                val changeToWall = mutableSetOf<Point>()
                 for (colIdx in board.grid.cols) {
                     if (!row[colIdx].type.known && row[colIdx].type.canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
-                        changeToWall.add(Pair(rowIdx, colIdx))
+                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(CellType.WALL))))
                     }
                 }
+
                 if (changeToWall.isNotEmpty()) {
-                    var b = board
-                    for (point in changeToWall) {
-                        val update = b.update(point.first, point.second, setOf(CellType.WALL))
-                        if (!update.valid) {
-                            return ApplyResult(true, true, name(), "", b)
-                        }
-                        b = update.board
-                    }
-                    return ApplyResult(true, false, name(), "${name()}.row[$rowIdx]", b)
+                    return Rule.Check(board.update(changeToWall), ".row[$rowIdx]");
                 }
             }
+            return null
         }
 
-        for (colIdx in board.grid.cols) {
-            val col = board.grid.col(colIdx)
+        fun colRule(col: List<Point>, colIdx: Int): Rule.Check? {
             if (gapsRemaining(board.colReqs[colIdx], col) == 1) {
-                val changeToWall = mutableSetOf<Pair<Int, Int>>()
+                val changeToWall = mutableSetOf<Point>()
                 for (rowIdx in board.grid.rows) {
                     if (!col[rowIdx].type.known && col[rowIdx].type.canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, false)) {
-                        changeToWall.add(Pair(rowIdx, colIdx))
+                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(CellType.WALL))))
                     }
                 }
                 if (changeToWall.isNotEmpty()) {
-                    var b = board
-                    for (point in changeToWall) {
-                        val update = b.update(point.first, point.second, setOf(CellType.WALL))
-                        if (!update.valid) {
-                            return ApplyResult(true, true, name(), "", b)
-                        }
-                        b = update.board
-                    }
-                    return ApplyResult(true, false, name(), "${name()}.col[$colIdx]", b)
+                    return Rule.Check(board.update(changeToWall), ".col[$colIdx]")
                 }
             }
+            return null
         }
-
-        return ApplyResult(false, false, name(), "", board)
+        return eachRowAndCol(
+            board,
+            ::rowRule,
+            ::colRule
+        )
     }
 
     private fun wouldBeDeadEndAsGap(rowIdx: Int, colIdx: Int, board: Board, checkingRow: Boolean): Boolean {
