@@ -7,7 +7,6 @@ import java.lang.RuntimeException
 
 class AvoidTwoByTwoHall : Rule {
     override fun apply(board: Board): ApplyResult {
-
         fun rule(box: Box): Rule.Check? {
             val subGrid = board.grid.subgrid(box).flatten()
             val has3Halls = subGrid.count { it.type.eq(CellType.HALL) } == 3

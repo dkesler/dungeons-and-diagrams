@@ -4,6 +4,7 @@ import game.Board
 import game.CellType
 import game.findTreasureRoomStartingAt
 import utils.Box
+import utils.Point
 import kotlin.math.max
 import kotlin.math.min
 
@@ -37,30 +38,27 @@ class CantReachTreasure : Rule {
             return true
         }
 
-        for (row in board.grid.rows) {
-            for (col in board.grid.cols) {
-                if (board.grid.cells[row][col].canBe(CellType.TREASURE_ROOM)) {
-                    val treasureHuntingBoundingBox = Box(
-                        max(0, row-3),
-                        max(0, col-3),
-                        min(board.grid.maxRow, row+3),
-                        min(board.grid.maxCol, col+3)
-                    )
-                    //Treasures we can even consider given the 3x3 max treasure room size rule
-                    val candidateTreasures = board.treasures.filter(treasureHuntingBoundingBox::contains)
-                    //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
-                    if (candidateTreasures.none{ canFeasiblyReachTreasure(row, col, it)}) {
-                        val update = board.update(row, col, board.grid.cells[row][col].types - CellType.TREASURE_ROOM)
-                        if (!update.valid) {
-                            return ApplyResult(true, true, name(), "${name()}.row[$row].col[$col]", update.board)
-                        } else {
-                            return ApplyResult(true, false, name(), "${name()}.row[$row].col[$col]", update.board)
-                        }
-                    }
-                }
+        fun rule(point: Point): Rule.Check? {
+            val treasureHuntingBoundingBox = Box(
+                max(0, point.row-3),
+                max(0, point.col-3),
+                min(board.grid.maxRow, point.row+3),
+                min(board.grid.maxCol, point.col+3)
+            )
+            //Treasures we can even consider given the 3x3 max treasure room size rule
+            val candidateTreasures = board.treasures.filter(treasureHuntingBoundingBox::contains)
+            //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
+            if (candidateTreasures.none{ canFeasiblyReachTreasure(point.row, point.col, it)}) {
+                val update = board.update(point.row, point.col, point.type.types - CellType.TREASURE_ROOM)
+                return Rule.Check(update, ".row[$${point.row}].col[${point.col}]")
             }
+            return null
         }
 
-        return ApplyResult(false, false, name(), "", board)
+        return each(
+            board,
+            {it.type.canBe(CellType.TREASURE_ROOM)},
+            ::rule
+        )
     }
 }
