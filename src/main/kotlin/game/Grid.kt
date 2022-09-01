@@ -87,4 +87,12 @@ class Grid(val cells: List<List<TypeRange>>) {
             }
         }
     }
+
+    fun points(): List<Point> {
+        return rows.flatMap{ row ->
+            cols.map { col ->
+                Point(row, col, cells[row][col])
+            }
+        }
+    }
 }
