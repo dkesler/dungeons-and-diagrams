@@ -1,8 +1,6 @@
 package rules
 
-import game.Board
-import game.Update
-import game.findTreasureRoomStartingAt
+import game.*
 import utils.Box
 import utils.Point
 import utils.TreasureRoom
@@ -20,8 +18,16 @@ interface Rule {
     }
 
 
-    //each monster
-    //each treasure?
+    fun eachMonster(
+        board: Board,
+        callback: (Point) -> Check?
+    ): ApplyResult {
+        val check = board.monsters.fold(null) { check: Check?, monster ->
+            if (check != null) check
+            else callback(Point(monster.first, monster.second, TypeRange(setOf(CellType.MONSTER))))
+        }
+        return checkToApplyResult(check, board)
+    }
 
     fun eachRowAndCol(
         board: Board,
