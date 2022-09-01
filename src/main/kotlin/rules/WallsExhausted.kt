@@ -8,7 +8,7 @@ import game.CellType
 class WallsExhausted : Rule {
     override fun name() = "WallsExhausted"
     override fun apply(board: Board): ApplyResult {
-        for (rIdx in board.grid.indices) {
+        for (rIdx in board.grid.rows) {
             val row = board.row(rIdx);
             val rowWalls = row.filter{it.eq(CellType.WALL)}.count()
             val rowPotentialWalls = row.filter{it.canBe(CellType.WALL) && !it.known}.count()
@@ -18,7 +18,7 @@ class WallsExhausted : Rule {
             }
         }
 
-        for (cIdx in board.grid[0].indices) {
+        for (cIdx in board.grid.cols) {
             val col = board.col(cIdx);
             val colWalls = col.filter{it.eq(CellType.WALL)}.count()
             val colPotentialWalls = col.filter{it.canBe(CellType.WALL) && !it.known}.count()
@@ -33,8 +33,8 @@ class WallsExhausted : Rule {
 
     private fun unknownToFreeRow(rIdx: Int, board: Board): Pair<Boolean, Board> {
         var b = board
-        for (cIdx in board.grid[rIdx].indices) {
-            val cell = b.grid[rIdx][cIdx]
+        for (cIdx in board.grid.cells[rIdx].indices) {
+            val cell = b.grid.cells[rIdx][cIdx]
             if (cell.canBe(CellType.WALL) && !cell.known) {
                 val update = b.update(rIdx, cIdx, cell.types - CellType.WALL)
                 if (!update.valid) {
@@ -48,8 +48,8 @@ class WallsExhausted : Rule {
 
     private fun unknownToFreeCol(cIdx: Int, board: Board): Pair<Boolean, Board> {
         var b = board
-        for (rIdx in board.grid.indices) {
-            val cell = b.grid[rIdx][cIdx]
+        for (rIdx in board.grid.rows) {
+            val cell = b.grid.cells[rIdx][cIdx]
             if (cell.canBe(CellType.WALL) && !cell.known) {
                 val update = b.update(rIdx, cIdx, cell.types - CellType.WALL)
                 if (!update.valid) {

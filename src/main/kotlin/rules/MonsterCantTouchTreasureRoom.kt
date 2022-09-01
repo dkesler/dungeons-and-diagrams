@@ -9,7 +9,7 @@ class MonsterCantTouchTreasureRoom : Rule {
 
     override fun apply(board: Board): ApplyResult {
         for (monster in board.monsters) {
-            val neighbors = neighborsWithTypes(monster.first, monster.second, board.grid)
+            val neighbors = neighborsWithTypes(monster.first, monster.second, board.grid.cells)
             if (neighbors.any { it.type.canBe(CellType.TREASURE_ROOM)}) {
                 var b = board
                 for (neighbor in neighbors.filter { it.type.canBe(CellType.TREASURE_ROOM) }) {

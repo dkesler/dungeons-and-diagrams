@@ -3,6 +3,7 @@ package integration
 import Loader
 import SolverConfiguration
 import game.Board
+import game.Grid
 import game.TypeRange
 import game.draw
 import metrics.Step
@@ -18,7 +19,7 @@ abstract class BaseIntegrationTest {
     @Test
     fun doTest() {
         val board = Loader.load(file)
-        val solution = loadSolution("/integration$file.sol")
+        val solution = Grid(loadSolution("/integration$file.sol"))
 
         val solved = solve(board, config)
         printSolveMetrics(solved.steps)
@@ -27,7 +28,7 @@ abstract class BaseIntegrationTest {
             fail("Did not find a solution")
         }
 
-        if (solution != solved.board.grid) {
+        if (solution.cells != solved.board.grid.cells) {
             println("Solutions do not match.  Final solution:")
             solved.board.draw()
             println("Expected solution:")

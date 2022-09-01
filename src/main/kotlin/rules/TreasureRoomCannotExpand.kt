@@ -19,25 +19,25 @@ class TreasureRoomCannotExpand : Rule {
             val treasureRoom = TreasureRoom(Box.fromPoints(treasureRoomPoints))
 
             if (treasureRoom.cannotExpandLeft(board, 1)) {
-                treasureRoom.box.leftNeighbors().map {Point(it.first, it.second, board.grid[it.first][it.second]) }
+                treasureRoom.box.leftNeighbors().map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandRight(board, 1)) {
-                treasureRoom.box.rightNeighbors(board.grid[0].size).map {Point(it.first, it.second, board.grid[it.first][it.second]) }
+                treasureRoom.box.rightNeighbors(board.grid.numCols).map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandDown(board, 1)) {
-                treasureRoom.box.downNeighbors(board.grid.size).map {Point(it.first, it.second, board.grid[it.first][it.second]) }
+                treasureRoom.box.downNeighbors(board.grid.numRows).map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandUp(board, 1)) {
-                treasureRoom.box.upNeighbors().map {Point(it.first, it.second, board.grid[it.first][it.second]) }
+                treasureRoom.box.upNeighbors().map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }

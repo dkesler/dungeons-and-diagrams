@@ -35,7 +35,6 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         TreasureRoomWithExitMustBeWalled(),
         TreasureRoomCannotExpand(),
         TreasureExpandsAwayFromWall(),
-
         EmptyishTwoByTwoIsTreasureRoom(),
         WallBoundBoxInternalStructure(),
         AllTreasureRoomsComplete(),
@@ -80,11 +79,11 @@ fun bifurcate(board: Board, config: SolverConfiguration): Triple<Board, Boolean,
     var probes = 0
     var wastedTimeMillis = 0L
 
-    for (rowIdx in board.grid.indices) {
-        for (colIdx in board.grid[0].indices) {
+    for (rowIdx in board.grid.rows) {
+        for (colIdx in board.grid.cols) {
             //if space is unknown, make it a wall and try to solve.
             //if we successfully solve, return solve, otherwise try next unknown
-            val cell = board.grid[rowIdx][colIdx]
+            val cell = board.grid.cells[rowIdx][colIdx]
             if (!cell.known && cell.canBe(CellType.WALL)) {
                 probes++
                 val probeStart = System.currentTimeMillis()

@@ -20,12 +20,12 @@ class TreasureExpandsAwayFromWall : Rule {
             if (box.minCol == 0 || !allCanBeTreasureRoom(box.leftNeighbors(), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.minCol+2)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             } else if (box.minCol == 1 || !allCanBeTreasureRoom(box.leftXNeighbors(2), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.minCol+1)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             }
 
@@ -33,12 +33,12 @@ class TreasureExpandsAwayFromWall : Rule {
             if (box.maxCol == board.rowReqs.size - 1 || !allCanBeTreasureRoom(box.rightNeighbors(board.colReqs.size), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.maxCol-2, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             } else if (box.maxCol == board.rowReqs.size - 2 || !allCanBeTreasureRoom(box.rightXNeighbors(2, board.colReqs.size), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.maxCol-1, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             }
 
@@ -46,12 +46,12 @@ class TreasureExpandsAwayFromWall : Rule {
             if (box.maxRow == board.rowReqs.size - 1 || !allCanBeTreasureRoom(box.downNeighbors(board.rowReqs.size), board)) {
                 val newTreasureRoom = Box(treasureRoom.maxRow-2, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             } else if (box.maxRow == board.rowReqs.size - 2 || !allCanBeTreasureRoom(box.downXNeighbors(2, board.rowReqs.size), board)) {
                 val newTreasureRoom = Box(treasureRoom.maxRow-1, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             }
 
@@ -59,12 +59,12 @@ class TreasureExpandsAwayFromWall : Rule {
             if (box.minRow == 0 || !allCanBeTreasureRoom(box.upNeighbors(), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.minRow+2, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             } else if (box.minRow == 1 || !allCanBeTreasureRoom(box.upXNeighbors(2), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.minRow+1, treasureRoom.maxCol)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
-                    .filter{!board.grid[it.first][it.second].eq(CellType.TREASURE_ROOM) }
+                    .filter{!board.grid.cells[it.first][it.second].eq(CellType.TREASURE_ROOM) }
                 toUpdate.addAll(pointsToUpdate)
             }
 
@@ -86,6 +86,6 @@ class TreasureExpandsAwayFromWall : Rule {
     }
 
     private fun allCanBeTreasureRoom(neighbors: List<Pair<Int, Int>>, board: Board): Boolean {
-        return neighbors.all { board.grid[it.first][it.second].canBe(CellType.TREASURE_ROOM) }
+        return neighbors.all { board.grid.cells[it.first][it.second].canBe(CellType.TREASURE_ROOM) }
     }
 }

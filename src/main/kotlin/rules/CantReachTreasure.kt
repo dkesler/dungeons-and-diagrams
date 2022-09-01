@@ -37,20 +37,20 @@ class CantReachTreasure : Rule {
             return true
         }
 
-        for (row in board.grid.indices) {
-            for (col in board.grid[0].indices) {
-                if (board.grid[row][col].canBe(CellType.TREASURE_ROOM)) {
+        for (row in board.grid.rows) {
+            for (col in board.grid.cols) {
+                if (board.grid.cells[row][col].canBe(CellType.TREASURE_ROOM)) {
                     val treasureHuntingBoundingBox = Box(
                         max(0, row-3),
                         max(0, col-3),
-                        min(board.grid.size-1, row+3),
-                        min(board.grid[0].size-1, col+3)
+                        min(board.grid.maxRow, row+3),
+                        min(board.grid.maxCol, col+3)
                     )
                     //Treasures we can even consider given the 3x3 max treasure room size rule
                     val candidateTreasures = board.treasures.filter(treasureHuntingBoundingBox::contains)
                     //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
                     if (candidateTreasures.none{ canFeasiblyReachTreasure(row, col, it)}) {
-                        val update = board.update(row, col, board.grid[row][col].types - CellType.TREASURE_ROOM)
+                        val update = board.update(row, col, board.grid.cells[row][col].types - CellType.TREASURE_ROOM)
                         if (!update.valid) {
                             return ApplyResult(true, true, name(), "${name()}.row[$row].col[$col]", update.board)
                         } else {

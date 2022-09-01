@@ -9,8 +9,8 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
     override fun name() = "EmptyishTwoByTwoIsTreasureRoom"
     override fun apply(board: Board): ApplyResult {
         //if any 2x2 area contains solely empty, treasure room, or treasure, each empty must be treasure room
-        for (row in (0 until board.grid.size-1)) {
-            for (col in (0 until board.grid[0].size-1)) {
+        for (row in (0 until board.grid.maxRow)) {
+            for (col in (0 until board.grid.maxCol)) {
                 val box = Box(row, col, row + 1, col + 1)
                 val subGrid = board.subgrid(box).flatten()
                 if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
@@ -26,7 +26,7 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
     private fun emptyToTreasureRoom(box: Box, board: Board): ApplyResult {
         var b = board
         for (point in box.points()) {
-            val cell = board.grid[point.first][point.second]
+            val cell = board.grid.cells[point.first][point.second]
             if (cell.canBe(CellType.HALL)) {
                 val update = b.update(point.first, point.second, cell.types - CellType.HALL)
                 if (!update.valid) {

@@ -13,13 +13,13 @@ class WallBoundBoxInternalStructure : Rule {
         //if wall bound, check each possible layout given required number of walls.  if a cell is the same type in
         //each layout, make it that type
 
-        for (row in (0 until board.grid.size-1)) {
-            for (col in (0 until board.grid[0].size-1)) {
+        for (row in (0 until board.grid.numRows-1)) {
+            for (col in (0 until board.grid.numCols-1)) {
                 val box = Box(row, col, row+1, col+1)
                 //TODO: should we handle boxes that aren't all unknown? do we gain anything from that?
                 if (isAllUnknown(box, board)) {
                     val wallBoundBox = WallBoundBox.fromBox(box, board)
-                    //TODO: handle walls == 1 or 3
+                    //TODO: handle walls == 1 or 3?  can this actually ever give us anything?
                     if (wallBoundBox.minWalls == wallBoundBox.maxWalls && wallBoundBox.minWalls == 2) {
                         val wbb2 = checkWalls2(wallBoundBox, board)
                         if (wbb2.applicable) return wbb2
@@ -130,7 +130,7 @@ class WallBoundBoxInternalStructure : Rule {
                 } else if (!couldBeWall.contains(Pair(rowOffset, colOffset)) && couldBeNonWall.contains(Pair(rowOffset, colOffset))) {
                     val rowIdx = wallBoundBox.box.minRow + rowOffset
                     val colIdx = wallBoundBox.box.minCol + colOffset
-                    val update = b.update(rowIdx, colIdx, board.grid[rowIdx][colIdx].types - CellType.WALL)
+                    val update = b.update(rowIdx, colIdx, board.grid.cells[rowIdx][colIdx].types - CellType.WALL)
                     if (!update.valid) {
                         return ApplyResult(true, true, name(), "", b)
                     }
@@ -144,14 +144,14 @@ class WallBoundBoxInternalStructure : Rule {
     }
 
     private fun hasAtLeastNPotentiallyEmptyNeighbors(row: Int, col: Int, n: Int, board: Board, box: Box): Boolean {
-        return neighbors(row, col, board.grid.size, board.grid[0].size)
+        return neighbors(row, col, board.grid.numRows, board.grid.numCols)
             .filter { !box.contains(it) }
-            .map{ board.grid[it.first][it.second] }
+            .map{ board.grid.cells[it.first][it.second] }
             .count{ !it.eq(CellType.WALL) } >= n
 
     }
 
     private fun isAllUnknown(box: Box, board: Board): Boolean {
-        return box.points().map{ board.grid[it.first][it.second] }.all { it.canBe(CellType.WALL) && it.canBe(CellType.TREASURE_ROOM, CellType.HALL) }
+        return box.points().map{ board.grid.cells[it.first][it.second] }.all { it.canBe(CellType.WALL) && it.canBe(CellType.TREASURE_ROOM, CellType.HALL) }
     }
 }

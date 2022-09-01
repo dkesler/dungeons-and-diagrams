@@ -9,7 +9,7 @@ class MonsterMayHaveAtMostOneHallway : Rule {
     //If a monster is adjacent to a hallway, every other neighbor must be wall
     override fun apply(board: Board): ApplyResult {
         for (monster in board.monsters) {
-            val neighborsWithTypes = neighborsWithTypes(monster.first, monster.second, board.grid)
+            val neighborsWithTypes = neighborsWithTypes(monster.first, monster.second, board.grid.cells)
             val numAdjacentHall = neighborsWithTypes.count{it.type.eq(CellType.HALL) }
             val adjacentUnknown = neighborsWithTypes.filter{it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.known }
             //If the monster has an adjacent empty, all other unknown neighbors must be wall
