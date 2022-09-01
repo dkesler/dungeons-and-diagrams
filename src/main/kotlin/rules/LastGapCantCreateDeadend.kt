@@ -57,13 +57,13 @@ class LastGapCantCreateDeadend: Rule {
     }
 
     private fun wouldBeDeadEndAsGap(rowIdx: Int, colIdx: Int, board: Board, checkingRow: Boolean): Boolean {
-        val verticalNeighbors = verticalNeighbors(rowIdx, colIdx, board.grid.numRows)
-        val horizontalNeighbors = horizontalNeighbors(rowIdx, colIdx, board.grid.numCols)
+        val verticalNeighbors = board.grid.verticalNeighbors(rowIdx, colIdx)
+        val horizontalNeighbors = board.grid.horizontalNeighbors(rowIdx, colIdx)
         val untouchedNeighbors = if (checkingRow) verticalNeighbors else horizontalNeighbors
         val touchedNeighbors = if (checkingRow) horizontalNeighbors else verticalNeighbors
 
-        val neighborWallCount = untouchedNeighbors.count{ board.grid.cells[it.first][it.second].eq(CellType.WALL) } +
-                touchedNeighbors.count{ board.grid.cells[it.first][it.second].canBe(CellType.WALL) }
+        val neighborWallCount = untouchedNeighbors.count{ it.type.eq(CellType.WALL) } +
+                touchedNeighbors.count{ it.type.canBe(CellType.WALL) }
 
         val neighborCount = untouchedNeighbors.count() + touchedNeighbors.count()
 

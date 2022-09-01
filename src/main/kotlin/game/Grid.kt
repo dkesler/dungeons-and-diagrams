@@ -31,4 +31,26 @@ class Grid(val cells: List<List<TypeRange>>) {
     fun neighbors(pt: Pair<Int, Int>): Set<Point> {
         return neighbors(pt.first, pt.second)
     }
+
+    fun horizontalNeighbors(row: Int, col: Int): Set<Point> {
+        val n = mutableSetOf<Pair<Int, Int>>()
+        if (col-1 >= 0) {
+            n.add(Pair(row, col-1))
+        }
+        if (col+1 < numCols) {
+            n.add(Pair(row, col+1))
+        }
+        return n.map{ Point(it.first, it.second, cells[it.first][it.second])}.toSet()
+    }
+
+    fun verticalNeighbors(row: Int, col: Int): Set<Point> {
+        val n = mutableSetOf<Pair<Int, Int>>()
+        if (row-1 >= 0) {
+            n.add(Pair(row-1, col))
+        }
+        if (row+1 < numRows) {
+            n.add(Pair(row+1, col))
+        }
+        return n.map{ Point(it.first, it.second, cells[it.first][it.second])}.toSet()
+    }
 }
