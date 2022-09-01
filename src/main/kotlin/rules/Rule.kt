@@ -1,6 +1,7 @@
 package rules
 
 import game.Board
+import game.Update
 import utils.Point
 
 interface Rule {
@@ -21,15 +22,20 @@ interface Rule {
     //each row/col
     //each 2x2
 
-    fun each(board: Board, filter: (Point) -> Boolean, callback: (Point) -> ApplyResult): ApplyResult {
-        board.grid.points().forEach { point ->
-            if (filter(point)) {
-                val r = callback(point)
-                if (r.applicable) return r
-            }
+    fun each(board: Board, filter: (Point) -> Boolean, callback: (Point) -> Check?): ApplyResult {
+        val check = board.grid.points().fold(null) { check: Check?, point ->
+            if (check != null) check
+            else if (!filter(point)) null
+            else callback(point)
         }
-        return ApplyResult(false, false, name(), "", board)
+        if (check == null) {
+            return ApplyResult(false, false, name(), "", board)
+        } else {
+            return ApplyResult(true, !check.update.valid, name(), check.description, check.update.board)
+        }
     }
+
+    data class Check(val update: Update, val description: String)
 }
 
 //Applicable:false means no part of the board matched the rule and we did not attempt to update

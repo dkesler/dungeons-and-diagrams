@@ -9,14 +9,14 @@ import utils.Point
 class AvoidCreatingDeadEnd : Rule {
     override fun name() = "AvoidCreatingDeadEnd"
     override fun apply(board: Board): ApplyResult {
-        fun rule(point: Point): ApplyResult {
+        fun rule(point: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(point.toPair())
             val wallNeighbors = neighbors.filter { it.type.eq(CellType.WALL) }
             if (wallNeighbors.count() >= neighbors.count()-1) {
                 val update = board.update(point.row, point.col, point.type.types - setOf(CellType.TREASURE_ROOM, CellType.HALL))
-                return ApplyResult(true, !update.valid, name(), ".row[${point.row}].col[${point.col}}]", update.board)
+                return Rule.Check(update, ".row[${point.row}].col[${point.col}}]")
             }
-            return ApplyResult(false, false, name(), "", board)
+            return null
         }
 
         return each(
