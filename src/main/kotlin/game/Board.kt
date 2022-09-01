@@ -19,8 +19,8 @@ class Board(
     }
 
     fun solved(): Boolean {
-        val rowsSatisfied = rowReqs.mapIndexed { index, req -> grid.row(index).count { it.eq(CellType.WALL) } == req }.all { it }
-        val colsSatisfied = colReqs.mapIndexed { index, req -> grid.col(index).count { it.eq(CellType.WALL) } == req }.all { it }
+        val rowsSatisfied = rowReqs.mapIndexed { index, req -> grid.row(index).count { it.type.eq(CellType.WALL) } == req }.all { it }
+        val colsSatisfied = colReqs.mapIndexed { index, req -> grid.col(index).count { it.type.eq(CellType.WALL) } == req }.all { it }
         val containsAnyUnknown = grid.cells.flatten().count { !it.known } > 0
         return rowsSatisfied && colsSatisfied && !containsAnyUnknown && isValid(grid, rowReqs, colReqs).first
     }
@@ -45,6 +45,34 @@ class Board(
         )
         return Update(isValid.first, isValid.second, board)
     }
+
+    fun update(toUpdate: Collection<Point>): Update {
+        //We cannot add types to cells, only remove them
+        for (point in toUpdate) {
+            if (!grid.cells[point.row][point.col].types.containsAll(point.type.types)) {
+                throw RuntimeException("Tried to add type(s) ${point.type.types - grid.cells[point.row][point.col]} to grid[${point.row}][${point.col}]")
+            }
+        }
+
+        //TODO: better way of doing this?
+        val newGrid = toMutable(grid.cells);
+        for (point in toUpdate) {
+            newGrid[point.row][point.col] = point.type
+        }
+
+        val isValid = isValid(Grid(newGrid), rowReqs, colReqs)
+        val board = Board(
+            rowReqs,
+            colReqs,
+            monsters,
+            treasures,
+            Grid(toImmutable(newGrid))
+        )
+        return Update(isValid.first, isValid.second, board)
+    }
+
+
+
 
 }
 

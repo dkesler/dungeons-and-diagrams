@@ -72,12 +72,12 @@ class Grid(val cells: List<List<TypeRange>>) {
         }
     }
 
-    fun row(rowIdx: Int): List<TypeRange> {
-        return cells[rowIdx]
+    fun row(rowIdx: Int): List<Point> {
+        return cols.map{ colIdx -> Point(rowIdx, colIdx, cells[rowIdx][colIdx]) }
     }
 
-    fun col(colIdx: Int): List<TypeRange> {
-        return cells.map{it[colIdx]}
+    fun col(colIdx: Int): List<Point> {
+        return rows.map{ rowIdx -> Point(rowIdx, colIdx, cells[rowIdx][colIdx]) }
     }
 
     fun subgrid(box: Box): List<List<Point>> {

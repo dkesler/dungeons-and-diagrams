@@ -1,6 +1,7 @@
 package rules
 
 import game.*
+import utils.Point
 
 //Given a row/col with exactly one gap to place, if placing a gap in a cell would make it a dead end, it must be a wall instead
 class LastGapCantCreateDeadend: Rule {
@@ -12,7 +13,7 @@ class LastGapCantCreateDeadend: Rule {
             if (gapsRemaining(board.rowReqs[rowIdx], row) == 1) {
                 val changeToWall = mutableSetOf<Pair<Int, Int>>()
                 for (colIdx in board.grid.cols) {
-                    if (!row[colIdx].known && row[colIdx].canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
+                    if (!row[colIdx].type.known && row[colIdx].type.canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
                         changeToWall.add(Pair(rowIdx, colIdx))
                     }
                 }
@@ -35,7 +36,7 @@ class LastGapCantCreateDeadend: Rule {
             if (gapsRemaining(board.colReqs[colIdx], col) == 1) {
                 val changeToWall = mutableSetOf<Pair<Int, Int>>()
                 for (rowIdx in board.grid.rows) {
-                    if (!col[rowIdx].known && col[rowIdx].canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, false)) {
+                    if (!col[rowIdx].type.known && col[rowIdx].type.canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, false)) {
                         changeToWall.add(Pair(rowIdx, colIdx))
                     }
                 }
@@ -70,9 +71,9 @@ class LastGapCantCreateDeadend: Rule {
         return neighborCount - neighborWallCount <= 1
     }
 
-    private fun gapsRemaining(wallsReqd: Int, line: List<TypeRange>): Int {
-        val wallsLeftToPlace = wallsReqd - line.count{ it.eq(CellType.WALL) }
-        val unknowns = line.count{!it.known}
+    private fun gapsRemaining(wallsReqd: Int, line: List<Point>): Int {
+        val wallsLeftToPlace = wallsReqd - line.count{ it.type.eq(CellType.WALL) }
+        val unknowns = line.count{!it.type.known}
         return unknowns - wallsLeftToPlace
     }
 }

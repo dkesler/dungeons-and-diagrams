@@ -10,8 +10,8 @@ class WallsExhausted : Rule {
     override fun apply(board: Board): ApplyResult {
         for (rIdx in board.grid.rows) {
             val row = board.grid.row(rIdx);
-            val rowWalls = row.filter{it.eq(CellType.WALL)}.count()
-            val rowPotentialWalls = row.filter{it.canBe(CellType.WALL) && !it.known}.count()
+            val rowWalls = row.filter{it.type.eq(CellType.WALL)}.count()
+            val rowPotentialWalls = row.filter{it.type.canBe(CellType.WALL) && !it.type.known}.count()
             if (rowWalls == board.rowReqs[rIdx] && rowPotentialWalls > 0) {
                 val result = unknownToFreeRow(rIdx, board)
                 return ApplyResult(true, result.first,name(), "${name()}.row[${rIdx}]", result.second)
@@ -20,8 +20,8 @@ class WallsExhausted : Rule {
 
         for (cIdx in board.grid.cols) {
             val col = board.grid.col(cIdx);
-            val colWalls = col.filter{it.eq(CellType.WALL)}.count()
-            val colPotentialWalls = col.filter{it.canBe(CellType.WALL) && !it.known}.count()
+            val colWalls = col.filter{it.type.eq(CellType.WALL)}.count()
+            val colPotentialWalls = col.filter{it.type.canBe(CellType.WALL) && !it.type.known}.count()
             if (colWalls == board.colReqs[cIdx] && colPotentialWalls > 0) {
                 val result = unknownToFreeCol(cIdx, board)
                 return ApplyResult(true, result.first,name(), "${name()}.col[${cIdx}]", result.second)
