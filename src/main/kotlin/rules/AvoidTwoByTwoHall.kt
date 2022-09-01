@@ -11,8 +11,8 @@ class AvoidTwoByTwoHall : Rule {
         for (row in (0 until board.grid.maxRow)) {
             for (col in (0 until board.grid.maxCol)) {
                 val box = Box(row, col, row + 1, col + 1)
-                val subGrid = board.subgrid(box).flatten()
-                if (subGrid.count{it.eq(CellType.HALL) } == 3 && subGrid.count{it.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.known} == 1) {
+                val subGrid = board.grid.subgrid(box).flatten()
+                if (subGrid.count{it.type.eq(CellType.HALL) } == 3 && subGrid.count{it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.known} == 1) {
                     return unknownToWall(box, board)
                 }
             }

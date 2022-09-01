@@ -8,7 +8,7 @@ class LastGapCantCreateDeadend: Rule {
 
     override fun apply(board: Board): ApplyResult {
         for (rowIdx in board.grid.rows) {
-            val row = board.row(rowIdx)
+            val row = board.grid.row(rowIdx)
             if (gapsRemaining(board.rowReqs[rowIdx], row) == 1) {
                 val changeToWall = mutableSetOf<Pair<Int, Int>>()
                 for (colIdx in board.grid.cols) {
@@ -31,7 +31,7 @@ class LastGapCantCreateDeadend: Rule {
         }
 
         for (colIdx in board.grid.cols) {
-            val col = board.col(colIdx)
+            val col = board.grid.col(colIdx)
             if (gapsRemaining(board.colReqs[colIdx], col) == 1) {
                 val changeToWall = mutableSetOf<Pair<Int, Int>>()
                 for (rowIdx in board.grid.rows) {

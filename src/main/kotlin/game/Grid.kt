@@ -1,5 +1,6 @@
 package game
 
+import utils.Box
 import utils.Point
 
 class Grid(val cells: List<List<TypeRange>>) {
@@ -68,6 +69,22 @@ class Grid(val cells: List<List<TypeRange>>) {
                     print("\u001b[42m\u001B[30m" + space.toChar() + "\u001B[0m")
             }
             println("")
+        }
+    }
+
+    fun row(rowIdx: Int): List<TypeRange> {
+        return cells[rowIdx]
+    }
+
+    fun col(colIdx: Int): List<TypeRange> {
+        return cells.map{it[colIdx]}
+    }
+
+    fun subgrid(box: Box): List<List<Point>> {
+        return (box.minRow..box.maxRow).map { row ->
+            (box.minCol..box.maxCol).map { col ->
+                Point(row, col, cells[row][col])
+            }
         }
     }
 }

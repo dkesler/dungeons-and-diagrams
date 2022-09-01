@@ -19,26 +19,10 @@ class Board(
     }
 
     fun solved(): Boolean {
-        val rowsSatisfied = rowReqs.mapIndexed { index, req -> row(index).filter{it.eq(CellType.WALL)}.count() == req }.all { it }
-        val colsSatisfied = colReqs.mapIndexed { index, req -> col(index).filter{it.eq(CellType.WALL)}.count() == req }.all { it }
+        val rowsSatisfied = rowReqs.mapIndexed { index, req -> grid.row(index).count { it.eq(CellType.WALL) } == req }.all { it }
+        val colsSatisfied = colReqs.mapIndexed { index, req -> grid.col(index).count { it.eq(CellType.WALL) } == req }.all { it }
         val containsAnyUnknown = grid.cells.flatten().count { !it.known } > 0
         return rowsSatisfied && colsSatisfied && !containsAnyUnknown && isValid(grid, rowReqs, colReqs).first
-    }
-
-    fun row(rowIdx: Int): List<TypeRange> {
-        return grid.cells[rowIdx]
-    }
-
-    fun col(colIdx: Int): List<TypeRange> {
-        return grid.cells.map{it[colIdx]}
-    }
-
-    fun subgrid(box: Box): List<List<TypeRange>> {
-        return (box.minRow..box.maxRow).map { row ->
-            (box.minCol..box.maxCol).map { col ->
-                grid.cells[row][col]
-            }
-        }
     }
 
     fun update(rowIdx: Int, colIdx: Int, typeRange: Set<CellType>): Update {

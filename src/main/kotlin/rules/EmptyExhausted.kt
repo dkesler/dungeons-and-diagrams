@@ -9,9 +9,9 @@ class EmptyExhausted : Rule {
     override fun name() = "EmptyExhausted"
     override fun apply(board: Board): ApplyResult {
         for (rIdx in board.grid.rows) {
-            val row = board.row(rIdx);
-            val rowWalls = row.filter{it.eq(CellType.WALL)}.count()
-            val rowPotentialWalls = row.filter{it.canBe(CellType.WALL) && !it.known}.count()
+            val row = board.grid.row(rIdx);
+            val rowWalls = row.count { it.eq(CellType.WALL) }
+            val rowPotentialWalls = row.count { it.canBe(CellType.WALL) && !it.known }
             if (rowPotentialWalls == board.rowReqs[rIdx] - rowWalls && rowPotentialWalls > 0) {
                 val update = unknownToWallRow(rIdx, board)
                 return ApplyResult(true, update.second,name(),"${name()}.row[${rIdx}]" , update.first)
@@ -19,9 +19,9 @@ class EmptyExhausted : Rule {
         }
 
         for (cIdx in board.grid.cols) {
-            val col = board.col(cIdx);
-            val colWalls = col.filter{it.eq(CellType.WALL)}.count()
-            val colPotentialWalls = col.filter{it.canBe(CellType.WALL) && !it.known}.count()
+            val col = board.grid.col(cIdx);
+            val colWalls = col.count { it.eq(CellType.WALL) }
+            val colPotentialWalls = col.count { it.canBe(CellType.WALL) && !it.known }
             if (colPotentialWalls == board.colReqs[cIdx] - colWalls && colPotentialWalls > 0) {
                 val update = unknownToWallCol(cIdx, board)
                 return ApplyResult(true, update.second,name(),"${name()}.col[${cIdx}]", update.first)

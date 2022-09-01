@@ -9,7 +9,7 @@ class WallsExhausted : Rule {
     override fun name() = "WallsExhausted"
     override fun apply(board: Board): ApplyResult {
         for (rIdx in board.grid.rows) {
-            val row = board.row(rIdx);
+            val row = board.grid.row(rIdx);
             val rowWalls = row.filter{it.eq(CellType.WALL)}.count()
             val rowPotentialWalls = row.filter{it.canBe(CellType.WALL) && !it.known}.count()
             if (rowWalls == board.rowReqs[rIdx] && rowPotentialWalls > 0) {
@@ -19,7 +19,7 @@ class WallsExhausted : Rule {
         }
 
         for (cIdx in board.grid.cols) {
-            val col = board.col(cIdx);
+            val col = board.grid.col(cIdx);
             val colWalls = col.filter{it.eq(CellType.WALL)}.count()
             val colPotentialWalls = col.filter{it.canBe(CellType.WALL) && !it.known}.count()
             if (colWalls == board.colReqs[cIdx] && colPotentialWalls > 0) {

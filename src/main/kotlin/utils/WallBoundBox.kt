@@ -22,7 +22,7 @@ data class WallBoundBox(val box: Box, val rowReqs: List<IntRange>, val colReqs: 
         fun fromBox(box: Box, board: Board): WallBoundBox {
             val rowReqs = mutableListOf<IntRange>()
             for (rowIdx in (box.minRow..box.maxRow)) {
-                val row = board.row(rowIdx)
+                val row = board.grid.row(rowIdx)
                 //if we cram as many walls elsewhere in the row, how many walls do we still need to put in the box
                 val wbbRowMin = board.rowReqs[rowIdx] - row.filterIndexed{ colIdx, space -> !box.contains(rowIdx, colIdx) && space.canBe(CellType.WALL)}.count()
                 //how many walls can we cram in the box.  it will be limited by the number of available slots in the row within the box
@@ -36,7 +36,7 @@ data class WallBoundBox(val box: Box, val rowReqs: List<IntRange>, val colReqs: 
 
             val colReqs = mutableListOf<IntRange>()
             for (colIdx in (box.minCol..box.maxCol)) {
-                val col = board.col(colIdx)
+                val col = board.grid.col(colIdx)
                 //if we cram as many walls elsewhere in the col, how many walls do we still need to put in the box
                 val wbbColMin = board.colReqs[colIdx] - col.filterIndexed{ rowIdx, space -> !box.contains(rowIdx, colIdx) && space.canBe(CellType.WALL)}.count()
                 //how many walls can we cram in the box.  it will be limited by the number of available slots in the col and the number of required walls for the col minus the number of placed walls
