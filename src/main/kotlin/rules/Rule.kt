@@ -21,9 +21,27 @@ interface Rule {
 
 
     //each monster
-    //each row/col
-    //each 2x2
     //each treasure?
+
+    fun eachRowAndCol(
+        board: Board,
+        rowCallback: (List<Point>, Int) -> Check?,
+        colCallback: (List<Point>, Int) -> Check?
+    ): ApplyResult {
+        val rowCheck = board.grid.rows.fold(null) { check: Check?, rowIdx ->
+            if (check != null) check
+            else rowCallback(board.grid.row(rowIdx), rowIdx)
+        }
+        if (rowCheck != null) {
+            return checkToApplyResult(rowCheck, board)
+        }
+
+        val colCheck = board.grid.cols.fold(null) { check: Check?, colIdx ->
+            if (check != null) check
+            else colCallback(board.grid.col(colIdx), colIdx)
+        }
+        return checkToApplyResult(colCheck, board)
+    }
 
     fun eachTwoByTwo(board: Board, callback: (Box) -> Check?): ApplyResult {
         val check = (0 until board.grid.maxRow).flatMap { rowIdx ->
