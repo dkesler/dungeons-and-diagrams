@@ -1,8 +1,10 @@
 package game
 
+import rules.ApplyResult
 import utils.Box
 import utils.Point
 import utils.TreasureRoom
+import java.util.function.Predicate
 
 class Board(
         val rowReqs: List<Int>,
@@ -70,10 +72,6 @@ class Board(
         )
         return Update(isValid.first, isValid.second, board)
     }
-
-
-
-
 }
 
 data class Update(val valid: Boolean, val invalidReason: String, val board: Board)

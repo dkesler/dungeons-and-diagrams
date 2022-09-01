@@ -14,6 +14,22 @@ interface Rule {
         }
         return ApplyResult(true, false, name(), description, update.board)
     }
+
+
+    //each monster
+    //each treasure
+    //each row/col
+    //each 2x2
+
+    fun each(board: Board, filter: (Point) -> Boolean, callback: (Point) -> ApplyResult): ApplyResult {
+        board.grid.points().forEach { point ->
+            if (filter(point)) {
+                val r = callback(point)
+                if (r.applicable) return r
+            }
+        }
+        return ApplyResult(false, false, name(), "", board)
+    }
 }
 
 //Applicable:false means no part of the board matched the rule and we did not attempt to update
