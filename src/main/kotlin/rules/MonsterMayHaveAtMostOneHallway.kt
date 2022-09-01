@@ -2,28 +2,27 @@ package rules
 
 import game.Board
 import game.CellType
+import game.TypeRange
+import utils.Point
 
 class MonsterMayHaveAtMostOneHallway : Rule {
     override fun name() = "MonsterMayHaveAtMostOneHallway"
     //If a monster is adjacent to a hallway, every other neighbor must be wall
+
     override fun apply(board: Board): ApplyResult {
-        for (monster in board.monsters) {
-            val neighborsWithTypes = board.grid.neighbors(monster.first, monster.second)
-            val numAdjacentHall = neighborsWithTypes.count{it.type.eq(CellType.HALL) }
-            val adjacentUnknown = neighborsWithTypes.filter{it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.known }
+
+        fun rule(monster: Point): Rule.Check? {
+            val neighbors = board.grid.neighbors(monster.row, monster.col)
+            val numAdjacentHall = neighbors.count{it.type.eq(CellType.HALL) }
+            val adjacentUnknown = neighbors.filter{it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.known }
             //If the monster has an adjacent empty, all other unknown neighbors must be wall
             if (numAdjacentHall == 1 && adjacentUnknown.isNotEmpty()) {
-                var b = board
-                for (point in adjacentUnknown) {
-                    val update = b.update(point.row, point.col, point.type.types - setOf(CellType.HALL, CellType.TREASURE_ROOM))
-                    if (!update.valid) {
-                        return ApplyResult(true, true, name(), "${name()}.row[${monster.first}].col[${monster.second}]", board)
-                    }
-                    b = update.board
-                }
-                return ApplyResult(true, false, name(), "${name()}.row[${monster.first}].col[${monster.second}]", b)
+                val toUpdate = adjacentUnknown.map{ Point(it.row, it.col, TypeRange(it.type.types - setOf(CellType.HALL, CellType.TREASURE_ROOM))) }
+                val update = board.update(toUpdate)
+                return Rule.Check(update, ".row[${monster.row}].col[${monster.col}]")
             }
+            return null
         }
-        return ApplyResult(false, false, name(), "", board)
+        return eachMonster(board, ::rule)
     }
 }
