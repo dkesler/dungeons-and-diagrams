@@ -2,7 +2,10 @@ package rules
 
 import game.Board
 import game.Update
+import game.findTreasureRoomStartingAt
+import utils.Box
 import utils.Point
+import utils.TreasureRoom
 
 interface Rule {
     fun apply(board: Board): ApplyResult
@@ -18,9 +21,34 @@ interface Rule {
 
 
     //each monster
-    //each treasure
     //each row/col
     //each 2x2
+    //each treasure?
+
+    fun eachTwoByTwo(board: Board, callback: (Box) -> Check?): ApplyResult {
+        val check = (0 until board.grid.maxRow).flatMap { rowIdx ->
+            (0 until board.grid.maxCol).map { colIdx ->
+                Box(rowIdx, colIdx, rowIdx+1, colIdx+1)
+            }
+        }.fold(null) { check: Check?, box ->
+            if (check != null) check
+            else callback(box)
+        }
+
+        return checkToApplyResult(check, board)
+    }
+
+    fun eachTreasureRoom(board: Board, callback: (TreasureRoom) -> Check?): ApplyResult {
+        val check = board.treasures
+            .map{ findTreasureRoomStartingAt(it.first, it.second, board.grid) }
+            .map{ TreasureRoom(Box.fromPoints(it)) }
+            .fold(null) { check: Check?, treasureRoom ->
+                if (check != null) check
+                else callback(treasureRoom)
+            }
+
+        return checkToApplyResult(check, board)
+    }
 
     fun each(board: Board, filter: (Point) -> Boolean, callback: (Point) -> Check?): ApplyResult {
         val check = board.grid.points().fold(null) { check: Check?, point ->
@@ -28,6 +56,10 @@ interface Rule {
             else if (!filter(point)) null
             else callback(point)
         }
+        return checkToApplyResult(check, board)
+    }
+
+    fun checkToApplyResult(check: Check?, board: Board): ApplyResult {
         if (check == null) {
             return ApplyResult(false, false, name(), "", board)
         } else {
