@@ -5,7 +5,6 @@ import SolverConfiguration
 import game.Board
 import game.Grid
 import game.TypeRange
-import game.draw
 import metrics.Step
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -32,7 +31,7 @@ abstract class BaseIntegrationTest {
             println("Solutions do not match.  Final solution:")
             solved.board.draw()
             println("Expected solution:")
-            draw(solved.board.rowReqs, solved.board.colReqs, solution, null)
+            solution.draw(solved.board.rowReqs, solved.board.colReqs, null)
             println("Diff:")
             solved.board.draw(solution)
             fail("Solutions did not match")

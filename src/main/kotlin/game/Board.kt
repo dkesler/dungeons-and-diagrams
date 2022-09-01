@@ -12,10 +12,10 @@ class Board(
         val grid: Grid
     ) {
     fun draw(prev: Grid) {
-        draw(rowReqs, colReqs, grid, prev)
+        grid.draw(rowReqs, colReqs, prev)
     }
     fun draw() {
-        draw(rowReqs, colReqs, grid, null)
+        grid.draw(rowReqs, colReqs, null)
     }
 
     fun solved(): Boolean {
@@ -296,21 +296,4 @@ private fun toMutable(l: List<List<TypeRange>>): MutableList<MutableList<TypeRan
 
 private fun toImmutable(l: MutableList<MutableList<TypeRange>>): List<List<TypeRange>> {
     return l.map{ it.toList()}.toList()
-}
-
-fun draw(rowReqs: List<Int>, colReqs: List<Int>, thisGrid: Grid, diffGrid: Grid?) {
-    print("\u001B[34m  ")
-    colReqs.forEach { print(it) }
-    println("")
-    thisGrid.cells.forEachIndexed{ rIdx, row ->
-        print("\u001B[34m" + rowReqs[rIdx] + "\u001B[0m")
-        print(" ")
-        row.forEachIndexed{ cIdx, space ->
-            if (diffGrid == null || space == diffGrid.cells[rIdx][cIdx])
-                print(space.toChar())
-            else
-                print("\u001b[42m\u001B[30m" + space.toChar() + "\u001B[0m")
-        }
-        println("")
-    }
 }

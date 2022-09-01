@@ -53,4 +53,21 @@ class Grid(val cells: List<List<TypeRange>>) {
         }
         return n.map{ Point(it.first, it.second, cells[it.first][it.second])}.toSet()
     }
+
+    fun draw(rowReqs: List<Int>, colReqs: List<Int>, diffGrid: Grid?) {
+        print("\u001B[34m  ")
+        colReqs.forEach { print(it) }
+        println("")
+        cells.forEachIndexed{ rIdx, row ->
+            print("\u001B[34m" + rowReqs[rIdx] + "\u001B[0m")
+            print(" ")
+            row.forEachIndexed{ cIdx, space ->
+                if (diffGrid == null || space == diffGrid.cells[rIdx][cIdx])
+                    print(space.toChar())
+                else
+                    print("\u001b[42m\u001B[30m" + space.toChar() + "\u001B[0m")
+            }
+            println("")
+        }
+    }
 }
