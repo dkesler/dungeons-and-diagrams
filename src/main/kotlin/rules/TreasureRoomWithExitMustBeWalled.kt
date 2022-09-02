@@ -8,9 +8,8 @@ import utils.TreasureRoom
 class TreasureRoomWithExitMustBeWalled : Rule {
     override fun name() = "TreasureRoomWithExitMustBeWalled"
     override fun apply(board: Board): ApplyResult {
-        for (treasure in board.treasures) {
-            val treasureRoomPoints = findTreasureRoomStartingAt(treasure.first, treasure.second, board.grid)
-            val treasureRoom = TreasureRoom(Box.fromPoints(treasureRoomPoints))
+
+        fun rule(treasureRoom: TreasureRoom): Rule.Check? {
             val treasureRoomNeighbors = getTreasureRoomNeighbors(treasureRoom, board.grid)
             val treasureRoomNeighborTypes = treasureRoomNeighbors.map{board.grid.cells[it.first][it.second]}
             //This treasure room has an exit.  if we cannot expand in a given direction, all unknown neighbors in that
@@ -39,20 +38,15 @@ class TreasureRoomWithExitMustBeWalled : Rule {
                     toUpdate.addAll(rightNeighbors.filter { !it.type.known })
                 }
                 if (toUpdate.isNotEmpty()) {
-                    var b = board
-                    for(point in toUpdate) {
-                        val update = b.update(point.row, point.col, setOf(CellType.WALL))
-                        if (!update.valid) {
-                            return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
-                        }
-                        b = update.board
-                    }
-                    return ApplyResult(true, false, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", b)
+                    val update = board.update(
+                        toUpdate.map{ Point(it.row, it.col, TypeRange(setOf(CellType.WALL))) }
+                    )
+                    return Rule.Check(update, ".row[${treasureRoom.box.minCol}].col[${treasureRoom.box.maxCol}]")
                 }
             }
-
+            return null
         }
 
-        return ApplyResult(false, false, name(), "", board)
+        return eachTreasureRoom(board, ::rule)
     }
 }
