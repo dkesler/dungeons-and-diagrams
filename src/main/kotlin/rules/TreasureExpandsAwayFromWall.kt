@@ -2,21 +2,22 @@ package rules
 
 import game.Board
 import game.CellType
-import game.findTreasureRoomStartingAt
+import game.TypeRange
 import utils.Box
+import utils.Point
 import utils.TreasureRoom
 
 class TreasureExpandsAwayFromWall : Rule {
     override fun name() = "TreasureExpandsAwayFromWall"
     override fun apply(board: Board): ApplyResult {
         //if a wall < 3 squares away from a treasure, the treasure room must expand away from the wall
-        for (treasure in board.treasures) {
+        fun rule(treasureRoom: TreasureRoom): Rule.Check? {
             val toUpdate = mutableSetOf<Pair<Int, Int>>()
-            val treasureRoomPoints = findTreasureRoomStartingAt(treasure.first, treasure.second, board.grid)
-            val box = Box.fromPoints(treasureRoomPoints)
-            val treasureRoom = TreasureRoom(box)
+            val box = treasureRoom.box
+            val treasureRoomPoints = box.points().toSet()
 
             //if we can't expand left, then we must expand right
+
             if (box.minCol == 0 || !allCanBeTreasureRoom(box.leftNeighbors(), board)) {
                 val newTreasureRoom = Box(treasureRoom.minRow, treasureRoom.minCol, treasureRoom.maxRow, treasureRoom.minCol+2)
                 val pointsToUpdate = (newTreasureRoom.points() - treasureRoomPoints)
@@ -68,21 +69,13 @@ class TreasureExpandsAwayFromWall : Rule {
                 toUpdate.addAll(pointsToUpdate)
             }
 
-
             if (toUpdate.isNotEmpty()) {
-                var b = board
-                for (point in toUpdate) {
-                    val update = b.update(point.first, point.second, setOf(CellType.TREASURE_ROOM))
-                    if (!update.valid) {
-                        return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
-                    }
-                    b = update.board
-                }
-                return ApplyResult(true, false, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", b)
+                val update = board.update(toUpdate.map { Point(it.first, it.second, TypeRange(setOf(CellType.TREASURE_ROOM))) })
+                return Rule.Check(update, ".row[${box.minRow}].col[${box.minCol}]")
             }
+            return null
         }
-
-        return ApplyResult(false, false, name(), "", board)
+        return eachTreasureRoom(board, ::rule)
     }
 
     private fun allCanBeTreasureRoom(neighbors: List<Pair<Int, Int>>, board: Board): Boolean {
