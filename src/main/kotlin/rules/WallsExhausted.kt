@@ -2,62 +2,38 @@ package rules
 
 import game.Board
 import game.CellType
+import game.TypeRange
+import utils.Point
 
 //If the total number of walls in a row or column matches the number of walls required, every other CellType
 //in that row or column must be free
 class WallsExhausted : Rule {
     override fun name() = "WallsExhausted"
     override fun apply(board: Board): ApplyResult {
-        for (rIdx in board.grid.rows) {
-            val row = board.grid.row(rIdx);
-            val rowWalls = row.filter{it.type.eq(CellType.WALL)}.count()
-            val rowPotentialWalls = row.filter{it.type.canBe(CellType.WALL) && !it.type.known}.count()
-            if (rowWalls == board.rowReqs[rIdx] && rowPotentialWalls > 0) {
-                val result = unknownToFreeRow(rIdx, board)
-                return ApplyResult(true, result.first,name(), "${name()}.row[${rIdx}]", result.second)
+
+        fun rowRule(row: List<Point>, rowIdx: Int): Rule.Check? {
+            val rowWalls = row.count { it.type.eq(CellType.WALL) }
+            val rowPotentialWalls = row.count { it.type.canBe(CellType.WALL) && !it.type.known }
+            if (rowWalls == board.rowReqs[rowIdx] && rowPotentialWalls > 0) {
+                val toUpdate = row.filter{ it.type.canBe(CellType.WALL) && !it.type.known }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
+                val update = board.update(toUpdate)
+                return Rule.Check(update, ".row[$rowIdx]")
             }
+            return null
         }
 
-        for (cIdx in board.grid.cols) {
-            val col = board.grid.col(cIdx);
-            val colWalls = col.filter{it.type.eq(CellType.WALL)}.count()
-            val colPotentialWalls = col.filter{it.type.canBe(CellType.WALL) && !it.type.known}.count()
-            if (colWalls == board.colReqs[cIdx] && colPotentialWalls > 0) {
-                val result = unknownToFreeCol(cIdx, board)
-                return ApplyResult(true, result.first,name(), "${name()}.col[${cIdx}]", result.second)
+        fun colRule(col: List<Point>, colIdx: Int): Rule.Check? {
+            val colWalls = col.count { it.type.eq(CellType.WALL) }
+            val colPotentialWalls = col.count { it.type.canBe(CellType.WALL) && !it.type.known }
+            if (colWalls == board.colReqs[colIdx] && colPotentialWalls > 0) {
+                val toUpdate = col.filter{ it.type.canBe(CellType.WALL) && !it.type.known }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
+                val update = board.update(toUpdate)
+                return Rule.Check(update, ".col[$colIdx]")
             }
+            return null
         }
-
-        return ApplyResult(false, false,name(),"", board);
-    }
-
-    private fun unknownToFreeRow(rIdx: Int, board: Board): Pair<Boolean, Board> {
-        var b = board
-        for (cIdx in board.grid.cells[rIdx].indices) {
-            val cell = b.grid.cells[rIdx][cIdx]
-            if (cell.canBe(CellType.WALL) && !cell.known) {
-                val update = b.update(rIdx, cIdx, cell.types - CellType.WALL)
-                if (!update.valid) {
-                    return Pair(true, b)
-                }
-                b = update.board
-            }
-        }
-        return Pair(false, b)
-    }
-
-    private fun unknownToFreeCol(cIdx: Int, board: Board): Pair<Boolean, Board> {
-        var b = board
-        for (rIdx in board.grid.rows) {
-            val cell = b.grid.cells[rIdx][cIdx]
-            if (cell.canBe(CellType.WALL) && !cell.known) {
-                val update = b.update(rIdx, cIdx, cell.types - CellType.WALL)
-                if (!update.valid) {
-                    return Pair(true, b)
-                }
-                b = update.board
-            }
-        }
-        return Pair(false, b)
+        return eachRowAndCol(board, ::rowRule, ::colRule)
     }
 }
