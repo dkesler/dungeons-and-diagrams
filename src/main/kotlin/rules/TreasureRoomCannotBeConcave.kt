@@ -2,8 +2,10 @@ package rules
 
 import game.Board
 import game.CellType
+import game.TypeRange
 import game.findTreasureRoomStartingAt
 import utils.Box
+import utils.Point
 
 class TreasureRoomCannotBeConcave : Rule {
     override fun name() = "TreasureRoomCannotBeConcave"
@@ -15,15 +17,8 @@ class TreasureRoomCannotBeConcave : Rule {
             val toUpdate = treasureRoomBoxPoints - treasureRoomPoints
 
             if (toUpdate.isNotEmpty()) {
-                var b = board
-                for (point in toUpdate) {
-                    val update = b.update(point.first, point.second, setOf(CellType.TREASURE_ROOM))
-                    if (!update.valid) {
-                        return ApplyResult(true, true, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", board)
-                    }
-                    b = update.board
-                }
-                return ApplyResult(true, false, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", b)
+                val update = board.update( toUpdate.map{ Point(it.first, it.second, TypeRange(setOf(CellType.TREASURE_ROOM))) })
+                return ApplyResult(true, !update.valid, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", update.board)
             }
         }
 
