@@ -18,7 +18,7 @@ class WallsExhausted : Rule {
                 val toUpdate = row.filter{ it.type.canBe(CellType.WALL) && !it.type.known }
                     .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
                 val update = board.update(toUpdate)
-                return Rule.Check(update, ".row[$rowIdx]")
+                return Rule.Check(update, "row[$rowIdx]")
             }
             return null
         }
@@ -30,7 +30,7 @@ class WallsExhausted : Rule {
                 val toUpdate = col.filter{ it.type.canBe(CellType.WALL) && !it.type.known }
                     .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
                 val update = board.update(toUpdate)
-                return Rule.Check(update, ".col[$colIdx]")
+                return Rule.Check(update, "col[$colIdx]")
             }
             return null
         }

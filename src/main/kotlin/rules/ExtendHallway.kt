@@ -16,7 +16,7 @@ class ExtendHallway : Rule {
                 neighbors.count{it.type.canBe(CellType.WALL)} > neighbors.count()-2) {
                 val toUpdate = neighbors.filter{it.type.canBe(CellType.WALL) && !it.type.known }
                     .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
-                return Rule.Check(board.update(toUpdate), ".row[${point.row}]col[${point.col}]")
+                return Rule.Check(board.update(toUpdate), "row[${point.row}]col[${point.col}]")
             }
             return null
         }

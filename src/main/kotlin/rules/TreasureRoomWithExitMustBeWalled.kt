@@ -41,7 +41,7 @@ class TreasureRoomWithExitMustBeWalled : Rule {
                     val update = board.update(
                         toUpdate.map{ Point(it.row, it.col, TypeRange(setOf(CellType.WALL))) }
                     )
-                    return Rule.Check(update, ".row[${treasureRoom.box.minCol}].col[${treasureRoom.box.maxCol}]")
+                    return Rule.Check(update, "row[${treasureRoom.box.minCol}].col[${treasureRoom.box.maxCol}]")
                 }
             }
             return null

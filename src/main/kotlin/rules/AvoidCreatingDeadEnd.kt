@@ -14,7 +14,7 @@ class AvoidCreatingDeadEnd : Rule {
             val wallNeighbors = neighbors.filter { it.type.eq(CellType.WALL) }
             if (wallNeighbors.count() >= neighbors.count()-1) {
                 val update = board.update(point.row, point.col, point.type.types - setOf(CellType.TREASURE_ROOM, CellType.HALL))
-                return Rule.Check(update, ".row[${point.row}].col[${point.col}}]")
+                return Rule.Check(update, "row[${point.row}].col[${point.col}}]")
             }
             return null
         }

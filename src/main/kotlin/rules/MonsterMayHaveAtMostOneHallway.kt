@@ -19,7 +19,7 @@ class MonsterMayHaveAtMostOneHallway : Rule {
             if (numAdjacentHall == 1 && adjacentUnknown.isNotEmpty()) {
                 val toUpdate = adjacentUnknown.map{ Point(it.row, it.col, TypeRange(it.type.types - setOf(CellType.HALL, CellType.TREASURE_ROOM))) }
                 val update = board.update(toUpdate)
-                return Rule.Check(update, ".row[${monster.row}].col[${monster.col}]")
+                return Rule.Check(update, "row[${monster.row}].col[${monster.col}]")
             }
             return null
         }

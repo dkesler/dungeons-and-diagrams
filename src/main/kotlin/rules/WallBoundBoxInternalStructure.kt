@@ -20,7 +20,7 @@ class WallBoundBoxInternalStructure : Rule {
                 if (wallBoundBox.minWalls == wallBoundBox.maxWalls && wallBoundBox.minWalls == 2) {
                     val toUpdate = checkWalls2(wallBoundBox, board)
                     if (toUpdate.isNotEmpty()) {
-                        return Rule.Check(board.update(toUpdate), ".row[${wallBoundBox.box.minRow}].col[${wallBoundBox.box.minCol}")
+                        return Rule.Check(board.update(toUpdate), "row[${wallBoundBox.box.minRow}].col[${wallBoundBox.box.minCol}")
                     }
                 }
             }

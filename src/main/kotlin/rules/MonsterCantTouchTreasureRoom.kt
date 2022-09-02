@@ -15,7 +15,7 @@ class MonsterCantTouchTreasureRoom : Rule {
             if (neighbors.any { it.type.canBe(CellType.TREASURE_ROOM)}) {
                 val toUpdate = neighbors.filter {it.type.canBe(CellType.TREASURE_ROOM) }
                     .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.TREASURE_ROOM)) }
-                return Rule.Check(board.update(toUpdate), ".row[${monster.row}].col[${monster.col}]")
+                return Rule.Check(board.update(toUpdate), "row[${monster.row}].col[${monster.col}]")
             }
             return null
         }

@@ -16,7 +16,7 @@ class MonsterRequiresHallway : Rule {
             //be a hall, it must be a hall
             if (numAdjacentHall == 0 && adjacentPossibleHall.count() == 1) {
                 val toUpdate = adjacentPossibleHall.map{ Point(it.row, it.col, TypeRange(setOf(CellType.HALL))) }
-                return Rule.Check(board.update(toUpdate), ".row[${monster.row}].col[${monster.col}]")
+                return Rule.Check(board.update(toUpdate), "row[${monster.row}].col[${monster.col}]")
             }
             return null
         }

@@ -71,7 +71,7 @@ class TreasureExpandsAwayFromWall : Rule {
 
             if (toUpdate.isNotEmpty()) {
                 val update = board.update(toUpdate.map { Point(it.first, it.second, TypeRange(setOf(CellType.TREASURE_ROOM))) })
-                return Rule.Check(update, ".row[${box.minRow}].col[${box.minCol}]")
+                return Rule.Check(update, "row[${box.minRow}].col[${box.minCol}]")
             }
             return null
         }

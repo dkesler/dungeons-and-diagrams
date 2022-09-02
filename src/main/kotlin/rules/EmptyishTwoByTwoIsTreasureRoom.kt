@@ -16,7 +16,7 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
             if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
                 val toUpdate = subGrid.filter { it.type.canBe(CellType.HALL) }
                     .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALL)) }
-                return Rule.Check(board.update(toUpdate), ".row[${box.minRow}].col[${box.minCol}]")
+                return Rule.Check(board.update(toUpdate), "row[${box.minRow}].col[${box.minCol}]")
             }
             return null
         }

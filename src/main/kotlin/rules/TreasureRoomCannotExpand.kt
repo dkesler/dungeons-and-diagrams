@@ -46,7 +46,7 @@ class TreasureRoomCannotExpand : Rule {
                 val update = board.update(
                     toUpdate.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.TREASURE_ROOM)) }
                 )
-                return Rule.Check(update, ".row[${treasureRoom.box.minRow}].col[${treasureRoom.box.minCol}]")
+                return Rule.Check(update, "row[${treasureRoom.box.minRow}].col[${treasureRoom.box.minCol}]")
             }
 
             return null

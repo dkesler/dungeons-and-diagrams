@@ -17,7 +17,7 @@ class AvoidTwoByTwoHall : Rule {
                     board.update(
                         toUpdate.row, toUpdate.col, toUpdate.type.types - setOf(CellType.HALL, CellType.TREASURE_ROOM)
                     ),
-                    ".row[${toUpdate.row}].col[${toUpdate.col}]"
+                    "row[${toUpdate.row}].col[${toUpdate.col}]"
                 )
             }
             return null

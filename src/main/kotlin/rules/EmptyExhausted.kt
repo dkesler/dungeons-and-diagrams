@@ -18,7 +18,7 @@ class EmptyExhausted : Rule {
                 if (rowPotentialWalls.size == board.rowReqs[rowIdx] - rowWalls && rowPotentialWalls.isNotEmpty()) {
                     val toUpdate = rowPotentialWalls.map { Point(it.row, it.col, TypeRange(setOf(CellType.WALL))) }
                     val update = board.update(toUpdate)
-                    Rule.Check(update, ".row[${rowIdx}]")
+                    Rule.Check(update, "row[${rowIdx}]")
                 } else {
                     null
                 }
@@ -29,7 +29,7 @@ class EmptyExhausted : Rule {
                 if (colPotentialWalls.size == board.colReqs[colIdx] - colWalls && colPotentialWalls.isNotEmpty()) {
                     val toUpdate = colPotentialWalls.map{ Point(it.row, it.col, TypeRange(setOf(CellType.WALL))) }
                     val update = board.update(toUpdate)
-                    Rule.Check(update, ".col[${colIdx}]")
+                    Rule.Check(update, "col[${colIdx}]")
                 } else {
                     null
                 }

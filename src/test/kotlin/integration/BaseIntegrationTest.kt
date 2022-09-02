@@ -2,11 +2,9 @@ package integration
 
 import Loader
 import SolverConfiguration
-import game.Board
 import game.Grid
 import game.TypeRange
 import metrics.Step
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.fail
 import solve
@@ -39,8 +37,8 @@ abstract class BaseIntegrationTest {
     }
 
     private fun printSolveMetrics(steps: List<Step>) {
-        data class Inference(var timesEvaluated: Int, var timesApplied: Int, var timeSpentMs: Long){}
-        val inferencesByName = mutableMapOf<String, Inference>()
+        data class Deduction(var timesEvaluated: Int, var timesApplied: Int, var timeSpentMs: Long){}
+        val deductionsByName = mutableMapOf<String, Deduction>()
         val stepsToAccumulate = mutableListOf<Step>()
         stepsToAccumulate.addAll(steps)
         var totalBifurcations = 0
@@ -52,13 +50,13 @@ abstract class BaseIntegrationTest {
             val step = stepsToAccumulate.first()
             stepsToAccumulate.remove(step)
             for (eval in step.evaluations) {
-                if (eval.rule !in inferencesByName) {
-                    inferencesByName[eval.rule] = Inference(0, 0, 0)
+                if (eval.rule !in deductionsByName) {
+                    deductionsByName[eval.rule] = Deduction(0, 0, 0)
                 }
-                inferencesByName[eval.rule]!!.timesEvaluated += 1
-                inferencesByName[eval.rule]!!.timeSpentMs += eval.timeElapsedMs
+                deductionsByName[eval.rule]!!.timesEvaluated += 1
+                deductionsByName[eval.rule]!!.timeSpentMs += eval.timeElapsedMs
                 totalEvalTimeMs += eval.timeElapsedMs
-                if (eval.applied) inferencesByName[eval.rule]!!.timesApplied += 1
+                if (eval.applied) deductionsByName[eval.rule]!!.timesApplied += 1
             }
             if (step.bifurcation != null) {
                 stepsToAccumulate.addAll(step.bifurcation!!.steps)
@@ -68,13 +66,17 @@ abstract class BaseIntegrationTest {
             }
         }
 
-        val totalInferences = inferencesByName.values.sumOf { it.timesApplied }
-        println("Total Inferences Applied: $totalInferences")
+        val totalInferences = deductionsByName.values.sumOf { it.timesApplied }
+        println("Total Deductions Applied: $totalInferences")
         println("Total Eval Time Millis: $totalEvalTimeMs")
-        println("Inferences: (name, evaluated, applied, duration)")
-        for (inference in inferencesByName) {
-            println("${inference.key}, ${inference.value.timesEvaluated}, ${inference.value.timesApplied}, ${inference.value.timeSpentMs}")
+        println("Deduction Stats:")
+        val rowFormat = "|%-35s|%-10s|%-10s|%-15s|"
+        println(rowFormat.format("Name", "Applied", "Evaluated", "Duration (ms)"))
+        for (deduction in deductionsByName) {
+            println(rowFormat.format(deduction.key, deduction.value.timesApplied, deduction.value.timesEvaluated, deduction.value.timeSpentMs))
         }
+
+        println("")
         println("Total Bifurcations: $totalBifurcations")
         println("Total Bifurcation Probes: $totalBifurcationProbes")
         println("Time Wasted Bifurcating: $timeWastedBifurcatingMs")

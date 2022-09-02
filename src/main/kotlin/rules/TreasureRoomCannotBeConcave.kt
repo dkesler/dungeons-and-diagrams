@@ -18,7 +18,7 @@ class TreasureRoomCannotBeConcave : Rule {
 
             if (toUpdate.isNotEmpty()) {
                 val update = board.update( toUpdate.map{ Point(it.first, it.second, TypeRange(setOf(CellType.TREASURE_ROOM))) })
-                return ApplyResult(true, !update.valid, name(), "${name()}.row[${treasure.first}].col[${treasure.second}]", update.board)
+                return ApplyResult(true, !update.valid, name(), "row[${treasure.first}].col[${treasure.second}]", update.board)
             }
         }
 

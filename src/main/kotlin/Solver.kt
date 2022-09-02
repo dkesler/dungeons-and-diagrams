@@ -65,7 +65,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
             steps.add(Step(evaluations, null))
             val prev = b
             b = applyResult.newBoard
-            println("Applying rule: ${applyResult.description}")
+            println("Applying rule: ${applyResult.rule}.${applyResult.description}")
             b.draw(prev.grid)
             println("")
         }

@@ -19,7 +19,7 @@ class LastGapCantCreateDeadend: Rule {
                 }
 
                 if (changeToWall.isNotEmpty()) {
-                    return Rule.Check(board.update(changeToWall), ".row[$rowIdx]");
+                    return Rule.Check(board.update(changeToWall), "row[$rowIdx]");
                 }
             }
             return null
@@ -34,7 +34,7 @@ class LastGapCantCreateDeadend: Rule {
                     }
                 }
                 if (changeToWall.isNotEmpty()) {
-                    return Rule.Check(board.update(changeToWall), ".col[$colIdx]")
+                    return Rule.Check(board.update(changeToWall), "col[$colIdx]")
                 }
             }
             return null
