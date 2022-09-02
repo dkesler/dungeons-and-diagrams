@@ -2,37 +2,35 @@ package rules
 
 import game.Board
 import game.CellType
+import game.TypeRange
 import utils.Box
+import utils.Point
 import utils.WallBoundBox
 
 class WallBoundBoxInternalStructure : Rule {
     override fun name() = "WallBoundBoxInternalStructure"
+    //for each 2x2 of unknowns, determine if they are wall-bound (i.e. require exactly 1, 2, or 3 walls)
+    //if wall bound, check each possible layout given required number of walls.  if a cell is the same type in
+    //each layout, make it that type
     override fun apply(board: Board): ApplyResult {
-        //for each 2x2 of unknowns, determine if they are wall-bound (i.e. require exactly 1, 2, or 3 walls)
-        //if wall bound, check each possible layout given required number of walls.  if a cell is the same type in
-        //each layout, make it that type
-
-        for (row in (0 until board.grid.numRows-1)) {
-            for (col in (0 until board.grid.numCols-1)) {
-                val box = Box(row, col, row+1, col+1)
-                //TODO: should we handle boxes that aren't all unknown? do we gain anything from that?
-                if (isAllUnknown(box, board)) {
-                    val wallBoundBox = WallBoundBox.fromBox(box, board)
-                    //TODO: handle walls == 1 or 3?  can this actually ever give us anything?
-                    if (wallBoundBox.minWalls == wallBoundBox.maxWalls && wallBoundBox.minWalls == 2) {
-                        val wbb2 = checkWalls2(wallBoundBox, board)
-                        if (wbb2.applicable) return wbb2
+        fun rule(box: Box): Rule.Check? {
+            if (isAllUnknown(box, board)) {
+                val wallBoundBox = WallBoundBox.fromBox(box, board)
+                //TODO: handle walls == 1 or 3?  can this actually ever give us anything?
+                if (wallBoundBox.minWalls == wallBoundBox.maxWalls && wallBoundBox.minWalls == 2) {
+                    val toUpdate = checkWalls2(wallBoundBox, board)
+                    if (toUpdate.isNotEmpty()) {
+                        return Rule.Check(board.update(toUpdate), ".row[${wallBoundBox.box.minRow}].col[${wallBoundBox.box.minCol}")
                     }
                 }
             }
+            return null
         }
-
-        return ApplyResult(false, false, name(), "", board)
+        return eachTwoByTwo(board, ::rule)
     }
 
-    //check each of the 6 layouts of 2 walls.  if, in each layout, a cell is always the same value, update it to
-    //that value.  if no cell can be updated, return applicable=false
-    private fun checkWalls2(wallBoundBox: WallBoundBox, board: Board): ApplyResult {
+    //check each of the 6 layouts of 2 walls.  if, in each layout, a cell is always the same value, return that point
+    private fun checkWalls2(wallBoundBox: WallBoundBox, board: Board): Set<Point> {
         val couldBeWall = mutableSetOf<Pair<Int, Int>>()
         val couldBeNonWall = mutableSetOf<Pair<Int, Int>>()
 
@@ -114,32 +112,25 @@ class WallBoundBoxInternalStructure : Rule {
 
         val updatePossible = couldBeWall != couldBeNonWall
         if (!updatePossible) {
-            return ApplyResult(false, false, name(), "", board)
+            return setOf()
         }
 
-        var b = board
+        val toUpdate = mutableSetOf<Point>()
         for (rowOffset in (0..1)) {
             for (colOffset in (0..1)) {
                 if (couldBeWall.contains(Pair(rowOffset, colOffset)) && !couldBeNonWall.contains(Pair(rowOffset, colOffset))) {
-                    val update = b.update(wallBoundBox.box.minRow+rowOffset, wallBoundBox.box.minCol+colOffset, setOf(CellType.WALL))
-                    if (!update.valid) {
-                        return ApplyResult(true, true, name(), "", b)
-                    }
-                    b = update.board
+                    val rowIdx = wallBoundBox.box.minRow + rowOffset
+                    val colIdx = wallBoundBox.box.minCol + colOffset
+                    toUpdate.add(Point(rowIdx, colIdx, TypeRange(setOf(CellType.WALL))))
                 } else if (!couldBeWall.contains(Pair(rowOffset, colOffset)) && couldBeNonWall.contains(Pair(rowOffset, colOffset))) {
                     val rowIdx = wallBoundBox.box.minRow + rowOffset
                     val colIdx = wallBoundBox.box.minCol + colOffset
-                    val update = b.update(rowIdx, colIdx, board.grid.cells[rowIdx][colIdx].types - CellType.WALL)
-                    if (!update.valid) {
-                        return ApplyResult(true, true, name(), "", b)
-                    }
-                    b = update.board
+                    toUpdate.add(Point(rowIdx, colIdx, TypeRange(board.grid.cells[rowIdx][colIdx].types - CellType.WALL)))
                 }
 
             }
         }
-        return ApplyResult(true, false, name(), "${name()}.row[${wallBoundBox.box.minRow}].col[${wallBoundBox.box.minCol}]", b)
-
+        return toUpdate.toSet()
     }
 
     private fun hasAtLeastNPotentiallyEmptyNeighbors(row: Int, col: Int, n: Int, board: Board, box: Box): Boolean {
