@@ -28,6 +28,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         MonsterMayHaveAtMostOneHallway(),
         TreasureRoomCannotBeConcave(),
         EmptyCannotDeadend(),
+        EmptyCannotBeIsolated(),
         AvoidCreatingDeadEnd(),
         AvoidTwoByTwoHall(),
         LastGapCantCreateDeadend(),

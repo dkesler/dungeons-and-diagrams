@@ -62,7 +62,7 @@ class LastGapCantCreateDeadend: Rule {
 
     private fun gapsRemaining(wallsReqd: Int, line: List<Point>): Int {
         val wallsLeftToPlace = wallsReqd - line.count{ it.type.eq(CellType.WALL) }
-        val unknowns = line.count{!it.type.known}
-        return unknowns - wallsLeftToPlace
+        val unknownsThatCouldBeWall = line.count{it.type.canBe(CellType.WALL) && !it.type.known}
+        return unknownsThatCouldBeWall - wallsLeftToPlace
     }
 }
