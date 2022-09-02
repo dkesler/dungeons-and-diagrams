@@ -5,13 +5,13 @@ import game.CellType
 import game.TypeRange
 import utils.Point
 
-class ExtendHallway : Rule {
-    override fun name() = "ExtendHallway"
+//if an empty space ever has neighbors.count()-1 walls, it would be a dead end.  so if it has neighbors.count()-2 walls
+//as neighbors, and it has more neighbors that might be walls but aren't known, those neighbors can't be walls
+class EmptyCannotDeadend : Rule {
+    override fun name() = "EmptyCannotDeadend"
     override fun apply(board: Board): ApplyResult {
         fun rule(point: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(point.row, point.col)
-            //if a hallway ever has neighbors.count()-1 walls, it would be a dead end.  so if it has neighbors.count()-2 walls
-            //as neighbors, and it has more neighbors that might be walls but aren't known, those neighbors can't be walls
             if (neighbors.count{it.type.eq(CellType.WALL) } == neighbors.count()-2 &&
                 neighbors.count{it.type.canBe(CellType.WALL)} > neighbors.count()-2) {
                 val toUpdate = neighbors.filter{it.type.canBe(CellType.WALL) && !it.type.known }
@@ -23,7 +23,7 @@ class ExtendHallway : Rule {
 
         return each(
             board,
-            { it.type.eq(CellType.HALL) },
+            { it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.canBe(CellType.WALL) },
             ::rule
         )
     }
