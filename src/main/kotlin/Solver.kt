@@ -49,7 +49,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
     while(!b.solved()) {
         val (applyResult, evaluations) = applyRules(b, rules)
         if (applyResult.contradiction) {
-            println("Contradiction found when applying rule ${applyResult.description}, no solution possible")
+            println("Contradiction found when applying rule ${applyResult.rule}.${applyResult.description}, no solution possible")
             steps.add(Step(evaluations, null))
             return Solve(b, false, steps)
         }

@@ -11,7 +11,7 @@ class TreasureRoomWithExitMustBeWalled : Rule {
 
         fun rule(treasureRoom: TreasureRoom): Rule.Check? {
             val treasureRoomHorizontalNeighbors = treasureRoom.box.leftNeighbors() + treasureRoom.box.rightNeighbors(board.grid.numCols)
-            val treasureRoomVerticalNeighbors = treasureRoom.box.leftNeighbors() + treasureRoom.box.rightNeighbors(board.grid.numCols)
+            val treasureRoomVerticalNeighbors = treasureRoom.box.upNeighbors() + treasureRoom.box.downNeighbors(board.grid.numRows)
             val treasureRoomNeighbors = treasureRoomHorizontalNeighbors + treasureRoomVerticalNeighbors
             val treasureRoomNeighborTypes = treasureRoomNeighbors.map{board.grid.cells[it.first][it.second]}
             //This treasure room has an exit.  if we cannot expand in a given direction, all unknown neighbors in that

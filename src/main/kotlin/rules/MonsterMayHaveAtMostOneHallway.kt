@@ -13,8 +13,8 @@ class MonsterMayHaveAtMostOneHallway : Rule {
 
         fun rule(monster: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(monster.row, monster.col)
-            val numAdjacentHall = neighbors.count{it.type.eq(CellType.HALL) }
-            val adjacentUnknown = neighbors.filter{it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.known }
+            val numAdjacentHall = neighbors.count{!it.type.canBe(CellType.WALL) }
+            val adjacentUnknown = neighbors.filter{it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && it.type.canBe(CellType.WALL) && !it.type.known }
             //If the monster has an adjacent empty, all other unknown neighbors must be wall
             if (numAdjacentHall == 1 && adjacentUnknown.isNotEmpty()) {
                 val toUpdate = adjacentUnknown.map{ Point(it.row, it.col, TypeRange(it.type.types - setOf(CellType.HALL, CellType.TREASURE_ROOM))) }
