@@ -33,12 +33,14 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         AvoidTwoByTwoHall(),
         LastGapCantCreateDeadend(),
         TreasureRoomWithExitMustBeWalled(),
-        MonsterCantTouchTreasureRoom(),
-        TreasureRoomCannotExpand(),
         TreasureExpandsAwayFromWall(),
         EmptyishTwoByTwoIsTreasureRoom(),
+
         WallBoundBoxInternalStructure(),
+
         AllTreasureRoomsComplete(),
+        TreasureRoomCannotExpand(),
+        MonsterCantTouchTreasureRoom(),
         CantReachTreasure(),
     )
     var b = board

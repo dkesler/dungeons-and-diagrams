@@ -9,6 +9,15 @@ data class Box(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: In
         return contains(point.first, point.second)
     }
 
+    fun containsRow(rowIdx: Int): Boolean {
+        return rowIdx in minRow..maxRow
+    }
+
+    fun containsCol(colIdx: Int): Boolean {
+        return colIdx in minCol..maxCol
+    }
+
+
     fun points(): List<Pair<Int, Int>> {
         return (minRow..maxRow).flatMap { row ->
             (minCol..maxCol).map{ col ->

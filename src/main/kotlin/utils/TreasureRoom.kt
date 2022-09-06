@@ -79,6 +79,17 @@ class TreasureRoom(val box: Box) {
             return true
         }
 
+        //if the resulting number of empty cells in any row is greater than the max possible, we can't expand left
+        for (rowIdx in (augmentedRoom.minRow..augmentedRoom.maxRow)) {
+            val maxEmptiesPossibleInRow = board.grid.numCols - board.rowReqs[rowIdx]
+            val emptiesKnownInRow = board.grid.row(rowIdx)
+                .count{ !augmentedRoom.containsCol(it.col) && !it.type.canBe(CellType.WALL) } +
+                    augmentedRoom.width()
+            if (emptiesKnownInRow > maxEmptiesPossibleInRow) {
+                return true
+            }
+        }
+
         return false
     }
 
@@ -133,6 +144,17 @@ class TreasureRoom(val box: Box) {
 
         if (cellsThatCanBeWallsInColRight < board.colReqs[augmentedRoom.maxCol]) {
             return true
+        }
+
+        //if the resulting number of empty cells in any row is greater than the max possible, we can't expand right
+        for (rowIdx in (augmentedRoom.minRow..augmentedRoom.maxRow)) {
+            val maxEmptiesPossibleInRow = board.grid.numCols - board.rowReqs[rowIdx]
+            val emptiesKnownInRow = board.grid.row(rowIdx)
+                .count{ !augmentedRoom.containsCol(it.col) && !it.type.canBe(CellType.WALL) } +
+                    augmentedRoom.width()
+            if (emptiesKnownInRow > maxEmptiesPossibleInRow) {
+                return true
+            }
         }
 
         return false
@@ -192,6 +214,16 @@ class TreasureRoom(val box: Box) {
             return true
         }
 
+        //if the resulting number of empty cells in any col is greater than the max possible, we can't expand down
+        for (colIdx in (augmentedRoom.minCol..augmentedRoom.maxCol)) {
+            val maxEmptiesPossibleInCol = board.grid.numRows - board.colReqs[colIdx]
+            val emptiesKnownInCol = board.grid.col(colIdx)
+                .count{ !augmentedRoom.containsRow(it.row) && !it.type.canBe(CellType.WALL) } +
+                    augmentedRoom.height()
+            if (emptiesKnownInCol > maxEmptiesPossibleInCol) {
+                return true
+            }
+        }
 
         return false
     }
@@ -247,6 +279,17 @@ class TreasureRoom(val box: Box) {
 
         if (cellsThatCanBeWallsInRowAbove < board.rowReqs[augmentedRoom.minRow]) {
             return true
+        }
+
+        //if the resulting number of empty cells in any col is greater than the max possible, we can't expand up
+        for (colIdx in (augmentedRoom.minCol..augmentedRoom.maxCol)) {
+            val maxEmptiesPossibleInCol = board.grid.numRows - board.colReqs[colIdx]
+            val emptiesKnownInCol = board.grid.col(colIdx)
+                .count{ !augmentedRoom.containsRow(it.row) && !it.type.canBe(CellType.WALL) } +
+                    augmentedRoom.height()
+            if (emptiesKnownInCol > maxEmptiesPossibleInCol) {
+                return true
+            }
         }
 
         return false
