@@ -37,6 +37,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         EmptyishTwoByTwoIsTreasureRoom(),
 
         WallBoundBoxInternalStructure(),
+        AvoidNonconnectivity(),
 
         AllTreasureRoomsComplete(),
         TreasureRoomCannotExpand(),
