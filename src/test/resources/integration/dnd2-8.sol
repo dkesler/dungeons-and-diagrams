@@ -1,0 +1,8 @@
+OOO##OOO
+OTO##OTO
+OOO#.OOO
+##...###
+####.###
+OOO..OOO
+OTO##OTO
+OOO##OOO
