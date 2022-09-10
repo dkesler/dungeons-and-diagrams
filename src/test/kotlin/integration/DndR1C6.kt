@@ -2,7 +2,7 @@ package integration
 
 import SolverConfiguration
 
-class Dnd1_2 : BaseIntegrationTest(){
-    override val file = "/dnd1-2"
+class DndR1C6 : BaseIntegrationTest() {
+    override val file = "/dnd1-6"
     override val config = SolverConfiguration(false)
 }
