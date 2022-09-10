@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Box
 import utils.Point
@@ -14,8 +14,8 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
         fun rule(box: Box): Rule.Check? {
             val subGrid = board.grid.subgrid(box).flatten()
             if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
-                val toUpdate = subGrid.filter { it.type.canBe(CellType.HALLWAY) }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALLWAY)) }
+                val toUpdate = subGrid.filter { it.type.canBe(Type.HALLWAY) }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - Type.HALLWAY)) }
                 return Rule.Check(board.update(toUpdate), "row[${box.minRow}].col[${box.minCol}]")
             }
             return null
@@ -28,9 +28,9 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
     }
 
     private fun isEmptyish(subGrid: List<Point>): Boolean {
-        return subGrid.all { it.type.cannotBe(CellType.WALL, CellType.MONSTER) }
+        return subGrid.all { it.type.cannotBe(Type.WALL, Type.MONSTER) }
     }
     private fun containsAtLeastOnePossibleHall(subGrid: List<Point>): Boolean {
-        return subGrid.any { it.type.canBe(CellType.HALLWAY) }
+        return subGrid.any { it.type.canBe(Type.HALLWAY) }
     }
 }

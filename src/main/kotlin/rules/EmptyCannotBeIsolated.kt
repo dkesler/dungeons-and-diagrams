@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Point
 
@@ -12,10 +12,10 @@ class EmptyCannotBeIsolated : Rule {
     override fun apply(board: Board): ApplyResult {
         fun rule(point: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(point.row, point.col)
-            val numNonemptyNeighbors = neighbors.count { !it.type.canBe(CellType.HALLWAY, CellType.ROOM, CellType.TREASURE) }
-            val unknownNeighborsThatCanBeWall = neighbors.filter { it.type.canBe(CellType.WALL) && !it.type.known }
+            val numNonemptyNeighbors = neighbors.count { !it.type.canBe(Type.HALLWAY, Type.ROOM, Type.TREASURE) }
+            val unknownNeighborsThatCanBeWall = neighbors.filter { it.type.canBe(Type.WALL) && !it.type.known }
             if (numNonemptyNeighbors == neighbors.count()-1 && unknownNeighborsThatCanBeWall.isNotEmpty()) {
-                val toUpdate = unknownNeighborsThatCanBeWall.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
+                val toUpdate = unknownNeighborsThatCanBeWall.map{ Point(it.row, it.col, TypeRange(it.type.types - Type.WALL)) }
                 return Rule.Check(board.update(toUpdate), "row[${point.row}]col[${point.col}]")
             }
             return null
@@ -23,7 +23,7 @@ class EmptyCannotBeIsolated : Rule {
 
         return each(
             board,
-            { it.type.canBe(CellType.HALLWAY, CellType.ROOM) && !it.type.canBe(CellType.WALL) },
+            { it.type.canBe(Type.HALLWAY, Type.ROOM) && !it.type.canBe(Type.WALL) },
             ::rule
         )
     }

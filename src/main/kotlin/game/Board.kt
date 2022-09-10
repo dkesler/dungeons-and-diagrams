@@ -19,13 +19,13 @@ class Board(
     }
 
     fun solved(): Boolean {
-        val rowsSatisfied = rowReqs.mapIndexed { index, req -> grid.row(index).count { it.type.eq(CellType.WALL) } == req }.all { it }
-        val colsSatisfied = colReqs.mapIndexed { index, req -> grid.col(index).count { it.type.eq(CellType.WALL) } == req }.all { it }
+        val rowsSatisfied = rowReqs.mapIndexed { index, req -> grid.row(index).count { it.type.eq(Type.WALL) } == req }.all { it }
+        val colsSatisfied = colReqs.mapIndexed { index, req -> grid.col(index).count { it.type.eq(Type.WALL) } == req }.all { it }
         val containsAnyUnknown = grid.cells.flatten().count { !it.known } > 0
         return rowsSatisfied && colsSatisfied && !containsAnyUnknown && isValid(grid, rowReqs, colReqs).first
     }
 
-    fun update(rowIdx: Int, colIdx: Int, typeRange: Set<CellType>): Update {
+    fun update(rowIdx: Int, colIdx: Int, typeRange: Set<Type>): Update {
         //We cannot add types to cells, only remove them
         if (!grid.cells[rowIdx][colIdx].types.containsAll(typeRange)) {
             throw RuntimeException("Tried to add type(s) ${typeRange - grid.cells[rowIdx][colIdx]} to grid[$rowIdx][$colIdx]")
@@ -76,16 +76,16 @@ data class Update(val valid: Boolean, val invalidReason: String, val board: Boar
 
 fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, String> {
     for (rowIdx in rowReqs.indices) {
-        val rowWalls = grid.cells[rowIdx].count{it.eq(CellType.WALL)}
-        val rowUnknowns = grid.cells[rowIdx].count{!it.known && it.canBe(CellType.WALL)}
+        val rowWalls = grid.cells[rowIdx].count{it.eq(Type.WALL)}
+        val rowUnknowns = grid.cells[rowIdx].count{!it.known && it.canBe(Type.WALL)}
         if (rowWalls > rowReqs[rowIdx]) return Pair(false, "Too many walls in row $rowIdx")
         if (rowWalls + rowUnknowns < rowReqs[rowIdx]) return Pair(false, "Insufficient space for walls in row $rowIdx")
     }
 
     for (colIdx in colReqs.indices) {
         val col = grid.cells.map{it[colIdx]}
-        val colWalls =  col.count{it.eq(CellType.WALL)}
-        val colUnknowns = col.count{!it.known && it.canBe(CellType.WALL)}
+        val colWalls =  col.count{it.eq(Type.WALL)}
+        val colUnknowns = col.count{!it.known && it.canBe(Type.WALL)}
         if (colWalls > colReqs[colIdx]) return Pair(false, "Too many walls in col $colIdx")
         if (colWalls + colUnknowns < colReqs[colIdx]) return Pair(false, "Insufficient space for walls in col $colIdx")
     }
@@ -97,30 +97,30 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
                 Pair(rowIdx+1, colIdx),
                 Pair(rowIdx, colIdx+1),
                 Pair(rowIdx+1, colIdx+1)
-            ).all { grid.cells[it.first][it.second].eq(CellType.HALLWAY) }
+            ).all { grid.cells[it.first][it.second].eq(Type.HALLWAY) }
             if (emptyTwoByTwo) return Pair(false, "2x2 Hall starting on ($rowIdx,$colIdx)")
         }
     }
 
     for (rowIdx in (rowReqs.indices)) {
         for (colIdx in (colReqs.indices)) {
-            val isMonster = grid.cells[rowIdx][colIdx].eq(CellType.MONSTER)
+            val isMonster = grid.cells[rowIdx][colIdx].eq(Type.MONSTER)
             if (isMonster) {
                 val neighbors = grid.neighbors(rowIdx, colIdx)
                 //if there are more than one neighboring empty, the monster isn't in a dead end
-                val neighboringEmpties = neighbors.count{ !it.type.canBe(CellType.WALL) }
+                val neighboringEmpties = neighbors.count{ !it.type.canBe(Type.WALL) }
                 if (neighboringEmpties > 1) return Pair(false, "Monster at ($rowIdx,$colIdx) not in a dead end")
                 //monsters can't go directly into treasure rooms
-                val neighboringTreasuresOrRoom = neighbors.map{ it.type }.count{it.mustBe(CellType.ROOM, CellType.TREASURE)}
+                val neighboringTreasuresOrRoom = neighbors.map{ it.type }.count{it.mustBe(Type.ROOM, Type.TREASURE)}
                 if (neighboringTreasuresOrRoom > 0) return Pair(false, "Monster at ($rowIdx,$colIdx) neighbors treasure room")
-            } else if (!grid.cells[rowIdx][colIdx].canBe(CellType.WALL)) {
+            } else if (!grid.cells[rowIdx][colIdx].canBe(Type.WALL)) {
                 //not a monster and not a wall so cannot be a dead end
                 val neighbors = grid.neighbors(rowIdx, colIdx)
-                val neighboringWalls = neighbors.count{ it.type.eq(CellType.WALL)}
+                val neighboringWalls = neighbors.count{ it.type.eq(Type.WALL)}
                 if (neighboringWalls == neighbors.size - 1) return Pair(false, "Dead end at ($rowIdx,$colIdx) with no monster")
 
-                if (grid.cells[rowIdx][colIdx].eq(CellType.TREASURE)) {
-                    val neighboringHalls = neighbors.count{ it.type.eq(CellType.HALLWAY)}
+                if (grid.cells[rowIdx][colIdx].eq(Type.TREASURE)) {
+                    val neighboringHalls = neighbors.count{ it.type.eq(Type.HALLWAY)}
                     if (neighboringHalls > 1) {
                         return Pair(false, "Treasure at ($rowIdx,$colIdx) in a hallway")
                     }
@@ -148,7 +148,7 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
             (treasureRoom.minCol..treasureRoom.maxCol).map{ col -> grid.cells[row][col]}
         }
 
-        val treasureInRoom = treasureRoomContents.count { it.eq(CellType.TREASURE) }
+        val treasureInRoom = treasureRoomContents.count { it.eq(Type.TREASURE) }
         if (treasureInRoom > 1) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains more than one treasure")
         }
@@ -157,16 +157,16 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) is complete but does not contain a treasure")
         }
 
-        if (treasureRoomContents.count{ it.eq(CellType.WALL) } > 0) {
+        if (treasureRoomContents.count{ it.eq(Type.WALL) } > 0) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a wall")
         }
 
-        if (treasureRoomContents.count{ it.eq(CellType.HALLWAY) } > 0) {
+        if (treasureRoomContents.count{ it.eq(Type.HALLWAY) } > 0) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a hall")
         }
 
         val treasureRoomNeighbors = grid.neighbors(treasureRoom.box)
-        if (treasureRoomNeighbors.count{it.type.eq(CellType.HALLWAY)} > 1) {
+        if (treasureRoomNeighbors.count{it.type.eq(Type.HALLWAY)} > 1) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) has multiple exits")
         }
     }
@@ -180,7 +180,7 @@ fun getAllTreasureRooms(grid: Grid): Set<TreasureRoom> {
     for (row in grid.rows) {
         for (col in grid.cols) {
             val type = grid.cells[row][col]
-            if ((type.eq(CellType.ROOM) || type.eq(CellType.TREASURE)) && Pair(row, col) !in visited) {
+            if ((type.eq(Type.ROOM) || type.eq(Type.TREASURE)) && Pair(row, col) !in visited) {
                 val treasureRoomCells = findTreasureRoomStartingAt(row, col, grid)
                 visited.addAll(treasureRoomCells)
                 val minRow = treasureRoomCells.minOfOrNull { it.first }!!
@@ -203,7 +203,7 @@ fun findTreasureRoomStartingAt(row: Int, col: Int, grid: Grid): Set<Pair<Int, In
         val visiting = toVisit.first()
         toVisit.remove(visiting)
         val neighbors = grid.neighbors(visiting.first, visiting.second)
-        val treasureNeighbors = neighbors.filter{ it.type.mustBe(CellType.TREASURE, CellType.ROOM)}
+        val treasureNeighbors = neighbors.filter{ it.type.mustBe(Type.TREASURE, Type.ROOM)}
             .map{it.toPair()}
             .filter{ it !in visited }
         visited.addAll(treasureNeighbors)
@@ -226,9 +226,9 @@ fun canBeContiguous(grid: Grid): Boolean {
         val visiting = toVisit.first()
         toVisit.remove(visiting)
         //We can visit a monster, but a monster can't propagate travel
-        if (grid.cells[visiting.first][visiting.second].cannotBe(CellType.MONSTER)) {
+        if (grid.cells[visiting.first][visiting.second].cannotBe(Type.MONSTER)) {
             val neighbors = grid.neighbors(visiting.first, visiting.second)
-            neighbors.filter { !it.type.eq(CellType.WALL) }
+            neighbors.filter { !it.type.eq(Type.WALL) }
                 .map{it.toPair()}
                 .filter { !visited.contains(it) }
                 .forEach { toVisit.add(it); visited.add(it) }
@@ -236,7 +236,7 @@ fun canBeContiguous(grid: Grid): Boolean {
     }
 
     val allEmptyAndMonsters = grid.cells.flatMapIndexed { rowIdx, row -> row.mapIndexed { colIdx, space -> Triple(rowIdx, colIdx, space) } }
-        .filter { it.third.cannotBe(CellType.WALL) }
+        .filter { it.third.cannotBe(Type.WALL) }
         .map{ Pair(it.first, it.second)}
         .toSet()
 
@@ -247,7 +247,7 @@ fun findFirstEmpty(grid: Grid): Pair<Int, Int>? {
     for (rowIdx in grid.rows) {
         for (colIdx in grid.cols) {
             val s = grid.cells[rowIdx][colIdx]
-            if (s.cannotBe(CellType.MONSTER, CellType.WALL)) return Pair(rowIdx, colIdx)
+            if (s.cannotBe(Type.MONSTER, Type.WALL)) return Pair(rowIdx, colIdx)
         }
     }
 
@@ -266,11 +266,11 @@ fun createBoard(
         for (cIdx in colReqs.indices) {
             val point = Pair(rIdx, cIdx)
             if (point in monsters) {
-                grid[rIdx].add(TypeRange(setOf(CellType.MONSTER)))
+                grid[rIdx].add(TypeRange(setOf(Type.MONSTER)))
             } else if (point in treasures) {
-                grid[rIdx].add(TypeRange(setOf(CellType.TREASURE)))
+                grid[rIdx].add(TypeRange(setOf(Type.TREASURE)))
             } else {
-                grid[rIdx].add(TypeRange(setOf(CellType.WALL, CellType.HALLWAY, CellType.ROOM)))
+                grid[rIdx].add(TypeRange(setOf(Type.WALL, Type.HALLWAY, Type.ROOM)))
             }
         }
     }

@@ -1,37 +1,37 @@
 package game
 
-class TypeRange(val types: Set<CellType>) {
+class TypeRange(val types: Set<Type>) {
     //TODO:  add validation regarding type mixes (e.g. cannot have a range of monster+wall)
     val known = types.count() == 1
 
-    fun eq(t: CellType): Boolean {
+    fun eq(t: Type): Boolean {
         return types.count() == 1 && types.contains(t)
     }
 
     //It is possible for this cell to be one of the types passed in
-    fun canBe(vararg t: CellType): Boolean {
+    fun canBe(vararg t: Type): Boolean {
         return t.any{it in types}
     }
 
-    fun cannotBe(vararg t: CellType): Boolean {
+    fun cannotBe(vararg t: Type): Boolean {
         return t.none{it in types}
     }
 
     //This cell must be one of the types passed in and cannot be anything else
-    fun mustBe(vararg t: CellType): Boolean {
+    fun mustBe(vararg t: Type): Boolean {
         return t.any{it in types} && (types - t.toSet()).isEmpty()
     }
 
     fun toChar(): Char {
         return when(types) {
-            setOf(CellType.TREASURE) -> 'T'
-            setOf(CellType.ROOM) -> 'O'
-            setOf(CellType.MONSTER) -> 'M'
-            setOf(CellType.WALL) -> '#'
-            setOf(CellType.HALLWAY, CellType.ROOM) -> 'o'
-            setOf(CellType.HALLWAY) -> '.'
-            setOf(CellType.WALL, CellType.HALLWAY) -> '!'
-            setOf(CellType.WALL, CellType.ROOM) -> '$'
+            setOf(Type.TREASURE) -> 'T'
+            setOf(Type.ROOM) -> 'O'
+            setOf(Type.MONSTER) -> 'M'
+            setOf(Type.WALL) -> '#'
+            setOf(Type.HALLWAY, Type.ROOM) -> 'o'
+            setOf(Type.HALLWAY) -> '.'
+            setOf(Type.WALL, Type.HALLWAY) -> '!'
+            setOf(Type.WALL, Type.ROOM) -> '$'
             else -> '?'
         }
     }
@@ -55,15 +55,15 @@ class TypeRange(val types: Set<CellType>) {
     companion object {
         fun fromChar(c: Char): TypeRange {
             return when (c) {
-                '?' -> TypeRange(setOf(CellType.WALL, CellType.HALLWAY, CellType.ROOM))
-                'o' -> TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))
-                '.' -> TypeRange(setOf(CellType.HALLWAY))
-                '#' -> TypeRange(setOf(CellType.WALL))
-                'T' -> TypeRange(setOf(CellType.TREASURE))
-                'M' -> TypeRange(setOf(CellType.MONSTER))
-                'O' -> TypeRange(setOf(CellType.ROOM))
-                '!' -> TypeRange(setOf(CellType.WALL, CellType.HALLWAY))
-                '$' -> TypeRange(setOf(CellType.WALL, CellType.ROOM))
+                '?' -> TypeRange(setOf(Type.WALL, Type.HALLWAY, Type.ROOM))
+                'o' -> TypeRange(setOf(Type.HALLWAY, Type.ROOM))
+                '.' -> TypeRange(setOf(Type.HALLWAY))
+                '#' -> TypeRange(setOf(Type.WALL))
+                'T' -> TypeRange(setOf(Type.TREASURE))
+                'M' -> TypeRange(setOf(Type.MONSTER))
+                'O' -> TypeRange(setOf(Type.ROOM))
+                '!' -> TypeRange(setOf(Type.WALL, Type.HALLWAY))
+                '$' -> TypeRange(setOf(Type.WALL, Type.ROOM))
 
                 else -> throw RuntimeException("Unknown char [${c}] in TypeRange.fromChar")
             }

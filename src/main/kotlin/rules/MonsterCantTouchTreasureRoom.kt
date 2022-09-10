@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Point
 
@@ -12,9 +12,9 @@ class MonsterCantTouchTreasureRoom : Rule {
 
         fun rule(monster: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(monster.row, monster.col)
-            if (neighbors.any { it.type.canBe(CellType.ROOM)}) {
-                val toUpdate = neighbors.filter {it.type.canBe(CellType.ROOM) }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.ROOM)) }
+            if (neighbors.any { it.type.canBe(Type.ROOM)}) {
+                val toUpdate = neighbors.filter {it.type.canBe(Type.ROOM) }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - Type.ROOM)) }
                 return Rule.Check(board.update(toUpdate), "row[${monster.row}].col[${monster.col}]")
             }
             return null

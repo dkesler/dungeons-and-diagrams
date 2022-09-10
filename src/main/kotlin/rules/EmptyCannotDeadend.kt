@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Point
 
@@ -12,10 +12,10 @@ class EmptyCannotDeadend : Rule {
     override fun apply(board: Board): ApplyResult {
         fun rule(point: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(point.row, point.col)
-            if (neighbors.count{it.type.eq(CellType.WALL) } == neighbors.count()-2 &&
-                neighbors.count{it.type.canBe(CellType.WALL)} > neighbors.count()-2) {
-                val toUpdate = neighbors.filter{it.type.canBe(CellType.WALL) && !it.type.known }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
+            if (neighbors.count{it.type.eq(Type.WALL) } == neighbors.count()-2 &&
+                neighbors.count{it.type.canBe(Type.WALL)} > neighbors.count()-2) {
+                val toUpdate = neighbors.filter{it.type.canBe(Type.WALL) && !it.type.known }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - Type.WALL)) }
                 return Rule.Check(board.update(toUpdate), "row[${point.row}]col[${point.col}]")
             }
             return null
@@ -23,7 +23,7 @@ class EmptyCannotDeadend : Rule {
 
         return each(
             board,
-            { it.type.canBe(CellType.HALLWAY, CellType.ROOM) && !it.type.canBe(CellType.WALL) },
+            { it.type.canBe(Type.HALLWAY, Type.ROOM) && !it.type.canBe(Type.WALL) },
             ::rule
         )
     }

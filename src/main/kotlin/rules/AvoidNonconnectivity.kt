@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import utils.Point
 
 //For each empty cell, find the contiguous empty blocks attached to it.
@@ -10,7 +10,7 @@ import utils.Point
 class AvoidNonconnectivity : Rule{
     override fun apply(board: Board): ApplyResult {
         //if we have nothing in the board we know isn't wall, this rule can't do anything so return early
-        val knownEmpties = board.grid.points().filter{ !it.type.eq(CellType.WALL) }
+        val knownEmpties = board.grid.points().filter{ !it.type.eq(Type.WALL) }
         val visitedEmpties = mutableSetOf<Point>()
 
         fun rule(point: Point): Rule.Check? {
@@ -24,7 +24,7 @@ class AvoidNonconnectivity : Rule{
                 if (unknownEmptyGraphNeighbors.size == 1) {
                     val pointToUpdate = unknownEmptyGraphNeighbors.first()
                     return Rule.Check(
-                        board.update(pointToUpdate.row, pointToUpdate.col, pointToUpdate.type.types - CellType.WALL),
+                        board.update(pointToUpdate.row, pointToUpdate.col, pointToUpdate.type.types - Type.WALL),
                         "row[${pointToUpdate.row}].col[${pointToUpdate.col}]"
                     )
                 }
@@ -34,7 +34,7 @@ class AvoidNonconnectivity : Rule{
 
         return each(
             board,
-            {it.type.mustBe(CellType.HALLWAY, CellType.ROOM)},
+            {it.type.mustBe(Type.HALLWAY, Type.ROOM)},
             ::rule
         )
 
@@ -52,7 +52,7 @@ class AvoidNonconnectivity : Rule{
             toVisit.remove(visiting)
             val neighbors = board.grid.neighbors(visiting.row, visiting.col)
             neighbors.filter { it !in visited }
-                .filter{ it.type.mustBe(CellType.ROOM, CellType.TREASURE, CellType.HALLWAY, CellType.MONSTER) }
+                .filter{ it.type.mustBe(Type.ROOM, Type.TREASURE, Type.HALLWAY, Type.MONSTER) }
                 .forEach { visited.add(it); toVisit.add(it) }
         }
         return visited

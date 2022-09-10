@@ -14,30 +14,30 @@ class TreasureRoomWithExitMustBeWalled : Rule {
             val treasureRoomNeighbors = treasureRoomHorizontalNeighbors + treasureRoomVerticalNeighbors
             //This treasure room has an exit.  if we cannot expand in a given direction, all unknown neighbors in that
             //direction must be a wall
-            val treasureRoomHasExit = treasureRoomNeighbors.any { it.type.eq(CellType.HALLWAY) } ||
-                    (treasureRoom.box.width() == 3 && treasureRoomHorizontalNeighbors.any{!it.type.canBe(CellType.WALL)}) ||
-                    (treasureRoom.box.height() == 3 && treasureRoomVerticalNeighbors.any{!it.type.canBe(CellType.WALL)})
+            val treasureRoomHasExit = treasureRoomNeighbors.any { it.type.eq(Type.HALLWAY) } ||
+                    (treasureRoom.box.width() == 3 && treasureRoomHorizontalNeighbors.any{!it.type.canBe(Type.WALL)}) ||
+                    (treasureRoom.box.height() == 3 && treasureRoomVerticalNeighbors.any{!it.type.canBe(Type.WALL)})
             if (treasureRoomHasExit) {
                 val toUpdate = mutableSetOf<Point>()
                 if (treasureRoom.cannotExpandDown(board, 1)) {
                     val downNeighbors = board.grid.downNeighbors(treasureRoom.box)
-                    toUpdate.addAll(downNeighbors.filter { it.type.canBe(CellType.WALL) && !it.type.known })
+                    toUpdate.addAll(downNeighbors.filter { it.type.canBe(Type.WALL) && !it.type.known })
                 }
                 if (treasureRoom.cannotExpandUp(board, 1)) {
                     val upNeighbors = board.grid.upNeighbors(treasureRoom.box)
-                    toUpdate.addAll(upNeighbors.filter { it.type.canBe(CellType.WALL) && !it.type.known })
+                    toUpdate.addAll(upNeighbors.filter { it.type.canBe(Type.WALL) && !it.type.known })
                 }
                 if (treasureRoom.cannotExpandLeft(board, 1)) {
                     val leftNeighbors = board.grid.leftNeighbors(treasureRoom.box)
-                    toUpdate.addAll(leftNeighbors.filter { it.type.canBe(CellType.WALL) && !it.type.known })
+                    toUpdate.addAll(leftNeighbors.filter { it.type.canBe(Type.WALL) && !it.type.known })
                 }
                 if (treasureRoom.cannotExpandRight(board, 1)) {
                     val rightNeighbors = board.grid.rightNeighbors(treasureRoom.box)
-                    toUpdate.addAll(rightNeighbors.filter { it.type.canBe(CellType.WALL) && !it.type.known })
+                    toUpdate.addAll(rightNeighbors.filter { it.type.canBe(Type.WALL) && !it.type.known })
                 }
                 if (toUpdate.isNotEmpty()) {
                     val update = board.update(
-                        toUpdate.map{ Point(it.row, it.col, TypeRange(setOf(CellType.WALL))) }
+                        toUpdate.map{ Point(it.row, it.col, TypeRange(setOf(Type.WALL))) }
                     )
                     return Rule.Check(update, "row[${treasureRoom.box.minCol}].col[${treasureRoom.box.maxCol}]")
                 }

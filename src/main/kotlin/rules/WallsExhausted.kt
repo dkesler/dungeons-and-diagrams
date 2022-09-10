@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Point
 
@@ -12,11 +12,11 @@ class WallsExhausted : Rule {
     override fun apply(board: Board): ApplyResult {
 
         fun rowRule(row: List<Point>, rowIdx: Int): Rule.Check? {
-            val rowWalls = row.count { it.type.eq(CellType.WALL) }
-            val rowPotentialWalls = row.count { it.type.canBe(CellType.WALL) && !it.type.known }
+            val rowWalls = row.count { it.type.eq(Type.WALL) }
+            val rowPotentialWalls = row.count { it.type.canBe(Type.WALL) && !it.type.known }
             if (rowWalls == board.rowReqs[rowIdx] && rowPotentialWalls > 0) {
-                val toUpdate = row.filter{ it.type.canBe(CellType.WALL) && !it.type.known }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
+                val toUpdate = row.filter{ it.type.canBe(Type.WALL) && !it.type.known }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - Type.WALL)) }
                 val update = board.update(toUpdate)
                 return Rule.Check(update, "row[$rowIdx]")
             }
@@ -24,11 +24,11 @@ class WallsExhausted : Rule {
         }
 
         fun colRule(col: List<Point>, colIdx: Int): Rule.Check? {
-            val colWalls = col.count { it.type.eq(CellType.WALL) }
-            val colPotentialWalls = col.count { it.type.canBe(CellType.WALL) && !it.type.known }
+            val colWalls = col.count { it.type.eq(Type.WALL) }
+            val colPotentialWalls = col.count { it.type.canBe(Type.WALL) && !it.type.known }
             if (colWalls == board.colReqs[colIdx] && colPotentialWalls > 0) {
-                val toUpdate = col.filter{ it.type.canBe(CellType.WALL) && !it.type.known }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
+                val toUpdate = col.filter{ it.type.canBe(Type.WALL) && !it.type.known }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - Type.WALL)) }
                 val update = board.update(toUpdate)
                 return Rule.Check(update, "col[$colIdx]")
             }

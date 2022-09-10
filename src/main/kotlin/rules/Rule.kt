@@ -24,7 +24,7 @@ interface Rule {
     ): ApplyResult {
         val check = board.monsters.fold(null) { check: Check?, monster ->
             if (check != null) check
-            else callback(Point(monster.first, monster.second, TypeRange(setOf(CellType.MONSTER))))
+            else callback(Point(monster.first, monster.second, TypeRange(setOf(Type.MONSTER))))
         }
         return checkToApplyResult(check, board)
     }

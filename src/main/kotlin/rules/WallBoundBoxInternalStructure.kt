@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Box
 import utils.Point
@@ -121,11 +121,11 @@ class WallBoundBoxInternalStructure : Rule {
                 if (couldBeWall.contains(Pair(rowOffset, colOffset)) && !couldBeNonWall.contains(Pair(rowOffset, colOffset))) {
                     val rowIdx = wallBoundBox.box.minRow + rowOffset
                     val colIdx = wallBoundBox.box.minCol + colOffset
-                    toUpdate.add(Point(rowIdx, colIdx, TypeRange(setOf(CellType.WALL))))
+                    toUpdate.add(Point(rowIdx, colIdx, TypeRange(setOf(Type.WALL))))
                 } else if (!couldBeWall.contains(Pair(rowOffset, colOffset)) && couldBeNonWall.contains(Pair(rowOffset, colOffset))) {
                     val rowIdx = wallBoundBox.box.minRow + rowOffset
                     val colIdx = wallBoundBox.box.minCol + colOffset
-                    toUpdate.add(Point(rowIdx, colIdx, TypeRange(board.grid.cells[rowIdx][colIdx].types - CellType.WALL)))
+                    toUpdate.add(Point(rowIdx, colIdx, TypeRange(board.grid.cells[rowIdx][colIdx].types - Type.WALL)))
                 }
 
             }
@@ -137,11 +137,11 @@ class WallBoundBoxInternalStructure : Rule {
         return board.grid.neighbors(row, col)
             .filter { !box.contains(it.toPair()) }
             .map{ it.type }
-            .count{ !it.eq(CellType.WALL) } >= n
+            .count{ !it.eq(Type.WALL) } >= n
 
     }
 
     private fun isAllUnknown(box: Box, board: Board): Boolean {
-        return box.points().map{ board.grid.cells[it.first][it.second] }.all { it.canBe(CellType.WALL) && it.canBe(CellType.ROOM, CellType.HALLWAY) }
+        return box.points().map{ board.grid.cells[it.first][it.second] }.all { it.canBe(Type.WALL) && it.canBe(Type.ROOM, Type.HALLWAY) }
     }
 }

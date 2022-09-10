@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import utils.Point
 import utils.TreasureRoom
@@ -18,31 +18,31 @@ class TreasureRoomCannotExpand : Rule {
 
             if (treasureRoom.cannotExpandLeft(board, 1)) {
                 board.grid.leftNeighbors(treasureRoom.box)
-                    .filter { it.type.canBe(CellType.ROOM) }
+                    .filter { it.type.canBe(Type.ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandRight(board, 1)) {
                 board.grid.rightNeighbors(treasureRoom.box)
-                    .filter { it.type.canBe(CellType.ROOM) }
+                    .filter { it.type.canBe(Type.ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandDown(board, 1)) {
                 board.grid.downNeighbors(treasureRoom.box)
-                    .filter { it.type.canBe(CellType.ROOM) }
+                    .filter { it.type.canBe(Type.ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandUp(board, 1)) {
                 board.grid.upNeighbors(treasureRoom.box)
-                    .filter { it.type.canBe(CellType.ROOM) }
+                    .filter { it.type.canBe(Type.ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (toUpdate.isNotEmpty()) {
                 val update = board.update(
-                    toUpdate.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.ROOM)) }
+                    toUpdate.map{ Point(it.row, it.col, TypeRange(it.type.types - Type.ROOM)) }
                 )
                 return Rule.Check(update, "row[${treasureRoom.box.minRow}].col[${treasureRoom.box.minCol}]")
             }

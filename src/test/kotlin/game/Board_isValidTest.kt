@@ -8,8 +8,8 @@ class Board_isValidTest {
     fun givenTooManyWallsInRow_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-                listOf(TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)))
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+                listOf(TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)))
             )
         val result = isValid(Grid(grid), listOf(1, 0), listOf(1, 1))
         assertFalse(result.first)
@@ -20,8 +20,8 @@ class Board_isValidTest {
     fun givenTooManyWallsInCol_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)))
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)))
             )
         val result = isValid(Grid(grid), listOf(1, 1), listOf(1, 1))
         assertFalse(result.first)
@@ -32,8 +32,8 @@ class Board_isValidTest {
     fun givenInsufficientSpaceForWallsInRow_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-                listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)))
+                listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+                listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)))
             )
         val result = isValid(Grid(grid), listOf(2, 1), listOf(0, 1))
         assertFalse(result.first)
@@ -44,8 +44,8 @@ class Board_isValidTest {
     fun givenInsufficientSpaceForWallsInCol_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-                listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)))
+                listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+                listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)))
             )
         val result = isValid(Grid(grid), listOf(1, 1), listOf(1, 1))
         assertFalse(result.first)
@@ -56,8 +56,8 @@ class Board_isValidTest {
     fun givenMonsterNotInDeadEnd_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-                listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)))
+                listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+                listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM)))
             )
         val result = isValid(Grid(grid), listOf(0, 0), listOf(0, 0))
         assertFalse(result.first)
@@ -68,8 +68,8 @@ class Board_isValidTest {
     fun givenMonsterInDeadEnd_isValid_returnsTrue() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER)))
+                listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER)))
             )
         val result = isValid(Grid(grid), listOf(0, 1), listOf(1, 0))
         assertTrue(result.first)
@@ -79,8 +79,8 @@ class Board_isValidTest {
     fun givenMonsterInHallDeadEnd_isValid_returnsTrue() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY))),
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER)))
+                listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY))),
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER)))
             )
         val result = isValid(Grid(grid), listOf(0, 1), listOf(1, 0))
         assertTrue(result.first)
@@ -91,8 +91,8 @@ class Board_isValidTest {
     fun givenDeadEndDoesntContainMonster_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)))
+                listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.ROOM)))
             )
         val result = isValid(Grid(grid), listOf(0, 1), listOf(1, 0))
         assertFalse(result.first)
@@ -103,8 +103,8 @@ class Board_isValidTest {
     fun givenDeadEndHallDoesntContainMonster_isValid_returnsFalse() {
         val grid =
             listOf(
-                listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY))),
-                listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY)))
+                listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY))),
+                listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY)))
             )
         val result = isValid(Grid(grid), listOf(0, 1), listOf(1, 0))
         assertFalse(result.first)
@@ -115,9 +115,9 @@ class Board_isValidTest {
     @Test
     fun givenNoConnectivityBetweenAllEmpties_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 1, 1), listOf(0, 3, 0))
@@ -128,9 +128,9 @@ class Board_isValidTest {
     @Test
     fun givenNoConnectivityBetweenAllHall_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 1, 1), listOf(0, 3, 0))
@@ -141,9 +141,9 @@ class Board_isValidTest {
     @Test
     fun givenNoConnectivityBetweenEmptyAndHall_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 1, 1), listOf(0, 3, 0))
@@ -154,9 +154,9 @@ class Board_isValidTest {
     @Test
     fun givenConnectivityThroughEmpty_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 0, 1), listOf(0, 2, 0))
@@ -166,9 +166,9 @@ class Board_isValidTest {
     @Test
     fun givenConnectivityThroughHall_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 0, 1), listOf(0, 2, 0))
@@ -178,9 +178,9 @@ class Board_isValidTest {
     @Test
     fun givenConnectivityThroughUnknown_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 0, 1), listOf(0, 3, 0))
@@ -190,9 +190,9 @@ class Board_isValidTest {
     @Test
     fun givenConnectivityThroughMonster_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 0, 1), listOf(0, 2, 0))
@@ -203,9 +203,9 @@ class Board_isValidTest {
     @Test
     fun givenNoConnectivityToUnknown_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
         )
 
         val result = isValid(Grid(grid), listOf(2, 2, 0), listOf(2, 2, 0))
@@ -215,8 +215,8 @@ class Board_isValidTest {
     @Test
     fun givenNoEmptiesToFailConnectivity_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2), listOf(1, 1))
@@ -226,9 +226,9 @@ class Board_isValidTest {
     @Test
     fun givenNoConnectivityBetweenMonstersWithAtLeastOneEmpty_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 1, 1), listOf(0, 3, 0))
@@ -239,9 +239,9 @@ class Board_isValidTest {
     @Test
     fun givenNoConnectivityBetweenMonstersWithNoEmpties_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 1, 1), listOf(0, 3, 0))
@@ -253,8 +253,8 @@ class Board_isValidTest {
     @Test
     fun given2x2Hall_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.HALLWAY))),
-            listOf(TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.HALLWAY))),
+            listOf(TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.HALLWAY))),
+            listOf(TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.HALLWAY))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 0), listOf(0, 0))
@@ -264,8 +264,8 @@ class Board_isValidTest {
     @Test
     fun given2x2HallAndUnknown_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.HALLWAY))),
-            listOf(TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.HALLWAY, CellType.WALL, CellType.ROOM))),
+            listOf(TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.HALLWAY))),
+            listOf(TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.HALLWAY, Type.WALL, Type.ROOM))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 0), listOf(0, 0))
@@ -275,8 +275,8 @@ class Board_isValidTest {
     @Test
     fun given2x2TreasureRoom_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 0), listOf(0, 0))
@@ -286,8 +286,8 @@ class Board_isValidTest {
     @Test
     fun given2x2Empty_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
-            listOf(TypeRange(setOf(CellType.HALLWAY, CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
+            listOf(TypeRange(setOf(Type.HALLWAY, Type.ROOM)), TypeRange(setOf(Type.HALLWAY, Type.ROOM))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 0), listOf(0, 0))
@@ -297,9 +297,9 @@ class Board_isValidTest {
     @Test
     fun given3x3TreasureRoomWithOneExit_isValid_returnsTrue() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(2, 2, 0), listOf(0, 0, 0, 2, 2))
@@ -310,9 +310,9 @@ class Board_isValidTest {
     @Test
     fun givenTreasureRoomWithMultipleExits_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2, 0), listOf(0, 0, 0, 1, 1))
@@ -323,9 +323,9 @@ class Board_isValidTest {
     @Test
     fun givenDisconnectedTreasureRoom_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.HALLWAY))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.HALLWAY))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 1, 1), listOf(0, 0, 0, 3, 0))
@@ -337,10 +337,10 @@ class Board_isValidTest {
     @Test
     fun givenTreasureRoomTallerThan3_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2, 2, 2), listOf(0, 0, 0, 3, 3))
@@ -351,9 +351,9 @@ class Board_isValidTest {
     @Test
     fun givenTreasureRoomWiderThan3_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2, 2), listOf(0, 0, 0, 0, 2, 2))
@@ -365,9 +365,9 @@ class Board_isValidTest {
     @Test
     fun given3x3TreasureRoomWithoutTreasure_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2, 0), listOf(0, 0, 0, 1, 1))
@@ -378,9 +378,9 @@ class Board_isValidTest {
     @Test
     fun givenTreasureRoomContainingWall_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 3, 0), listOf(0, 0, 1, 1, 1))
@@ -391,9 +391,9 @@ class Board_isValidTest {
     @Test
     fun givenTreasureRoomContainingHall_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2, 0), listOf(0, 0, 0, 1, 1))
@@ -406,9 +406,9 @@ class Board_isValidTest {
     @Test
     fun givenTreasureRoomWithMultipleTreasure_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER))),
         )
 
         val result = isValid(Grid(grid), listOf(0, 2, 0), listOf(0, 0, 0, 1, 1))
@@ -419,7 +419,7 @@ class Board_isValidTest {
     @Test
     fun givenTreasureInHall_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.MONSTER)))
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.MONSTER)))
         )
         val result = isValid(Grid(grid), listOf(0), listOf(0, 0, 0, 0, 0))
 
@@ -430,7 +430,7 @@ class Board_isValidTest {
     @Test
     fun givenTreasureInDeadend_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.HALLWAY)), TypeRange(setOf(CellType.TREASURE)))
+            listOf(TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.HALLWAY)), TypeRange(setOf(Type.TREASURE)))
         )
         val result = isValid(Grid(grid), listOf(0), listOf(0, 0, 0))
 
@@ -441,9 +441,9 @@ class Board_isValidTest {
     @Test
     fun givenMonsterTouchingTreasureRoom_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 2, 2), listOf(0, 0, 0, 2, 3))
@@ -454,9 +454,9 @@ class Board_isValidTest {
     @Test
     fun givenMonsterTouchingTreasure_isValid_returnsFalse() {
         val grid = listOf(
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.TREASURE)), TypeRange(setOf(CellType.MONSTER)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
-            listOf(TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.ROOM)), TypeRange(setOf(CellType.WALL)), TypeRange(setOf(CellType.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.TREASURE)), TypeRange(setOf(Type.MONSTER)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
+            listOf(TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.ROOM)), TypeRange(setOf(Type.WALL)), TypeRange(setOf(Type.WALL))),
         )
 
         val result = isValid(Grid(grid), listOf(1, 2, 2), listOf(0, 0, 0, 2, 3))

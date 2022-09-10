@@ -1,6 +1,6 @@
 package game
 
-enum class CellType(val c: Char) {
+enum class Type(val c: Char) {
     HALLWAY('.'),
     WALL('W'),
     TREASURE('T'),

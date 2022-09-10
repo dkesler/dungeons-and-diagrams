@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.TypeRange
 import game.getAllTreasureRooms
 import utils.Point
@@ -14,13 +14,13 @@ class AllTreasureRoomsComplete : Rule {
         val allTreasureRoomsComplete = treasureRooms.all{ it.box.width() == 3 && it.box.height() == 3}
         if (allTreasureRoomsComplete) {
             val anyUnknownsThatCanBeTreasureRoom = board.grid.points().filter {
-                !it.type.known && it.type.canBe(CellType.ROOM)
+                !it.type.known && it.type.canBe(Type.ROOM)
             }
 
             if (anyUnknownsThatCanBeTreasureRoom.isNotEmpty()) {
                 return update(
                     board,
-                    anyUnknownsThatCanBeTreasureRoom.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.ROOM)) },
+                    anyUnknownsThatCanBeTreasureRoom.map{ Point(it.row, it.col, TypeRange(it.type.types - Type.ROOM)) },
                     ""
                 )
             }

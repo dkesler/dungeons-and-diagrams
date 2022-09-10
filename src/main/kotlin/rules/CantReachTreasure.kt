@@ -1,7 +1,7 @@
 package rules
 
 import game.Board
-import game.CellType
+import game.Type
 import game.findTreasureRoomStartingAt
 import utils.Box
 import utils.Point
@@ -49,7 +49,7 @@ class CantReachTreasure : Rule {
             val candidateTreasures = board.treasures.filter(treasureHuntingBoundingBox::contains)
             //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
             if (candidateTreasures.none{ canFeasiblyReachTreasure(point.row, point.col, it)}) {
-                val update = board.update(point.row, point.col, point.type.types - CellType.ROOM)
+                val update = board.update(point.row, point.col, point.type.types - Type.ROOM)
                 return Rule.Check(update, ".row[$${point.row}].col[${point.col}]")
             }
             return null
@@ -57,7 +57,7 @@ class CantReachTreasure : Rule {
 
         return each(
             board,
-            {it.type.canBe(CellType.ROOM)},
+            {it.type.canBe(Type.ROOM)},
             ::rule
         )
     }

@@ -1,5 +1,5 @@
 import game.Board
-import game.CellType
+import game.Type
 import metrics.Bifurcation
 import metrics.EvaluationMetric
 import metrics.Solve
@@ -92,11 +92,11 @@ fun bifurcate(board: Board, config: SolverConfiguration): Triple<Board, Boolean,
             //if space is unknown, make it a wall and try to solve.
             //if we successfully solve, return solve, otherwise try next unknown
             val cell = board.grid.cells[rowIdx][colIdx]
-            if (!cell.known && cell.canBe(CellType.WALL)) {
+            if (!cell.known && cell.canBe(Type.WALL)) {
                 probes++
                 val probeStart = System.currentTimeMillis()
                 println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx]")
-                val update = board.update(rowIdx, colIdx, setOf(CellType.WALL))
+                val update = board.update(rowIdx, colIdx, setOf(Type.WALL))
                 if (update.valid) {
                     println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx]")
                     update.board.draw()

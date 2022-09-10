@@ -13,8 +13,8 @@ class LastGapCantCreateDeadend: Rule {
             if (gapsRemaining(board.rowReqs[rowIdx], row) == 1) {
                 val changeToWall = mutableSetOf<Point>()
                 for (colIdx in board.grid.cols) {
-                    if (!row[colIdx].type.known && row[colIdx].type.canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
-                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(CellType.WALL))))
+                    if (!row[colIdx].type.known && row[colIdx].type.canBe(Type.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
+                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(Type.WALL))))
                     }
                 }
 
@@ -29,8 +29,8 @@ class LastGapCantCreateDeadend: Rule {
             if (gapsRemaining(board.colReqs[colIdx], col) == 1) {
                 val changeToWall = mutableSetOf<Point>()
                 for (rowIdx in board.grid.rows) {
-                    if (!col[rowIdx].type.known && col[rowIdx].type.canBe(CellType.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, false)) {
-                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(CellType.WALL))))
+                    if (!col[rowIdx].type.known && col[rowIdx].type.canBe(Type.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, false)) {
+                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(Type.WALL))))
                     }
                 }
                 if (changeToWall.isNotEmpty()) {
@@ -52,8 +52,8 @@ class LastGapCantCreateDeadend: Rule {
         val untouchedNeighbors = if (checkingRow) verticalNeighbors else horizontalNeighbors
         val touchedNeighbors = if (checkingRow) horizontalNeighbors else verticalNeighbors
 
-        val neighborWallCount = untouchedNeighbors.count{ it.type.eq(CellType.WALL) } +
-                touchedNeighbors.count{ it.type.canBe(CellType.WALL) }
+        val neighborWallCount = untouchedNeighbors.count{ it.type.eq(Type.WALL) } +
+                touchedNeighbors.count{ it.type.canBe(Type.WALL) }
 
         val neighborCount = untouchedNeighbors.count() + touchedNeighbors.count()
 
@@ -61,8 +61,8 @@ class LastGapCantCreateDeadend: Rule {
     }
 
     private fun gapsRemaining(wallsReqd: Int, line: List<Point>): Int {
-        val wallsLeftToPlace = wallsReqd - line.count{ it.type.eq(CellType.WALL) }
-        val unknownsThatCouldBeWall = line.count{it.type.canBe(CellType.WALL) && !it.type.known}
+        val wallsLeftToPlace = wallsReqd - line.count{ it.type.eq(Type.WALL) }
+        val unknownsThatCouldBeWall = line.count{it.type.canBe(Type.WALL) && !it.type.known}
         return unknownsThatCouldBeWall - wallsLeftToPlace
     }
 }
