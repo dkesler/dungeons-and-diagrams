@@ -37,8 +37,12 @@ class TreasureRoom(val box: Box) {
         }
 
         //if the expanded room neighbors a monster or a treasure, it's invalid
-        val horizontalNeighbors = board.grid.horizontalNeighbors(augmentedRoom)
-        val verticalNeighbors = board.grid.verticalNeighbors(augmentedRoom)
+        val leftNeighbors = board.grid.leftNeighbors(augmentedRoom)
+        val rightNeighbors = board.grid.rightNeighbors(augmentedRoom)
+        val upNeighbors = board.grid.upNeighbors(augmentedRoom)
+        val downNeighbors = board.grid.downNeighbors(augmentedRoom)
+        val horizontalNeighbors = leftNeighbors + rightNeighbors
+        val verticalNeighbors = upNeighbors + downNeighbors
         val neighbors = horizontalNeighbors + verticalNeighbors
 
         if (neighbors.any{ it.type.mustBe(CellType.TREASURE, CellType.MONSTER) }) {
@@ -100,8 +104,81 @@ class TreasureRoom(val box: Box) {
         }
 
 
+        val hasExit = neighbors.any{ it.type.eq(CellType.HALL) } ||
+                (augmentedRoom.width() == 3 && horizontalNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) }) ||
+                (augmentedRoom.height() == 3 && verticalNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
+        val hasLeftExit = leftNeighbors.any {it.type.eq(CellType.HALL) } ||
+                (augmentedRoom.width() == 3 && leftNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
+        val hasRightExit = rightNeighbors.any {it.type.eq(CellType.HALL) } ||
+                (augmentedRoom.width() == 3 && rightNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
+        val hasUpExit = upNeighbors.any {it.type.eq(CellType.HALL) } ||
+                (augmentedRoom.height() == 3 && upNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
+        val hasDownExit = downNeighbors.any {it.type.eq(CellType.HALL) } ||
+                (augmentedRoom.height() == 3 && downNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
+
         //if the expanded room is max width and it's horizontal neighbor cols don't have enough room for walls, it's invalid
+        if (augmentedRoom.width() == 3) {
+            val leftColIdx = augmentedRoom.minCol-1
+            if (leftColIdx in board.grid.cols) {
+                //if the col to the left can't even hold 2 walls, the augmented room must be invalid
+                if (board.colReqs[leftColIdx] <= 1) return true
+                //if the room has an exit but it's not on the left, and the left col can't hold 3 walls, the augmented room must be invalid
+                if (hasExit && !hasLeftExit && board.colReqs[leftColIdx] <= 2) return true
+
+                val leftCol = board.grid.col(leftColIdx)
+                val wallsForcedInLeftCol = leftCol.count{
+                    it.type.eq(CellType.WALL) && !leftNeighbors.contains(it)
+                } + augmentedRoom.height() - if (hasLeftExit || !hasExit) 1 else 0
+
+                if (wallsForcedInLeftCol > board.colReqs[leftColIdx]) return true
+            }
+
+            val rightColIdx = augmentedRoom.maxCol+1
+            if (rightColIdx in board.grid.cols) {
+                //if the col to the right can't even hold 2 walls, the augmented room must be invalid
+                if (board.colReqs[rightColIdx] <= 1) return true
+                //if the room has an exit but it's not on the right, and the right col can't hold 3 walls, the augmented room must be invalid
+                if (hasExit && !hasRightExit && board.colReqs[rightColIdx] <= 2) return true
+
+                val rightCol = board.grid.col(rightColIdx)
+                val wallsForcedInRightCol = rightCol.count{
+                    it.type.eq(CellType.WALL) && !rightNeighbors.contains(it)
+                } + augmentedRoom.height() - if (hasRightExit || !hasExit) 1 else 0
+                if (wallsForcedInRightCol > board.colReqs[rightColIdx]) return true
+            }
+        }
+
         //if the expanded room is max height and it's vertical neighbor rows don't have enough room for walls, it's invalid
+        if (augmentedRoom.height() == 3) {
+            val upRowIdx = augmentedRoom.minRow-1
+            if (upRowIdx in board.grid.rows) {
+                //if the row above can't even hold 2 walls, the augmented room must be invalid
+                if (board.rowReqs[upRowIdx] <= 1) return true
+                //if the room has an exit but it's not above, and the above row can't hold 3 walls, the augmented room must be invalid
+                if (hasExit && !hasUpExit && board.rowReqs[upRowIdx] <= 2) return true
+
+                val upRow = board.grid.row(upRowIdx)
+                val wallsForcedInUpRow = upRow.count{
+                    it.type.eq(CellType.WALL) && !upNeighbors.contains(it)
+                } + augmentedRoom.width() - if (hasUpExit || !hasExit) 1 else 0
+
+                if (wallsForcedInUpRow > board.rowReqs[upRowIdx]) return true
+            }
+
+            val downRowIdx = augmentedRoom.maxRow+1
+            if (downRowIdx in board.grid.rows) {
+                //if the row below can't even hold 2 walls, the augmented room must be invalid
+                if (board.rowReqs[downRowIdx] <= 1) return true
+                //if the room has an exit but it's not below, and the row below can't hold 3 walls, the augmented room must be invalid
+                if (hasExit && !hasDownExit && board.rowReqs[downRowIdx] <= 2) return true
+
+                val downRow = board.grid.row(downRowIdx)
+                val wallsForcedInDownRow = downRow.count{
+                    it.type.eq(CellType.WALL) && !downNeighbors.contains(it)
+                } + augmentedRoom.width() - if (hasDownExit || !hasExit) 1 else 0
+                if (wallsForcedInDownRow > board.rowReqs[downRowIdx]) return true
+            }
+        }
 
         return false
     }
@@ -113,43 +190,6 @@ class TreasureRoom(val box: Box) {
 
         val augmentedRoom = Box(box.minRow, box.minCol-offset, box.maxRow, box.maxCol)
 
-        //if the augmented room is width 3 and the col to the right of the augmented room can't fit the necessary walls
-        //we can't expand left
-        val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), board.grid)
-            .count{grid[it.first][it.second].eq(CellType.HALL)}
-        val hasExit = hallNeighbors == 1
-        if (augmentedRoom.width() == 3 && augmentedRoom.maxCol+1 < board.grid.maxCol ) {
-            val colToRight = augmentedRoom.maxCol + 1
-            if (board.colReqs[colToRight] <= 1) {
-                return true
-            }
-
-            //number of walls we can add to col to right
-            val wallsRemaining = board.colReqs[colToRight] - board.grid.col(colToRight).count{it.type.eq(CellType.WALL) }
-            //minimum number of walls in col to right that we will end up having to convert to wall if we expand the
-            //treasure room left.  if we don't yet have an exit, subtract 1 since the exit could be in the right neighbors
-            val cellsToRightThatMustBeChangedToWall = augmentedRoom.rightNeighbors(board.grid.numCols)
-                .map{ board.grid.cells[it.first][it.second] }
-                .count{ !it.known && it.canBe(CellType.WALL) } -
-                    if (hasExit) 0 else 1
-
-
-            if (cellsToRightThatMustBeChangedToWall > wallsRemaining) {
-                return true
-            }
-        }
-
-        //if the resulting number of empty cells in any row is greater than the max possible, we can't expand left
-        for (rowIdx in (augmentedRoom.minRow..augmentedRoom.maxRow)) {
-            val maxEmptiesPossibleInRow = board.grid.numCols - board.rowReqs[rowIdx]
-            val emptiesKnownInRow = board.grid.row(rowIdx)
-                .count{ !augmentedRoom.containsCol(it.col) && !it.type.canBe(CellType.WALL) } +
-                    augmentedRoom.width()
-            if (emptiesKnownInRow > maxEmptiesPossibleInRow) {
-                return true
-            }
-        }
-
         return expandedRoomInvalid(augmentedRoom, board)
     }
 
@@ -159,45 +199,6 @@ class TreasureRoom(val box: Box) {
         if (box.maxCol - box.minCol + offset > 2) return true
 
         val augmentedRoom = Box(box.minRow, box.minCol, box.maxRow, box.maxCol+offset)
-
-        //if the augmented room is width 3 and the col to the left of the augmented room can't fit the necessary walls
-        //we can't expand right
-        //If the augmented room has more than one neighbors of type HALL, we can't expand right
-        val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), board.grid)
-            .count{grid[it.first][it.second].eq(CellType.HALL)}
-        val hasExit = hallNeighbors == 1
-        if (augmentedRoom.width() == 3 && augmentedRoom.minCol-1 >= 0 ) {
-            val colToLeft = augmentedRoom.minCol-1
-            if (board.colReqs[colToLeft] <= 1) {
-                return true
-            }
-
-            //number of walls we can add to col to left
-            val wallsRemaining = board.colReqs[colToLeft] - board.grid.col(colToLeft).count{it.type.eq(CellType.WALL) }
-            //minimum number of walls in col to left that we will end up having to convert to wall if we expand the
-            //treasure room right.  if we don't yet have an exit, subtract 1 since the exit could be in the left neighbors
-            val cellsToLeftThatMustBeChangedToWall = augmentedRoom.leftNeighbors()
-                .map{ board.grid.cells[it.first][it.second] }
-                .count{ !it.known && it.canBe(CellType.WALL) } -
-                    if (hasExit) 0 else 1
-
-
-            if (cellsToLeftThatMustBeChangedToWall > wallsRemaining) {
-                return true
-            }
-        }
-
-
-        //if the resulting number of empty cells in any row is greater than the max possible, we can't expand right
-        for (rowIdx in (augmentedRoom.minRow..augmentedRoom.maxRow)) {
-            val maxEmptiesPossibleInRow = board.grid.numCols - board.rowReqs[rowIdx]
-            val emptiesKnownInRow = board.grid.row(rowIdx)
-                .count{ !augmentedRoom.containsCol(it.col) && !it.type.canBe(CellType.WALL) } +
-                    augmentedRoom.width()
-            if (emptiesKnownInRow > maxEmptiesPossibleInRow) {
-                return true
-            }
-        }
 
         return expandedRoomInvalid(augmentedRoom, board)
     }
@@ -209,45 +210,6 @@ class TreasureRoom(val box: Box) {
 
         val augmentedRoom = Box(box.minRow, box.minCol, box.maxRow+offset, box.maxCol)
 
-        //if the augmented room is height 3 and the row above the augmented room can't fit the necessary walls
-        //we can't expand down
-        val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), board.grid)
-            .count{grid[it.first][it.second].eq(CellType.HALL)}
-
-        val hasExit = hallNeighbors == 1
-        if (augmentedRoom.height() == 3 && augmentedRoom.minRow-1 >= 0 ) {
-            val rowAbove = augmentedRoom.minRow-1
-            if (board.rowReqs[rowAbove] <= 1) {
-                return true
-            }
-
-            //number of walls we can add to row above
-            val wallsRemaining = board.rowReqs[rowAbove] - board.grid.row(rowAbove).count{it.type.eq(CellType.WALL) }
-            //minimum number of walls in row above that we will end up having to convert to wall if we expand the
-            //treasure room down.  if we don't yet have an exit, subtract 1 since the exit could be in the up neighbors
-            val cellsAboveThatMustBeChangedToWall = augmentedRoom.upNeighbors()
-                .map{ board.grid.cells[it.first][it.second] }
-                .count{ !it.known && it.canBe(CellType.WALL) } -
-                    if (hasExit) 0 else 1
-
-
-            if (cellsAboveThatMustBeChangedToWall > wallsRemaining) {
-                return true
-            }
-        }
-
-
-        //if the resulting number of empty cells in any col is greater than the max possible, we can't expand down
-        for (colIdx in (augmentedRoom.minCol..augmentedRoom.maxCol)) {
-            val maxEmptiesPossibleInCol = board.grid.numRows - board.colReqs[colIdx]
-            val emptiesKnownInCol = board.grid.col(colIdx)
-                .count{ !augmentedRoom.containsRow(it.row) && !it.type.canBe(CellType.WALL) } +
-                    augmentedRoom.height()
-            if (emptiesKnownInCol > maxEmptiesPossibleInCol) {
-                return true
-            }
-        }
-
         return expandedRoomInvalid(augmentedRoom, board)
     }
 
@@ -257,44 +219,6 @@ class TreasureRoom(val box: Box) {
         if (box.maxRow - box.minRow + offset > 2) return true
 
         val augmentedRoom = Box(box.minRow-offset, box.minCol, box.maxRow, box.maxCol)
-
-        //if the augmented room is height 3 and the row below the augmented room can't fit the necessary walls
-        //we can't expand up
-        val hallNeighbors = getTreasureRoomNeighbors(TreasureRoom(augmentedRoom), board.grid)
-            .count{grid[it.first][it.second].eq(CellType.HALL)}
-        val hasExit = hallNeighbors == 1
-        if (augmentedRoom.height() == 3 && augmentedRoom.maxRow+1 < board.grid.numRows ) {
-            val rowBelow = augmentedRoom.maxRow+1
-            if (board.rowReqs[rowBelow] <= 1) {
-                return true
-            }
-
-            //number of walls we can add to row above
-            val wallsRemaining = board.rowReqs[rowBelow] - board.grid.row(rowBelow).count{it.type.eq(CellType.WALL) }
-            //minimum number of walls in row above that we will end up having to convert to wall if we expand the
-            //treasure room down.  if we don't yet have an exit, subtract 1 since the exit could be in the up neighbors
-            val cellsBelowThatMustBeChangedToWall = augmentedRoom.downNeighbors(board.grid.numRows)
-                .map{ board.grid.cells[it.first][it.second] }
-                .count{ !it.known && it.canBe(CellType.WALL) } -
-                    if (hasExit) 0 else 1
-
-
-            if (cellsBelowThatMustBeChangedToWall > wallsRemaining) {
-                return true
-            }
-        }
-
-        //if the resulting number of empty cells in any col is greater than the max possible, we can't expand up
-        for (colIdx in (augmentedRoom.minCol..augmentedRoom.maxCol)) {
-            val maxEmptiesPossibleInCol = board.grid.numRows - board.colReqs[colIdx]
-            val emptiesKnownInCol = board.grid.col(colIdx)
-                .count{ !augmentedRoom.containsRow(it.row) && !it.type.canBe(CellType.WALL) } +
-                    augmentedRoom.height()
-            if (emptiesKnownInCol > maxEmptiesPossibleInCol) {
-                return true
-            }
-        }
-
         return expandedRoomInvalid(augmentedRoom, board)
     }
 }
