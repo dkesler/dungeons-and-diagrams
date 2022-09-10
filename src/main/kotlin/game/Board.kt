@@ -1,10 +1,8 @@
 package game
 
-import rules.ApplyResult
 import utils.Box
 import utils.Point
 import utils.TreasureRoom
-import java.util.function.Predicate
 
 class Board(
         val rowReqs: List<Int>,
@@ -167,35 +165,14 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a hall")
         }
 
-        val treasureRoomNeighborPoints = getTreasureRoomNeighbors(treasureRoom, grid)
-        val treasureRoomNeighborTypes = treasureRoomNeighborPoints.map{ grid.cells[it.first][it.second] }
-        if (treasureRoomNeighborTypes.count{it.eq(CellType.HALL)} > 1) {
+        val treasureRoomNeighbors = grid.neighbors(treasureRoom.box)
+        if (treasureRoomNeighbors.count{it.type.eq(CellType.HALL)} > 1) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) has multiple exits")
         }
     }
 
     return Pair(true, "")
 }
-
-//TODO: move into TreasureRoom
-fun getTreasureRoomNeighbors(treasureRoom: TreasureRoom, grid: Grid): List<Pair<Int, Int>> {
-    val neighbors = mutableSetOf<Pair<Int, Int>>()
-
-    for (col in (treasureRoom.minCol..treasureRoom.maxCol)) {
-        neighbors.add(Pair(treasureRoom.minRow-1, col))
-        neighbors.add(Pair(treasureRoom.maxRow+1, col))
-    }
-    for (row in (treasureRoom.minRow..treasureRoom.maxRow)) {
-        neighbors.add(Pair(row, treasureRoom.minCol-1))
-        neighbors.add(Pair(row, treasureRoom.maxCol+1))
-    }
-
-    return neighbors.filter{it.first >= 0}
-        .filter{it.first < grid.cells.size}
-        .filter{it.second >= 0}
-        .filter{it.second < grid.cells[0].size}
-}
-
 fun getAllTreasureRooms(grid: Grid): Set<TreasureRoom> {
     val visited = mutableSetOf<Pair<Int, Int>>()
     val treasureRooms = mutableSetOf<TreasureRoom>()

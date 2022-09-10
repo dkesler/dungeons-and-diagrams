@@ -2,7 +2,6 @@ package utils
 
 import game.Board
 import game.CellType
-import game.getTreasureRoomNeighbors
 
 class TreasureRoom(val box: Box) {
     val minRow: Int

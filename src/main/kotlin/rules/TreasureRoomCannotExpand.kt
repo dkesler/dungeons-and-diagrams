@@ -19,25 +19,25 @@ class TreasureRoomCannotExpand : Rule {
             val toUpdate = mutableSetOf<Point>()
 
             if (treasureRoom.cannotExpandLeft(board, 1)) {
-                treasureRoom.box.leftNeighbors().map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
+                board.grid.leftNeighbors(treasureRoom.box)
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandRight(board, 1)) {
-                treasureRoom.box.rightNeighbors(board.grid.numCols).map { Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
+                board.grid.rightNeighbors(treasureRoom.box)
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandDown(board, 1)) {
-                treasureRoom.box.downNeighbors(board.grid.numRows).map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
+                board.grid.downNeighbors(treasureRoom.box)
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
 
             if (treasureRoom.cannotExpandUp(board, 1)) {
-                treasureRoom.box.upNeighbors().map {Point(it.first, it.second, board.grid.cells[it.first][it.second]) }
+                board.grid.upNeighbors(treasureRoom.box)
                     .filter { it.type.canBe(CellType.TREASURE_ROOM) }
                     .forEach { toUpdate.add(it) }
             }
