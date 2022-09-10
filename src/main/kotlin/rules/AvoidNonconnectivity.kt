@@ -2,7 +2,6 @@ package rules
 
 import game.Board
 import game.CellType
-import game.Grid
 import utils.Point
 
 //For each empty cell, find the contiguous empty blocks attached to it.
@@ -35,7 +34,7 @@ class AvoidNonconnectivity : Rule{
 
         return each(
             board,
-            {it.type.mustBe(CellType.HALL, CellType.TREASURE_ROOM)},
+            {it.type.mustBe(CellType.HALLWAY, CellType.ROOM)},
             ::rule
         )
 
@@ -53,7 +52,7 @@ class AvoidNonconnectivity : Rule{
             toVisit.remove(visiting)
             val neighbors = board.grid.neighbors(visiting.row, visiting.col)
             neighbors.filter { it !in visited }
-                .filter{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.TREASURE, CellType.HALL, CellType.MONSTER) }
+                .filter{ it.type.mustBe(CellType.ROOM, CellType.TREASURE, CellType.HALLWAY, CellType.MONSTER) }
                 .forEach { visited.add(it); toVisit.add(it) }
         }
         return visited

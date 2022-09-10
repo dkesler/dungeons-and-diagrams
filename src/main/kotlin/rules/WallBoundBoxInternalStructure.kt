@@ -142,6 +142,6 @@ class WallBoundBoxInternalStructure : Rule {
     }
 
     private fun isAllUnknown(box: Box, board: Board): Boolean {
-        return box.points().map{ board.grid.cells[it.first][it.second] }.all { it.canBe(CellType.WALL) && it.canBe(CellType.TREASURE_ROOM, CellType.HALL) }
+        return box.points().map{ board.grid.cells[it.first][it.second] }.all { it.canBe(CellType.WALL) && it.canBe(CellType.ROOM, CellType.HALLWAY) }
     }
 }

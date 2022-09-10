@@ -1,12 +1,10 @@
 package game
 
-import java.lang.RuntimeException
-
 enum class CellType(val c: Char) {
-    HALL('.'),
+    HALLWAY('.'),
     WALL('W'),
     TREASURE('T'),
-    TREASURE_ROOM('O'),
+    ROOM('O'),
     MONSTER('M')
 }
 

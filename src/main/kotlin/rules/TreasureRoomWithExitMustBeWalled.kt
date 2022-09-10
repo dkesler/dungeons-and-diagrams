@@ -1,7 +1,6 @@
 package rules
 
 import game.*
-import utils.Box
 import utils.Point
 import utils.TreasureRoom
 
@@ -15,7 +14,7 @@ class TreasureRoomWithExitMustBeWalled : Rule {
             val treasureRoomNeighbors = treasureRoomHorizontalNeighbors + treasureRoomVerticalNeighbors
             //This treasure room has an exit.  if we cannot expand in a given direction, all unknown neighbors in that
             //direction must be a wall
-            val treasureRoomHasExit = treasureRoomNeighbors.any { it.type.eq(CellType.HALL) } ||
+            val treasureRoomHasExit = treasureRoomNeighbors.any { it.type.eq(CellType.HALLWAY) } ||
                     (treasureRoom.box.width() == 3 && treasureRoomHorizontalNeighbors.any{!it.type.canBe(CellType.WALL)}) ||
                     (treasureRoom.box.height() == 3 && treasureRoomVerticalNeighbors.any{!it.type.canBe(CellType.WALL)})
             if (treasureRoomHasExit) {

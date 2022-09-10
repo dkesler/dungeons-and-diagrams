@@ -25,13 +25,13 @@ class TypeRange(val types: Set<CellType>) {
     fun toChar(): Char {
         return when(types) {
             setOf(CellType.TREASURE) -> 'T'
-            setOf(CellType.TREASURE_ROOM) -> 'O'
+            setOf(CellType.ROOM) -> 'O'
             setOf(CellType.MONSTER) -> 'M'
             setOf(CellType.WALL) -> '#'
-            setOf(CellType.HALL, CellType.TREASURE_ROOM) -> 'o'
-            setOf(CellType.HALL) -> '.'
-            setOf(CellType.WALL, CellType.HALL) -> '!'
-            setOf(CellType.WALL, CellType.TREASURE_ROOM) -> '$'
+            setOf(CellType.HALLWAY, CellType.ROOM) -> 'o'
+            setOf(CellType.HALLWAY) -> '.'
+            setOf(CellType.WALL, CellType.HALLWAY) -> '!'
+            setOf(CellType.WALL, CellType.ROOM) -> '$'
             else -> '?'
         }
     }
@@ -55,15 +55,15 @@ class TypeRange(val types: Set<CellType>) {
     companion object {
         fun fromChar(c: Char): TypeRange {
             return when (c) {
-                '?' -> TypeRange(setOf(CellType.WALL, CellType.HALL, CellType.TREASURE_ROOM))
-                'o' -> TypeRange(setOf(CellType.HALL, CellType.TREASURE_ROOM))
-                '.' -> TypeRange(setOf(CellType.HALL))
+                '?' -> TypeRange(setOf(CellType.WALL, CellType.HALLWAY, CellType.ROOM))
+                'o' -> TypeRange(setOf(CellType.HALLWAY, CellType.ROOM))
+                '.' -> TypeRange(setOf(CellType.HALLWAY))
                 '#' -> TypeRange(setOf(CellType.WALL))
                 'T' -> TypeRange(setOf(CellType.TREASURE))
                 'M' -> TypeRange(setOf(CellType.MONSTER))
-                'O' -> TypeRange(setOf(CellType.TREASURE_ROOM))
-                '!' -> TypeRange(setOf(CellType.WALL, CellType.HALL))
-                '$' -> TypeRange(setOf(CellType.WALL, CellType.TREASURE_ROOM))
+                'O' -> TypeRange(setOf(CellType.ROOM))
+                '!' -> TypeRange(setOf(CellType.WALL, CellType.HALLWAY))
+                '$' -> TypeRange(setOf(CellType.WALL, CellType.ROOM))
 
                 else -> throw RuntimeException("Unknown char [${c}] in TypeRange.fromChar")
             }

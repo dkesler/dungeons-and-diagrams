@@ -14,13 +14,13 @@ class AllTreasureRoomsComplete : Rule {
         val allTreasureRoomsComplete = treasureRooms.all{ it.box.width() == 3 && it.box.height() == 3}
         if (allTreasureRoomsComplete) {
             val anyUnknownsThatCanBeTreasureRoom = board.grid.points().filter {
-                !it.type.known && it.type.canBe(CellType.TREASURE_ROOM)
+                !it.type.known && it.type.canBe(CellType.ROOM)
             }
 
             if (anyUnknownsThatCanBeTreasureRoom.isNotEmpty()) {
                 return update(
                     board,
-                    anyUnknownsThatCanBeTreasureRoom.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.TREASURE_ROOM)) },
+                    anyUnknownsThatCanBeTreasureRoom.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.ROOM)) },
                     ""
                 )
             }

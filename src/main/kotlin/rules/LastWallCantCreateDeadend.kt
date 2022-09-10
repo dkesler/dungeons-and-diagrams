@@ -58,7 +58,7 @@ class LastWallCantCreateDeadend: Rule {
     private fun wouldCreateDeadEndAsWall(idx: Int, slice: List<Point>, board: Board): Boolean {
         val pointTurningToWall = slice[idx]
         for (point in slice) {
-            if (pointTurningToWall != point && point.type.canBe(CellType.HALL, CellType.TREASURE_ROOM)) {
+            if (pointTurningToWall != point && point.type.canBe(CellType.HALLWAY, CellType.ROOM)) {
                 val neighbors = board.grid.neighbors(point.row, point.col)
                 val wallNeighbors = neighbors.filter{ it == pointTurningToWall || it.type.eq(CellType.WALL) }
                 if (wallNeighbors.size + 1 >= neighbors.size) {

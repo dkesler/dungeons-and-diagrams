@@ -49,7 +49,7 @@ class CantReachTreasure : Rule {
             val candidateTreasures = board.treasures.filter(treasureHuntingBoundingBox::contains)
             //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
             if (candidateTreasures.none{ canFeasiblyReachTreasure(point.row, point.col, it)}) {
-                val update = board.update(point.row, point.col, point.type.types - CellType.TREASURE_ROOM)
+                val update = board.update(point.row, point.col, point.type.types - CellType.ROOM)
                 return Rule.Check(update, ".row[$${point.row}].col[${point.col}]")
             }
             return null
@@ -57,7 +57,7 @@ class CantReachTreasure : Rule {
 
         return each(
             board,
-            {it.type.canBe(CellType.TREASURE_ROOM)},
+            {it.type.canBe(CellType.ROOM)},
             ::rule
         )
     }

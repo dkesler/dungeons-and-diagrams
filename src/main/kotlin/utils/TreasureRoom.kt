@@ -49,7 +49,7 @@ class TreasureRoom(val box: Box) {
         }
 
         //if the expanded room has more than one hall neighbor, it's invalid
-        if (neighbors.count{it.type.eq(CellType.HALL)} > 1) {
+        if (neighbors.count{it.type.eq(CellType.HALLWAY)} > 1) {
             return true
         }
 
@@ -103,17 +103,17 @@ class TreasureRoom(val box: Box) {
         }
 
 
-        val hasExit = neighbors.any{ it.type.eq(CellType.HALL) } ||
-                (augmentedRoom.width() == 3 && horizontalNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) }) ||
-                (augmentedRoom.height() == 3 && verticalNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
-        val hasLeftExit = leftNeighbors.any {it.type.eq(CellType.HALL) } ||
-                (augmentedRoom.width() == 3 && leftNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
-        val hasRightExit = rightNeighbors.any {it.type.eq(CellType.HALL) } ||
-                (augmentedRoom.width() == 3 && rightNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
-        val hasUpExit = upNeighbors.any {it.type.eq(CellType.HALL) } ||
-                (augmentedRoom.height() == 3 && upNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
-        val hasDownExit = downNeighbors.any {it.type.eq(CellType.HALL) } ||
-                (augmentedRoom.height() == 3 && downNeighbors.any{ it.type.mustBe(CellType.TREASURE_ROOM, CellType.HALL) })
+        val hasExit = neighbors.any{ it.type.eq(CellType.HALLWAY) } ||
+                (augmentedRoom.width() == 3 && horizontalNeighbors.any{ it.type.mustBe(CellType.ROOM, CellType.HALLWAY) }) ||
+                (augmentedRoom.height() == 3 && verticalNeighbors.any{ it.type.mustBe(CellType.ROOM, CellType.HALLWAY) })
+        val hasLeftExit = leftNeighbors.any {it.type.eq(CellType.HALLWAY) } ||
+                (augmentedRoom.width() == 3 && leftNeighbors.any{ it.type.mustBe(CellType.ROOM, CellType.HALLWAY) })
+        val hasRightExit = rightNeighbors.any {it.type.eq(CellType.HALLWAY) } ||
+                (augmentedRoom.width() == 3 && rightNeighbors.any{ it.type.mustBe(CellType.ROOM, CellType.HALLWAY) })
+        val hasUpExit = upNeighbors.any {it.type.eq(CellType.HALLWAY) } ||
+                (augmentedRoom.height() == 3 && upNeighbors.any{ it.type.mustBe(CellType.ROOM, CellType.HALLWAY) })
+        val hasDownExit = downNeighbors.any {it.type.eq(CellType.HALLWAY) } ||
+                (augmentedRoom.height() == 3 && downNeighbors.any{ it.type.mustBe(CellType.ROOM, CellType.HALLWAY) })
 
         //if the expanded room is max width and it's horizontal neighbor cols don't have enough room for walls, it's invalid
         if (augmentedRoom.width() == 3) {

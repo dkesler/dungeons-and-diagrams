@@ -12,7 +12,7 @@ class EmptyCannotBeIsolated : Rule {
     override fun apply(board: Board): ApplyResult {
         fun rule(point: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(point.row, point.col)
-            val numNonemptyNeighbors = neighbors.count { !it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM, CellType.TREASURE) }
+            val numNonemptyNeighbors = neighbors.count { !it.type.canBe(CellType.HALLWAY, CellType.ROOM, CellType.TREASURE) }
             val unknownNeighborsThatCanBeWall = neighbors.filter { it.type.canBe(CellType.WALL) && !it.type.known }
             if (numNonemptyNeighbors == neighbors.count()-1 && unknownNeighborsThatCanBeWall.isNotEmpty()) {
                 val toUpdate = unknownNeighborsThatCanBeWall.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.WALL)) }
@@ -23,7 +23,7 @@ class EmptyCannotBeIsolated : Rule {
 
         return each(
             board,
-            { it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.canBe(CellType.WALL) },
+            { it.type.canBe(CellType.HALLWAY, CellType.ROOM) && !it.type.canBe(CellType.WALL) },
             ::rule
         )
     }

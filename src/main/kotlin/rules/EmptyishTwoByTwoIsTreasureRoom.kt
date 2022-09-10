@@ -14,8 +14,8 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
         fun rule(box: Box): Rule.Check? {
             val subGrid = board.grid.subgrid(box).flatten()
             if (containsAtLeastOnePossibleHall(subGrid) && isEmptyish(subGrid)) {
-                val toUpdate = subGrid.filter { it.type.canBe(CellType.HALL) }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALL)) }
+                val toUpdate = subGrid.filter { it.type.canBe(CellType.HALLWAY) }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALLWAY)) }
                 return Rule.Check(board.update(toUpdate), "row[${box.minRow}].col[${box.minCol}]")
             }
             return null
@@ -31,6 +31,6 @@ class EmptyishTwoByTwoIsTreasureRoom : Rule {
         return subGrid.all { it.type.cannotBe(CellType.WALL, CellType.MONSTER) }
     }
     private fun containsAtLeastOnePossibleHall(subGrid: List<Point>): Boolean {
-        return subGrid.any { it.type.canBe(CellType.HALL) }
+        return subGrid.any { it.type.canBe(CellType.HALLWAY) }
     }
 }

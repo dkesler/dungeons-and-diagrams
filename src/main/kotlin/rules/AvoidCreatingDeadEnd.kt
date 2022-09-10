@@ -13,7 +13,7 @@ class AvoidCreatingDeadEnd : Rule {
             val neighbors = board.grid.neighbors(point.toPair())
             val wallNeighbors = neighbors.filter { it.type.eq(CellType.WALL) }
             if (wallNeighbors.count() >= neighbors.count()-1) {
-                val update = board.update(point.row, point.col, point.type.types - setOf(CellType.TREASURE_ROOM, CellType.HALL))
+                val update = board.update(point.row, point.col, point.type.types - setOf(CellType.ROOM, CellType.HALLWAY))
                 return Rule.Check(update, "row[${point.row}].col[${point.col}}]")
             }
             return null
@@ -21,7 +21,7 @@ class AvoidCreatingDeadEnd : Rule {
 
         return each(
             board,
-            { it.type.canBe(CellType.TREASURE_ROOM, CellType.HALL) },
+            { it.type.canBe(CellType.ROOM, CellType.HALLWAY) },
             ::rule
         )
     }

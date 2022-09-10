@@ -9,7 +9,7 @@ import utils.Point
 //cannot be hall
 class UnknownIslandThatCantReachHallCantBeHall: Rule {
     override fun apply(board: Board): ApplyResult {
-        val knownHalls = board.grid.points().filter{ it.type.eq(CellType.HALL) }
+        val knownHalls = board.grid.points().filter{ it.type.eq(CellType.HALLWAY) }
         //if there's no known halls yet, we can't verify connectivity to those halls
         if (knownHalls.isEmpty()) {
             return ApplyResult(false, false, name(), "", board)
@@ -17,11 +17,11 @@ class UnknownIslandThatCantReachHallCantBeHall: Rule {
 
         fun rule(point: Point): Rule.Check? {
             val island = findIslandOfCellsThatCouldBeHall(point, board)
-            if (island.count{ it.type.eq(CellType.HALL) } > 0) return null
+            if (island.count{ it.type.eq(CellType.HALLWAY) } > 0) return null
 
             return Rule.Check(
                 board.update(
-                    island.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALL)) }
+                    island.map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.HALLWAY)) }
                 ),
                 "row[${point.row}].col[${point.col}]"
             )
@@ -29,7 +29,7 @@ class UnknownIslandThatCantReachHallCantBeHall: Rule {
 
         return each(
             board,
-            { it.type.canBe(CellType.HALL) && !it.type.known },
+            { it.type.canBe(CellType.HALLWAY) && !it.type.known },
             ::rule
         )
     }
@@ -43,7 +43,7 @@ class UnknownIslandThatCantReachHallCantBeHall: Rule {
             toVisit.remove(visiting)
             val neighbors = board.grid.neighbors(visiting.row, visiting.col)
             neighbors.filter { it !in visited }
-                .filter{ it.type.canBe(CellType.HALL) }
+                .filter{ it.type.canBe(CellType.HALLWAY) }
                 .forEach { visited.add(it); toVisit.add(it) }
         }
         return visited

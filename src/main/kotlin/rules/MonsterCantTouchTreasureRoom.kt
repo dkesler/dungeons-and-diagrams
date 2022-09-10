@@ -12,9 +12,9 @@ class MonsterCantTouchTreasureRoom : Rule {
 
         fun rule(monster: Point): Rule.Check? {
             val neighbors = board.grid.neighbors(monster.row, monster.col)
-            if (neighbors.any { it.type.canBe(CellType.TREASURE_ROOM)}) {
-                val toUpdate = neighbors.filter {it.type.canBe(CellType.TREASURE_ROOM) }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.TREASURE_ROOM)) }
+            if (neighbors.any { it.type.canBe(CellType.ROOM)}) {
+                val toUpdate = neighbors.filter {it.type.canBe(CellType.ROOM) }
+                    .map{ Point(it.row, it.col, TypeRange(it.type.types - CellType.ROOM)) }
                 return Rule.Check(board.update(toUpdate), "row[${monster.row}].col[${monster.col}]")
             }
             return null

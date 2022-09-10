@@ -23,7 +23,7 @@ class EmptyCannotDeadend : Rule {
 
         return each(
             board,
-            { it.type.canBe(CellType.HALL, CellType.TREASURE_ROOM) && !it.type.canBe(CellType.WALL) },
+            { it.type.canBe(CellType.HALLWAY, CellType.ROOM) && !it.type.canBe(CellType.WALL) },
             ::rule
         )
     }

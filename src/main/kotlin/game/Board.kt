@@ -97,7 +97,7 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
                 Pair(rowIdx+1, colIdx),
                 Pair(rowIdx, colIdx+1),
                 Pair(rowIdx+1, colIdx+1)
-            ).all { grid.cells[it.first][it.second].eq(CellType.HALL) }
+            ).all { grid.cells[it.first][it.second].eq(CellType.HALLWAY) }
             if (emptyTwoByTwo) return Pair(false, "2x2 Hall starting on ($rowIdx,$colIdx)")
         }
     }
@@ -111,7 +111,7 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
                 val neighboringEmpties = neighbors.count{ !it.type.canBe(CellType.WALL) }
                 if (neighboringEmpties > 1) return Pair(false, "Monster at ($rowIdx,$colIdx) not in a dead end")
                 //monsters can't go directly into treasure rooms
-                val neighboringTreasuresOrRoom = neighbors.map{ it.type }.count{it.mustBe(CellType.TREASURE_ROOM, CellType.TREASURE)}
+                val neighboringTreasuresOrRoom = neighbors.map{ it.type }.count{it.mustBe(CellType.ROOM, CellType.TREASURE)}
                 if (neighboringTreasuresOrRoom > 0) return Pair(false, "Monster at ($rowIdx,$colIdx) neighbors treasure room")
             } else if (!grid.cells[rowIdx][colIdx].canBe(CellType.WALL)) {
                 //not a monster and not a wall so cannot be a dead end
@@ -120,7 +120,7 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
                 if (neighboringWalls == neighbors.size - 1) return Pair(false, "Dead end at ($rowIdx,$colIdx) with no monster")
 
                 if (grid.cells[rowIdx][colIdx].eq(CellType.TREASURE)) {
-                    val neighboringHalls = neighbors.count{ it.type.eq(CellType.HALL)}
+                    val neighboringHalls = neighbors.count{ it.type.eq(CellType.HALLWAY)}
                     if (neighboringHalls > 1) {
                         return Pair(false, "Treasure at ($rowIdx,$colIdx) in a hallway")
                     }
@@ -161,12 +161,12 @@ fun isValid(grid: Grid, rowReqs: List<Int>, colReqs: List<Int>): Pair<Boolean, S
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a wall")
         }
 
-        if (treasureRoomContents.count{ it.eq(CellType.HALL) } > 0) {
+        if (treasureRoomContents.count{ it.eq(CellType.HALLWAY) } > 0) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) contains a hall")
         }
 
         val treasureRoomNeighbors = grid.neighbors(treasureRoom.box)
-        if (treasureRoomNeighbors.count{it.type.eq(CellType.HALL)} > 1) {
+        if (treasureRoomNeighbors.count{it.type.eq(CellType.HALLWAY)} > 1) {
             return Pair(false, "Treasure room starting at (${treasureRoom.minRow},${treasureRoom.minCol}) has multiple exits")
         }
     }
@@ -180,7 +180,7 @@ fun getAllTreasureRooms(grid: Grid): Set<TreasureRoom> {
     for (row in grid.rows) {
         for (col in grid.cols) {
             val type = grid.cells[row][col]
-            if ((type.eq(CellType.TREASURE_ROOM) || type.eq(CellType.TREASURE)) && Pair(row, col) !in visited) {
+            if ((type.eq(CellType.ROOM) || type.eq(CellType.TREASURE)) && Pair(row, col) !in visited) {
                 val treasureRoomCells = findTreasureRoomStartingAt(row, col, grid)
                 visited.addAll(treasureRoomCells)
                 val minRow = treasureRoomCells.minOfOrNull { it.first }!!
@@ -203,7 +203,7 @@ fun findTreasureRoomStartingAt(row: Int, col: Int, grid: Grid): Set<Pair<Int, In
         val visiting = toVisit.first()
         toVisit.remove(visiting)
         val neighbors = grid.neighbors(visiting.first, visiting.second)
-        val treasureNeighbors = neighbors.filter{ it.type.mustBe(CellType.TREASURE, CellType.TREASURE_ROOM)}
+        val treasureNeighbors = neighbors.filter{ it.type.mustBe(CellType.TREASURE, CellType.ROOM)}
             .map{it.toPair()}
             .filter{ it !in visited }
         visited.addAll(treasureNeighbors)
@@ -270,7 +270,7 @@ fun createBoard(
             } else if (point in treasures) {
                 grid[rIdx].add(TypeRange(setOf(CellType.TREASURE)))
             } else {
-                grid[rIdx].add(TypeRange(setOf(CellType.WALL, CellType.HALL, CellType.TREASURE_ROOM)))
+                grid[rIdx].add(TypeRange(setOf(CellType.WALL, CellType.HALLWAY, CellType.ROOM)))
             }
         }
     }
