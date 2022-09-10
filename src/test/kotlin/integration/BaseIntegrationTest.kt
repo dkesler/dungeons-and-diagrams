@@ -70,7 +70,7 @@ abstract class BaseIntegrationTest {
         println("Total Deductions Applied: $totalInferences")
         println("Total Eval Time Millis: $totalEvalTimeMs")
         println("Deduction Stats:")
-        val rowFormat = "|%-35s|%-10s|%-10s|%-15s|"
+        val rowFormat = "|%-40s|%-10s|%-10s|%-15s|"
         println(rowFormat.format("Name", "Applied", "Evaluated", "Duration (ms)"))
         for (deduction in deductionsByName) {
             println(rowFormat.format(deduction.key, deduction.value.timesApplied, deduction.value.timesEvaluated, deduction.value.timeSpentMs))
