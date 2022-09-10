@@ -34,7 +34,7 @@ class UnknownIslandThatCantReachHallCantBeHall: Rule {
         )
     }
 
-    fun findIslandOfCellsThatCouldBeHall(point: Point, board: Board): Set<Point> {
+    private fun findIslandOfCellsThatCouldBeHall(point: Point, board: Board): Set<Point> {
         val visited = mutableSetOf(point)
         val toVisit = mutableSetOf(point)
 

@@ -44,6 +44,43 @@ class Grid(val cells: List<List<TypeRange>>) {
         return n.map{ Point(it.first, it.second, cells[it.first][it.second])}.toSet()
     }
 
+    fun horizontalNeighbors(box: Box): Set<Point> {
+        return leftNeighbors(box) + rightNeighbors(box)
+    }
+
+    fun leftNeighbors(box: Box): Set<Point> {
+        return (box.minRow..box.maxRow).map{ Pair(it, box.minCol-1) }
+            .filter{it.second in cols }
+            .map{ Point(it.first, it.second, cells[it.first][it.second]) }
+            .toSet()
+    }
+
+    fun rightNeighbors(box: Box): Set<Point> {
+        return (box.minRow..box.maxRow).map{ Pair(it, box.maxCol+1) }
+            .filter{it.second in cols }
+            .map{ Point(it.first, it.second, cells[it.first][it.second]) }
+            .toSet()
+    }
+
+    fun verticalNeighbors(box: Box): Set<Point> {
+        return upNeighbors(box) + downNeighbors(box)
+    }
+
+    fun upNeighbors(box: Box): Set<Point> {
+        return (box.minCol..box.maxCol).map{ Pair(box.minRow-1, it) }
+            .filter{it.first in rows }
+            .map{ Point(it.first, it.second, cells[it.first][it.second]) }
+            .toSet()
+    }
+
+    fun downNeighbors(box: Box): Set<Point> {
+        return (box.minCol..box.maxCol).map{ Pair(box.maxRow+1, it) }
+            .filter{it.first in rows }
+            .map{ Point(it.first, it.second, cells[it.first][it.second]) }
+            .toSet()
+    }
+
+
     fun verticalNeighbors(row: Int, col: Int): Set<Point> {
         val n = mutableSetOf<Pair<Int, Int>>()
         if (row-1 >= 0) {
