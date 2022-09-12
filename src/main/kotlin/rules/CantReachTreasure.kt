@@ -50,7 +50,7 @@ class CantReachTreasure : Rule {
             //If the current space cannot feasibly reach any treasure, it cannot be a treasure room
             if (candidateTreasures.none{ canFeasiblyReachTreasure(point.row, point.col, it)}) {
                 val update = board.update(point.row, point.col, point.type.types - Type.ROOM)
-                return Rule.Check(update, ".row[$${point.row}].col[${point.col}]")
+                return Rule.Check(update, "row[${point.row}].col[${point.col}]")
             }
             return null
         }

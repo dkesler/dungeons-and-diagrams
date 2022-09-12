@@ -38,8 +38,9 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         EmptyishTwoByTwoIsTreasureRoom(),
 
         WallBoundBoxInternalStructure(),
+        IBeam(),
         AvoidNonconnectivity(),
-        UnknownIslandThatCantReachHallCantBeHall(),
+        IncompleteUnknownHallCrawlCantBeHallway(),
 
         //Generally, if we reach these rules (other than AllTreasureRoomsComplete as the very last step), we're not
         //solving very human-like or elegantly
