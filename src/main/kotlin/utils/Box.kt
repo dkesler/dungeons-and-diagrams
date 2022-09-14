@@ -1,5 +1,8 @@
 package utils
 
+import kotlin.math.max
+import kotlin.math.min
+
 data class Box(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: Int) {
     fun contains(row: Int, col: Int): Boolean {
         return row in minRow..maxRow && col in minCol..maxCol
@@ -33,6 +36,18 @@ data class Box(val minRow: Int, val minCol: Int, val maxRow: Int, val maxCol: In
         return maxRow - minRow + 1
     }
 
+    fun overlaps(box: Box): Boolean {
+        return box.points().any { contains(it) }
+    }
+
+    fun merge(other: Box): Box {
+        return Box(
+            min(this.minRow, other.minRow),
+            min(this.minCol, other.minCol),
+            max(this.maxRow, other.maxRow),
+            max(this.maxCol, other.maxCol)
+        )
+    }
 
     companion object {
         fun fromPoints(points: Collection<Pair<Int, Int>>): Box {

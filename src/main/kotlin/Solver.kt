@@ -37,6 +37,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         TreasureRoomWithExitMustBeWalled(),
         EmptyishTwoByTwoIsTreasureRoom(),
 
+        Railroad(),
         WallBoundBoxInternalStructure(),
         IBeam(),
         AvoidNonconnectivity(),
