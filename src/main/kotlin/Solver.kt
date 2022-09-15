@@ -31,11 +31,13 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         EmptyCannotBeIsolated(),
         AvoidCreatingDeadEnd(),
         AvoidTwoByTwoHall(),
+
         LastGapCantCreateDeadend(),
         LastWallCantCreateDeadend(),
         TreasureExpandsAwayFromWall(),
         TreasureRoomWithExitMustBeWalled(),
         EmptyishTwoByTwoIsTreasureRoom(),
+        LastTwoWallsCantCreateCulDeSac(),
 
         Railroad(),
         WallBoundBoxInternalStructure(),
