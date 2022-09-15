@@ -42,7 +42,8 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         Railroad(),
         WallBoundBoxInternalStructure(),
         IBeam(),
-        AvoidNonconnectivity(),
+        IncompleteKnownHallCrawlMustExpand(),
+        //AvoidNonconnectivity(),
         IncompleteUnknownHallCrawlCantBeHallway(),
 
         //Generally, if we reach these rules (other than AllTreasureRoomsComplete as the very last step), we're not
