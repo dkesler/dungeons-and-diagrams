@@ -9,41 +9,26 @@ class LastGapCantCreateDeadend: Rule {
 
     override fun apply(board: Board): ApplyResult {
 
-        fun rowRule(row: List<Point>, rowIdx: Int): Rule.Check? {
-            if (gapsRemaining(board.rowReqs[rowIdx], row) == 1) {
-                val changeToWall = mutableSetOf<Point>()
-                for (colIdx in board.grid.cols) {
-                    if (!row[colIdx].type.known && row[colIdx].type.canBe(Type.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
-                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(Type.WALL))))
-                    }
-                }
-
-                if (changeToWall.isNotEmpty()) {
-                    return Rule.Check(board.update(changeToWall), "row[$rowIdx]");
-                }
-            }
-            return null
-        }
-
-        fun colRule(col: List<Point>, colIdx: Int): Rule.Check? {
-            if (gapsRemaining(board.colReqs[colIdx], col) == 1) {
-                val changeToWall = mutableSetOf<Point>()
-                for (rowIdx in board.grid.rows) {
-                    if (!col[rowIdx].type.known && col[rowIdx].type.canBe(Type.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, false)) {
-                        changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(Type.WALL))))
-                    }
-                }
-                if (changeToWall.isNotEmpty()) {
-                    return Rule.Check(board.update(changeToWall), "col[$colIdx]")
-                }
-            }
-            return null
-        }
-        return eachRowAndCol(
+        return eachStripe(
             board,
-            ::rowRule,
-            ::colRule
+            ::rowRule
         )
+    }
+
+    fun rowRule(row: List<Point>, rowIdx: Int, board: Board): Rule.Check? {
+        if (gapsRemaining(board.rowReqs[rowIdx], row) == 1) {
+            val changeToWall = mutableSetOf<Point>()
+            for (colIdx in board.grid.cols) {
+                if (!row[colIdx].type.known && row[colIdx].type.canBe(Type.WALL) && wouldBeDeadEndAsGap(rowIdx, colIdx, board, true)) {
+                    changeToWall.add(Point(rowIdx, colIdx, TypeRange(setOf(Type.WALL))))
+                }
+            }
+
+            if (changeToWall.isNotEmpty()) {
+                return Rule.Check(board.update(changeToWall), "row[$rowIdx]");
+            }
+        }
+        return null
     }
 
     private fun wouldBeDeadEndAsGap(rowIdx: Int, colIdx: Int, board: Board, checkingRow: Boolean): Boolean {

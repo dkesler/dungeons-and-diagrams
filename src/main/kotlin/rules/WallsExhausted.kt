@@ -11,7 +11,7 @@ class WallsExhausted : Rule {
     override fun name() = "WallsExhausted"
     override fun apply(board: Board): ApplyResult {
 
-        fun rowRule(row: List<Point>, rowIdx: Int): Rule.Check? {
+        fun rule(row: List<Point>, rowIdx: Int, board: Board): Rule.Check? {
             val rowWalls = row.count { it.type.eq(Type.WALL) }
             val rowPotentialWalls = row.count { it.type.canBe(Type.WALL) && !it.type.known }
             if (rowWalls == board.rowReqs[rowIdx] && rowPotentialWalls > 0) {
@@ -23,17 +23,6 @@ class WallsExhausted : Rule {
             return null
         }
 
-        fun colRule(col: List<Point>, colIdx: Int): Rule.Check? {
-            val colWalls = col.count { it.type.eq(Type.WALL) }
-            val colPotentialWalls = col.count { it.type.canBe(Type.WALL) && !it.type.known }
-            if (colWalls == board.colReqs[colIdx] && colPotentialWalls > 0) {
-                val toUpdate = col.filter{ it.type.canBe(Type.WALL) && !it.type.known }
-                    .map{ Point(it.row, it.col, TypeRange(it.type.types - Type.WALL)) }
-                val update = board.update(toUpdate)
-                return Rule.Check(update, "col[$colIdx]")
-            }
-            return null
-        }
-        return eachRowAndCol(board, ::rowRule, ::colRule)
+        return eachStripe(board, ::rule)
     }
 }

@@ -136,4 +136,14 @@ class Grid(val cells: List<List<TypeRange>>) {
             }
         }
     }
+
+    fun transposed(): Grid {
+        return Grid(
+            cols.map { colIdx ->
+                rows.map { rowIdx ->
+                    cells[rowIdx][colIdx]
+                }
+            }
+        )
+    }
 }

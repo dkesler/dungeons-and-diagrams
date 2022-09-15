@@ -29,24 +29,38 @@ interface Rule {
         return checkToApplyResult(check, board)
     }
 
-    fun eachRowAndCol(
+    fun eachStripe(
         board: Board,
-        rowCallback: (List<Point>, Int) -> Check?,
-        colCallback: (List<Point>, Int) -> Check?
+        callback: (List<Point>, Int, Board) -> Check?
     ): ApplyResult {
         val rowCheck = board.grid.rows.fold(null) { check: Check?, rowIdx ->
             if (check != null) check
-            else rowCallback(board.grid.row(rowIdx), rowIdx)
+            else callback(board.grid.row(rowIdx), rowIdx, board)
         }
         if (rowCheck != null) {
             return checkToApplyResult(rowCheck, board)
         }
-
-        val colCheck = board.grid.cols.fold(null) { check: Check?, colIdx ->
+        val transposedBoard = board.transposed()
+        val colCheck = transposedBoard.grid.rows.fold(null) { check: Check?, rowIdx ->
             if (check != null) check
-            else colCallback(board.grid.col(colIdx), colIdx)
+            else callback(transposedBoard.grid.row(rowIdx), rowIdx, transposedBoard)
         }
-        return checkToApplyResult(colCheck, board)
+        if (colCheck == null) {
+            return ApplyResult(false, false, name(), "", board)
+        } else {
+            return ApplyResult(true, !colCheck.update.valid, name(), transpose(colCheck.description), colCheck.update.board.transposed())
+        }
+    }
+
+    //this is heinous and fragile.  it only works because of conventions in our description strings and the fact that
+    //we're only using this for row or column level descriptions.  This will be bettern when/if we make the descriptions
+    //more formalized and only stringify them after the fact
+    private fun transpose(description: String): String {
+        if (description.contains("row")) {
+            return description.replace("row", "col")
+        } else {
+            return description.replace("col", "row")
+        }
     }
 
     fun eachTwoByTwo(board: Board, callback: (Box) -> Check?): ApplyResult {

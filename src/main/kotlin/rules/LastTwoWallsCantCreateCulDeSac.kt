@@ -22,81 +22,55 @@ cul-de-sac we'd then just end up with a dead end.
 
 class LastTwoWallsCantCreateCulDeSac: Rule {
     override fun apply(board: Board): ApplyResult {
-        fun wouldBeCulDeSac(box: Box): Boolean {
-            //both cells must be empty to be a cul de sac.  we ignore WALL here since even if they could be wall
-            //our no-cul-de-sac logic is predicated on using up all the walls without modifying this potential cul de sac
-            if (board.grid.subgrid(box).flatten().any{ !it.type.canBe(Type.ROOM, Type.HALLWAY) } ) {
-                return false
-            }
-
-            val boxNeighbors = listOf(
-                board.grid.leftNeighbors(box),
-                board.grid.rightNeighbors(box),
-                board.grid.upNeighbors(box),
-                board.grid.downNeighbors(box)
-            )
-            return boxNeighbors.count { neighbors ->
-                neighbors.any { !it.type.eq(Type.WALL) }
-            } < 3
-            //count is < 3 because we're testing what would happen if one of the neighbors were to turn to wall.  We
-            //need at least 2 non-wall neighbors after that neighbor turns to wall
-        }
-
-        fun rowRule(row: List<Point>, rowIdx: Int): Rule.Check? {
-            if (board.rowReqs[rowIdx] - row.count{it.type.eq(Type.WALL)} <= 2) {
-                val toUpdate = mutableSetOf<Point>()
-                for (colIdx in board.grid.cols) {
-                    val t = board.grid.cells[rowIdx][colIdx]
-                    if (!t.known && t.canBe(Type.WALL)) {
-                        if (colIdx >= 2) {
-                            if (wouldBeCulDeSac(Box(rowIdx, colIdx-2, rowIdx, colIdx-1))) {
-                                toUpdate.add(Point(rowIdx, colIdx, TypeRange(t.types - Type.WALL)))
-                            }
-                        }
-                        if (colIdx <= board.grid.maxCol - 2) {
-                            if (wouldBeCulDeSac(Box(rowIdx, colIdx+1, rowIdx, colIdx+2))) {
-                                toUpdate.add(Point(rowIdx, colIdx, TypeRange(t.types - Type.WALL)))
-                            }
-                        }
-                    }
-                }
-                if (toUpdate.isNotEmpty()) {
-                    return Rule.Check(board.update(toUpdate), "row[$rowIdx]")
-                }
-            }
-            return null
-        }
-
-        fun colRule(col: List<Point>, colIdx: Int): Rule.Check? {
-            if (board.colReqs[colIdx] - col.count{it.type.eq(Type.WALL)} <= 2) {
-                val toUpdate = mutableSetOf<Point>()
-                for (rowIdx in board.grid.rows) {
-                    val t = board.grid.cells[rowIdx][colIdx]
-                    if (!t.known && t.canBe(Type.WALL)) {
-                        if (rowIdx >= 2) {
-                            if (wouldBeCulDeSac(Box(rowIdx - 2, colIdx, rowIdx - 1, colIdx))) {
-                                toUpdate.add(Point(rowIdx, colIdx, TypeRange(t.types - Type.WALL)))
-                            }
-                        }
-                        if (rowIdx <= board.grid.maxRow - 2) {
-                            if (wouldBeCulDeSac(Box(rowIdx + 1, colIdx, rowIdx + 2, colIdx))) {
-                                toUpdate.add(Point(rowIdx, colIdx, TypeRange(t.types - Type.WALL)))
-                            }
-                        }
-                    }
-                }
-                if (toUpdate.isNotEmpty()) {
-                    return Rule.Check(board.update(toUpdate), "col[$colIdx]")
-                }
-            }
-
-            return null
-        }
-        return eachRowAndCol(
+        return eachStripe(
             board,
-            ::rowRule,
-            ::colRule
+            ::rowRule
         )
+    }
+
+    private fun wouldBeCulDeSac(board: Board, box: Box): Boolean {
+        //both cells must be empty to be a cul de sac.  we ignore WALL here since even if they could be wall
+        //our no-cul-de-sac logic is predicated on using up all the walls without modifying this potential cul de sac
+        if (board.grid.subgrid(box).flatten().any{ !it.type.canBe(Type.ROOM, Type.HALLWAY) } ) {
+            return false
+        }
+
+        val boxNeighbors = listOf(
+            board.grid.leftNeighbors(box),
+            board.grid.rightNeighbors(box),
+            board.grid.upNeighbors(box),
+            board.grid.downNeighbors(box)
+        )
+        return boxNeighbors.count { neighbors ->
+            neighbors.any { !it.type.eq(Type.WALL) }
+        } < 3
+        //count is < 3 because we're testing what would happen if one of the neighbors were to turn to wall.  We
+        //need at least 2 non-wall neighbors after that neighbor turns to wall
+    }
+
+    private fun rowRule(row: List<Point>, rowIdx: Int, board: Board): Rule.Check? {
+        if (board.rowReqs[rowIdx] - row.count{it.type.eq(Type.WALL)} <= 2) {
+            val toUpdate = mutableSetOf<Point>()
+            for (colIdx in board.grid.cols) {
+                val t = board.grid.cells[rowIdx][colIdx]
+                if (!t.known && t.canBe(Type.WALL)) {
+                    if (colIdx >= 2) {
+                        if (wouldBeCulDeSac(board, Box(rowIdx, colIdx-2, rowIdx, colIdx-1))) {
+                            toUpdate.add(Point(rowIdx, colIdx, TypeRange(t.types - Type.WALL)))
+                        }
+                    }
+                    if (colIdx <= board.grid.maxCol - 2) {
+                        if (wouldBeCulDeSac(board, Box(rowIdx, colIdx+1, rowIdx, colIdx+2))) {
+                            toUpdate.add(Point(rowIdx, colIdx, TypeRange(t.types - Type.WALL)))
+                        }
+                    }
+                }
+            }
+            if (toUpdate.isNotEmpty()) {
+                return Rule.Check(board.update(toUpdate), "row[$rowIdx]")
+            }
+        }
+        return null
     }
 
     override fun name() = "LastTwoWallsCantCreateCulDeSac"

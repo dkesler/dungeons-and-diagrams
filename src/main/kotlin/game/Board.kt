@@ -18,6 +18,16 @@ class Board(
         grid.draw(rowReqs, colReqs, null)
     }
 
+    fun transposed(): Board {
+        return Board(
+            colReqs,
+            rowReqs,
+            monsters.map{ Pair(it.second, it.first) }.toSet(),
+            treasures.map{ Pair(it.second, it.first) }.toSet(),
+            grid.transposed()
+        )
+    }
+
     fun solved(): Boolean {
         val rowsSatisfied = rowReqs.mapIndexed { index, req -> grid.row(index).count { it.type.eq(Type.WALL) } == req }.all { it }
         val colsSatisfied = colReqs.mapIndexed { index, req -> grid.col(index).count { it.type.eq(Type.WALL) } == req }.all { it }
