@@ -25,6 +25,7 @@ rules
   - walled tr must have exit
   - incomplete known hall crawls w/ one path to island they need to reach
 
+dedupe selections in bifurcation
 improve description fields in ApplyResult
   - explain why
   - hints for the forcers?

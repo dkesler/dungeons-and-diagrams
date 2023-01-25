@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
 data class SolverConfiguration(val allowBifurcation: Boolean)
 
 fun solve(board: Board, config: SolverConfiguration): Solve {
-    val rules = listOf(
+    val rules = listOf<Rule>(
         WallsExhausted(),
         EmptyExhausted(),
         MonsterRequiresHallway(),
@@ -35,7 +35,6 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         LastGapCantCreateDeadend(),
         LastWallCantCreateDeadend(),
         TreasureExpandsAwayFromWall(),
-        TreasureRoomWithExitMustBeWalled(),
         EmptyishTwoByTwoIsTreasureRoom(),
         LastTwoWallsCantCreateCulDeSac(),
 
@@ -91,38 +90,79 @@ fun bifurcate(board: Board, config: SolverConfiguration): Triple<Board, Boolean,
     var probes = 0
     var wastedTimeMillis = 0L
 
-    for (rowIdx in board.grid.rows) {
-        for (colIdx in board.grid.cols) {
-            //if space is unknown, make it a wall and try to solve.
-            //if we successfully solve, return solve, otherwise try next unknown
-            val cell = board.grid.cells[rowIdx][colIdx]
-            if (!cell.known && cell.canBe(Type.WALL)) {
-                probes++
-                val probeStart = System.currentTimeMillis()
-                println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx]")
-                val update = board.update(rowIdx, colIdx, setOf(Type.WALL))
-                if (update.valid) {
-                    println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx]")
-                    update.board.draw()
-                    val solve = solve(update.board, config)
-                    if (solve.successful) {
-                        return Triple(solve.board, solve.successful, Bifurcation(probes, wastedTimeMillis, solve.steps))
-                    }
-                } else {
-                    println("Invalid bifurcation probe: ${update.invalidReason}")
-                    wastedTimeMillis += System.currentTimeMillis() - probeStart
-                }
-            }
+    val firstUnknownWallableCoordinates = (board.grid.rows).flatMap{ row -> board.grid.cols.map{Pair(row, it)}}
+        .first{
+            val cell = board.grid.cells[it.first][it.second]
+            !cell.known && cell.canBe(Type.WALL)
         }
+    val rowIdx = firstUnknownWallableCoordinates.first
+    val colIdx = firstUnknownWallableCoordinates.second
+
+    //TOOO: Dedup the these three blocks
+
+    probes++
+    val probeStartWall = System.currentTimeMillis()
+    println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx] = WALL")
+    val updateWall = board.update(rowIdx, colIdx, setOf(Type.WALL))
+    wastedTimeMillis += if (updateWall.valid) {
+        println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx] = WALL")
+        updateWall.board.draw()
+        val solve = solve(updateWall.board, config)
+        if (solve.successful) {
+            return Triple(solve.board, solve.successful, Bifurcation(probes, wastedTimeMillis, solve.steps))
+        } else {
+            println("Failed bifurcation probe")
+            System.currentTimeMillis() - probeStartWall
+        }
+    } else {
+        println("Invalid bifurcation probe: ${updateWall.invalidReason}")
+        System.currentTimeMillis() - probeStartWall
     }
+
+    val probeStartHall = System.currentTimeMillis()
+    println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx] = HALLWAY")
+    val updateHall = board.update(rowIdx, colIdx, setOf(Type.HALLWAY))
+    if (updateHall.valid) {
+        println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx] = HALLWAY")
+        updateHall.board.draw()
+        val solve = solve(updateHall.board, config)
+        if (solve.successful) {
+            return Triple(solve.board, solve.successful, Bifurcation(probes, wastedTimeMillis, solve.steps))
+        } else {
+            println("Failed bifurcation probe")
+            System.currentTimeMillis() - probeStartHall
+        }
+    } else {
+        println("Invalid bifurcation probe: ${updateHall.invalidReason}")
+        wastedTimeMillis += System.currentTimeMillis() - probeStartHall
+    }
+
+    val probeStartRoom = System.currentTimeMillis()
+    println("Checking rule: Bifurcation.row[$rowIdx].col[$colIdx] = ROOM")
+    val updateRoom = board.update(rowIdx, colIdx, setOf(Type.ROOM))
+    if (updateRoom.valid) {
+        println("Applying rule: Bifurcation.row[$rowIdx].col[$colIdx] = ROOM")
+        updateRoom.board.draw()
+        val solve = solve(updateRoom.board, config)
+        if (solve.successful) {
+            return Triple(solve.board, solve.successful, Bifurcation(probes, wastedTimeMillis, solve.steps))
+        } else {
+            println("Failed bifurcation probe")
+            System.currentTimeMillis() - probeStartRoom
+        }
+    } else {
+        println("Invalid bifurcation probe: ${updateRoom.invalidReason}")
+        wastedTimeMillis += System.currentTimeMillis() - probeStartRoom
+    }
+
     return Triple(board, false, Bifurcation(probes, wastedTimeMillis, listOf()))
 }
 fun applyRules(board: Board, rules: List<Rule>): Pair<ApplyResult, List<EvaluationMetric>> {
-    var evaluations = mutableListOf<EvaluationMetric>()
+    val evaluations = mutableListOf<EvaluationMetric>()
     for (rule in rules) {
         val evalStart = System.currentTimeMillis()
         val tryApply = rule.apply(board)
-        val evalTime = System.currentTimeMillis() - evalStart;
+        val evalTime = System.currentTimeMillis() - evalStart
         evaluations.add(EvaluationMetric(tryApply.rule, tryApply.applicable, evalTime))
         if (tryApply.applicable) {
             return Pair(tryApply, evaluations)
