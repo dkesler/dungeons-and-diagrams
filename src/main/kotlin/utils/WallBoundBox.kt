@@ -9,6 +9,11 @@ import kotlin.math.min
 data class WallBoundBox(val box: Box, val rowReqs: List<IntRange>, val colReqs: List<IntRange>, val minWalls: Int, val maxWalls: Int) {
 
     fun checkWalls(board: Board): Set<Point> {
+        //our check functions in here don't properly handle if one of the cells is a monster or treasure so bail early
+        //We may want to add functionality later to consider WBBs with monsters and/or treasures
+        if ( box.points().map{ board.grid.cells[it.first][it.second]}.any{ it.eq(Type.MONSTER) || it.eq(Type.TREASURE)} ) {
+            return setOf()
+        }
         if (minWalls == maxWalls && minWalls == 2) {
             return checkWalls2(board)
         } else if (minWalls == maxWalls && minWalls == 1) {

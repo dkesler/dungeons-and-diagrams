@@ -2,9 +2,8 @@
   - 1 in col 3 forces TR exit column
   - if 0,0 is hall, upper left quadrant is cutoff
 
-4-7, 4-8:  ibeam contradiction
-
 rm bifurcation:
+4-7
 5-1
 5-3
 5-7
