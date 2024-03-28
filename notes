@@ -30,6 +30,7 @@ rules
   - walled tr must have exit
   - incomplete known hall crawls w/ one path to island they need to reach
 
+pseudo rule that checks if all walls + trs placed and resolves empties to hallway to skip complicated rules running when the grid is essentially solved
 dedupe selections in bifurcation
 improve description fields in ApplyResult
   - explain why

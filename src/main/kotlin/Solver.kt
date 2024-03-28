@@ -31,6 +31,7 @@ fun solve(board: Board, config: SolverConfiguration): Solve {
         EmptyCannotBeIsolated(),
         AvoidCreatingDeadEnd(),
         AvoidTwoByTwoHall(),
+        TreasureRoomWithExitMustBeWalled(),
 
         LastGapCantCreateDeadend(),
         LastWallCantCreateDeadend(),
