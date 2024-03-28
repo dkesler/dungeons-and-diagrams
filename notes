@@ -1,12 +1,9 @@
-4-4 - remove bifurcation
+rm bifurcation:
+4-4
   - 1 in col 3 forces TR exit column
   - if 0,0 is hall, upper left quadrant is cutoff
-
-rm bifurcation:
-4-7
-5-1
+4-7 - if wbbs can handle monsters, we can combine an ibeam on c0+c1 plus a claim from the M in r7c0 to deduce that r6c1 must be empty which will open up the solve
 5-3
-5-7
 5-8
 
 
