@@ -2,8 +2,6 @@ rm bifurcation:
 4-4
   - 1 in col 3 forces TR exit column
   - if 0,0 is hall, upper left quadrant is cutoff
-4-7 - if wbbs can handle monsters, we can combine an ibeam on c0+c1 plus a claim from the M in r7c0 to deduce that r6c1 must be empty which will open up the solve
-5-3
 5-8
 
 
@@ -26,7 +24,13 @@ rules
   - walled tr must have exit
   - incomplete known hall crawls w/ one path to island they need to reach
 
+add monster handling to 2 wall scenario for WBBs?
+add WBB handling 2x2s that contain known walls/empties?
 pseudo rule that checks if all walls + trs placed and resolves empties to hallway to skip complicated rules running when the grid is essentially solved
+cutseying names:
+  is WallBoundBoxinternalStructure actually just a TBeam?
+  should beams get redefined?  I beam => only the two relevant rows, E beam => two main rows plus each cross row, monsterous * beam => monster in a block?
+  hall crawls could use better names
 dedupe selections in bifurcation
 improve description fields in ApplyResult
   - explain why

@@ -9,9 +9,9 @@ import kotlin.math.min
 data class WallBoundBox(val box: Box, val rowReqs: List<IntRange>, val colReqs: List<IntRange>, val minWalls: Int, val maxWalls: Int) {
 
     fun checkWalls(board: Board): Set<Point> {
-        //our check functions in here don't properly handle if one of the cells is a monster or treasure so bail early
-        //We may want to add functionality later to consider WBBs with monsters and/or treasures
-        if ( box.points().map{ board.grid.cells[it.first][it.second]}.any{ it.eq(Type.MONSTER) || it.eq(Type.TREASURE)} ) {
+        //our check functions in here don't properly handle if one of the cells is a treasure or treasure room so bail early
+        //We may want to add functionality later to consider WBBs with treasures/treasure rooms
+        if ( box.points().map{ board.grid.cells[it.first][it.second]}.any{it.eq(Type.TREASURE) || it.eq(Type.ROOM)}  ) {
             return setOf()
         }
         if (minWalls == maxWalls && minWalls == 2) {
@@ -27,53 +27,66 @@ data class WallBoundBox(val box: Box, val rowReqs: List<IntRange>, val colReqs: 
         val couldBeWall = mutableSetOf<Pair<Int, Int>>()
         val couldBeNonWall = mutableSetOf<Pair<Int, Int>>()
 
+        val claims = box.points().filter{ board.grid.cells[it.first][it.second].eq(Type.MONSTER)}.map{ board.grid.neighbors(it).map{ it.toPair() } }
+
         //top left
         if (rowReqs[0].contains(1) &&
             colReqs[0].contains(1) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.maxCol, 1, board, box ) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.minCol, 1, board, box )
+            (board.grid.cells[box.minRow][box.maxCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.maxCol, 1, board, box )) &&
+            (board.grid.cells[box.maxRow][box.minCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.minCol, 1, board, box ))
         ) {
-            couldBeWall.add(Pair(0, 0))
-            couldBeNonWall.add(Pair(0, 1))
-            couldBeNonWall.add(Pair(1, 0))
-            couldBeNonWall.add(Pair(1, 1))
+            if (claims.isEmpty() || claims.all{ Pair(box.minRow, box.minCol) in it }) {
+                couldBeWall.add(Pair(0, 0))
+                couldBeNonWall.add(Pair(0, 1))
+                couldBeNonWall.add(Pair(1, 0))
+                couldBeNonWall.add(Pair(1, 1))
+            }
         }
 
         //top right
         if (rowReqs[0].contains(1) &&
             colReqs[1].contains(1) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.minCol, 1, board, box ) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.maxCol, 1, board, box )
+            (board.grid.cells[box.minRow][box.minCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.minCol, 1, board, box )) &&
+            (board.grid.cells[box.maxRow][box.maxCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.maxCol, 1, board, box ))
         ) {
-            couldBeNonWall.add(Pair(0, 0))
-            couldBeWall.add(Pair(0, 1))
-            couldBeNonWall.add(Pair(1, 0))
-            couldBeNonWall.add(Pair(1, 1))
+            if (claims.isEmpty() || claims.all{ Pair(box.minRow, box.maxCol) in it }) {
+                couldBeNonWall.add(Pair(0, 0))
+                couldBeWall.add(Pair(0, 1))
+                couldBeNonWall.add(Pair(1, 0))
+                couldBeNonWall.add(Pair(1, 1))
+            }
         }
 
         //bot left
         if (rowReqs[1].contains(1) &&
             colReqs[0].contains(1) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.minCol, 1, board, box ) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.maxCol, 1, board, box )
+            (board.grid.cells[box.minRow][box.minCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.minCol, 1, board, box )) &&
+            (board.grid.cells[box.maxRow][box.maxCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.maxCol, 1, board, box ))
         ) {
-            couldBeNonWall.add(Pair(0, 0))
-            couldBeNonWall.add(Pair(0, 1))
-            couldBeWall.add(Pair(1, 0))
-            couldBeNonWall.add(Pair(1, 1))
+            if (claims.isEmpty() || claims.all{ Pair(box.maxRow, box.minCol) in it }) {
+                couldBeNonWall.add(Pair(0, 0))
+                couldBeNonWall.add(Pair(0, 1))
+                couldBeWall.add(Pair(1, 0))
+                couldBeNonWall.add(Pair(1, 1))
+            }
         }
 
         //bot right
         if (rowReqs[1].contains(1) &&
             colReqs[1].contains(1) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.maxCol, 1, board, box ) &&
-            hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.minCol, 1, board, box )
+            (board.grid.cells[box.minRow][box.maxCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.minRow, box.maxCol, 1, board, box )) &&
+            (board.grid.cells[box.maxRow][box.minCol].eq(Type.MONSTER) || hasAtLeastNPotentiallyEmptyNeighborsOutsideBox(box.maxRow, box.minCol, 1, board, box))
         ) {
-            couldBeNonWall.add(Pair(0, 0))
-            couldBeNonWall.add(Pair(0, 1))
-            couldBeNonWall.add(Pair(1, 0))
-            couldBeWall.add(Pair(1, 1))
+            if (claims.isEmpty() || claims.all{ Pair(box.maxRow, box.maxCol) in it }) {
+                couldBeNonWall.add(Pair(0, 0))
+                couldBeNonWall.add(Pair(0, 1))
+                couldBeNonWall.add(Pair(1, 0))
+                couldBeWall.add(Pair(1, 1))
+            }
         }
+
+        couldBeWall.removeIf { board.grid.cells[it.first][it.second].eq(Type.MONSTER) }
+        couldBeNonWall.removeIf { board.grid.cells[it.first][it.second].eq(Type.MONSTER) }
 
         val updatePossible = couldBeWall != couldBeNonWall
         if (!updatePossible) {
