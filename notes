@@ -1,38 +1,12 @@
-rm bifurcation:
-4-4
-  - 1 in col 3 forces TR exit column
-  - if 0,0 is hall, upper left quadrant is cutoff
-5-8
-  - row 4 has 1 empty which must connect the rows above and the rows below.  this requires putting 3 empties into a column which doesn't fit in all columns
-
-
-rules
-  - augmenting treasure room in EmptyCantReachTreasure can't include wall, hall, or monster
-  - 1/2 on the edge?
-    - can this get extended to be generic if there are 1 or 2 walls remaining on the edge?
-  - avoid cul-de-sac?  does this handle 1/2 on the edge?
-  - wallprobe?
-    - if adding a wall would be invalid, the candidate point must be empty
-  - emptyprobe?
-    - if adding an empty would be invalid, the candidate point must be a wall
-  - wall bound box chains
-  - tr w/ exit must border non-halls
-  - last gap should not cause cul de sac
-  - treasure cannot expand:  handle cases where current room width/height < 3 (and thus is not as strict as it could be)
-  - empty w/ opposing walls must be hall
-  - tr + monster gap claims in row/col:  if tr + monster gaps would take up all available gaps, everything else must be wall
-  - update tr can't expand to require 3 walls if exit can't be on that side
-  - walled tr must have exit
-  - incomplete known hall crawls w/ one path to island they need to reach
-
-add monster handling to 2 wall scenario for WBBs?
-add WBB handling 2x2s that contain known walls/empties?
 pseudo rule that checks if all walls + trs placed and resolves empties to hallway to skip complicated rules running when the grid is essentially solved (or just have all TRs complete be first)
 cutseying names:
   is WallBoundBoxinternalStructure actually just a TBeam?
   should beams get redefined/split up?  I beam => only the two relevant rows, E beam => two main rows plus each cross row, monsterous * beam => monster in a block?
   hall crawls could use better names
+add monster handling to 2 wall scenario for WBBs?
+add WBB handling 2x2s that contain known walls/empties?
 dedupe selections in bifurcation
+dedupe C&P logic in wall trap + double wall trap
 improve description fields in ApplyResult
   - explain why
   - hints for the forcers?

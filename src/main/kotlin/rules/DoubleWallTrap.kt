@@ -5,7 +5,9 @@ import game.Type
 import game.getAllTreasureRooms
 import utils.Point
 
-class WallTrap: Rule {
+class DoubleWallTrap: Rule {
+    //TODO: This rule's code is very duplicative with WallTrap.  Should we just have this be a special case of WallTrap
+    //or keep them separate but find a way to share code?
     fun rule(row: List<Point>, index: Int, board: Board): Rule.Check? {
 
         fun trapsPointsOfInterest(point: Point): Boolean {
@@ -26,7 +28,7 @@ class WallTrap: Rule {
                             //have one exit
                             !n.type.eq(Type.WALL) && !n.type.eq(Type.MONSTER) && !n.type.eq(Type.TREASURE) && !n.type.eq(Type.ROOM)
                         }.filter{ n ->
-                            n == point || n.row != point.row || n.type.cannotBe(Type.WALL)
+                            n == point || (n.row != point.row && n.col != point.col) || n.type.cannotBe(Type.WALL)
                         }.filter{ n -> n !in visited }
                     )
 
@@ -60,24 +62,25 @@ class WallTrap: Rule {
             return false
         }
 
-        //if the row is not the first or last and it has only one hallway cell left to place, then the column it is placed
-        //in may be restricted.  When placing the last gap, the rest of the row becomes walled in.  If this traps any
+        //if the row has only one hallway cell left to place then the column it is placed
+        //in may be restricted.  When placing the last gap, the rest of the row becomes walled in.  If this is also
+        // the last gap to be placed in that column the rest of the column becomes walled in.  If this traps any
         //points of interest (i.e. monsters, treasure, or known empty), then that cell cannot be a gap after all
 
-
-        //The first and last rows are not relevant because they can't wall anything off
-        if (index == 0 || index == board.rowReqs.size-1) return null
-
-        //The rule does not apply if we can place more than one gap in the wall
+        //The rule does not apply if we can place more than one gap in the row
         val gapsRemaining = row.count{ it.type.canBe(Type.WALL)} - board.rowReqs[index]
         if (gapsRemaining != 1) {
             return null
         }
 
         for (point in row) {
-            if (!point.type.known && point.type.canBe(Type.WALL)) {
-                if (trapsPointsOfInterest(point)) {
-                    return Rule.Check( board.update(point.row, point.col, setOf(Type.WALL)), "row[${point.row}].col[${point.col}]")
+            val colGapsRemaining = board.grid.col(point.col).count{ it.type.canBe(Type.WALL)} - board.colReqs[point.col]
+            //This rule does not apply if we can place more than one gap in the column
+            if (colGapsRemaining == 1) {
+                if (!point.type.known && point.type.canBe(Type.WALL)) {
+                    if (trapsPointsOfInterest(point)) {
+                        return Rule.Check( board.update(point.row, point.col, setOf(Type.WALL)), "row[${point.row}].col[${point.col}]")
+                    }
                 }
             }
         }
@@ -89,5 +92,5 @@ class WallTrap: Rule {
         return eachStripe(board, ::rule)
     }
 
-    override fun name() = "WallTrap"
+    override fun name() = "DoubleWallTrap"
 }
