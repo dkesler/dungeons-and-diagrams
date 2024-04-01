@@ -9,6 +9,6 @@ The solver tries to follow the following principles
 * Prefer targeted deductions over casting a wide net
 * Optimize for solve path "elegance" over brute force
 
-Current Status:  The solver is capable of solving the first four rows and some of the fifth row without bifurcation
+Current Status:  The solver is capable of solving the first five rows without bifurcation
 
 
