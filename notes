@@ -3,6 +3,7 @@ rm bifurcation:
   - 1 in col 3 forces TR exit column
   - if 0,0 is hall, upper left quadrant is cutoff
 5-8
+  - row 4 has 1 empty which must connect the rows above and the rows below.  this requires putting 3 empties into a column which doesn't fit in all columns
 
 
 rules
@@ -26,10 +27,10 @@ rules
 
 add monster handling to 2 wall scenario for WBBs?
 add WBB handling 2x2s that contain known walls/empties?
-pseudo rule that checks if all walls + trs placed and resolves empties to hallway to skip complicated rules running when the grid is essentially solved
+pseudo rule that checks if all walls + trs placed and resolves empties to hallway to skip complicated rules running when the grid is essentially solved (or just have all TRs complete be first)
 cutseying names:
   is WallBoundBoxinternalStructure actually just a TBeam?
-  should beams get redefined?  I beam => only the two relevant rows, E beam => two main rows plus each cross row, monsterous * beam => monster in a block?
+  should beams get redefined/split up?  I beam => only the two relevant rows, E beam => two main rows plus each cross row, monsterous * beam => monster in a block?
   hall crawls could use better names
 dedupe selections in bifurcation
 improve description fields in ApplyResult

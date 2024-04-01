@@ -57,9 +57,9 @@ interface Rule {
     //more formalized and only stringify them after the fact
     private fun transpose(description: String): String {
         if (description.contains("row")) {
-            return description.replace("row", "col")
+            return description.replace("col", "ZZZZZ").replace("row", "col").replace("ZZZZZ", "row")
         } else {
-            return description.replace("col", "row")
+            return description.replace("row", "ZZZZZ").replace("col", "row").replace("ZZZZZ", "col")
         }
     }
 
